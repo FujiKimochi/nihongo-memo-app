@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Key, Bot, RefreshCw, CheckCircle, AlertCircle } from 'lucide-react';
 import { getApiKey, setApiKey, getModelName, setModelName, fetchAvailableModels } from '../services/ai';
+import { getSupabaseConfig, setSupabaseConfig } from '../services/supabase';
+import { Database, Cloud, RefreshCw, CheckCircle, AlertCircle, Save, Key, Bot } from 'lucide-react';
 
 import { version } from '../../package.json';
 
@@ -8,6 +9,10 @@ export function Settings() {
     const [key, setKey] = useState('');
     const [model, setModel] = useState('');
     const [saved, setSaved] = useState(false);
+
+    // Supabase config
+    const [supabaseUrl, setSupabaseUrl] = useState('');
+    const [supabaseKey, setSupabaseKey] = useState('');
 
     // New state for model fetching
     const [availableModels, setAvailableModels] = useState([]);
@@ -18,11 +23,16 @@ export function Settings() {
         const storedKey = getApiKey();
         if (storedKey) setKey(storedKey);
         setModel(getModelName());
+
+        const sbc = getSupabaseConfig();
+        setSupabaseUrl(sbc.url);
+        setSupabaseKey(sbc.key);
     }, []);
 
     const handleSave = () => {
         setApiKey(key);
         setModelName(model);
+        setSupabaseConfig(supabaseUrl, supabaseKey);
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
     };
@@ -172,6 +182,63 @@ export function Settings() {
                     >
                         Get a free API Key →
                     </a>
+                </div>
+            </div>
+
+            {/* Supabase Sync Section */}
+            <div className="glass-card" style={{ padding: '1.5rem' }}>
+                <h3 className="flex items-center gap-2" style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1rem' }}>
+                    <Cloud size={20} className="text-blue-500" />
+                    Supabase 雲端同步
+                </h3>
+
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1rem' }}>
+                    輸入 Supabase 設定以啟用跨裝置自動同步功能。
+                    <br />
+                    (URL 通常為 https://[ref].supabase.co)
+                </p>
+
+                <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-1">
+                        <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#666' }}>Project URL</label>
+                        <input
+                            type="text"
+                            value={supabaseUrl}
+                            onChange={(e) => setSupabaseUrl(e.target.value)}
+                            placeholder="https://your-project.supabase.co"
+                            style={{
+                                padding: '0.75rem',
+                                borderRadius: 'var(--radius-md)',
+                                border: '1px solid var(--border-color)',
+                                background: 'rgba(255,255,255,0.5)',
+                            }}
+                        />
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                        <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#666' }}>Anon Key / API Key</label>
+                        <input
+                            type="password"
+                            value={supabaseKey}
+                            onChange={(e) => setSupabaseKey(e.target.value)}
+                            placeholder="your-anon-key"
+                            style={{
+                                padding: '0.75rem',
+                                borderRadius: 'var(--radius-md)',
+                                border: '1px solid var(--border-color)',
+                                background: 'rgba(255,255,255,0.5)',
+                            }}
+                        />
+                    </div>
+
+                    <button
+                        onClick={handleSave}
+                        className="btn btn-primary"
+                        style={{ alignSelf: 'flex-start', background: 'var(--indigo-600)' }}
+                    >
+                        {saved ? '已儲存！' : '儲存同步設定'}
+                        <Save size={18} />
+                    </button>
                 </div>
             </div>
         </div>

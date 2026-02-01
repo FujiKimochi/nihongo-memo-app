@@ -2,7 +2,7 @@
     "homepage": "https://FujiKimochi.github.io/nihongo-memo-app/",
     "name": "nihongo-memo",
     "private": true,
-    "version": "0.2.0",
+    "version": "0.3.0",
     "type": "module",
     "scripts": {
         "dev": "vite",
@@ -13,6 +13,7 @@
     },
     "dependencies": {
         "@google/generative-ai": "^0.24.1",
+        "@supabase/supabase-js": "^2.93.3",
         "lucide-react": "^0.300.0",
         "react": "^18.2.0",
         "react-dom": "^18.2.0"
