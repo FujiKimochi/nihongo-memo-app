@@ -89,3 +89,59 @@ export const supabaseService = {
         if (error) throw error;
     }
 };
+
+export const grammarSupabaseService = {
+    async fetchAll() {
+        const client = getSupabaseClient();
+        if (!client) return null;
+
+        const { data, error } = await client
+            .from('grammar')
+            .select('*')
+            .order('added_at', { ascending: false });
+
+        if (error) throw error;
+        return data.map(row => ({
+            id: row.id,
+            grammarPoint: row.grammar_point,
+            meaning: row.meaning,
+            explanation: row.explanation,
+            connection: row.connection,
+            examples: row.examples,
+            addedAt: row.added_at,
+            memorized: row.memorized
+        }));
+    },
+
+    async upsert(item) {
+        const client = getSupabaseClient();
+        if (!client) return null;
+
+        const { error } = await client
+            .from('grammar')
+            .upsert({
+                id: item.id,
+                grammar_point: item.grammarPoint,
+                meaning: item.meaning,
+                explanation: item.explanation,
+                connection: item.connection,
+                examples: item.examples,
+                added_at: item.addedAt,
+                memorized: item.memorized
+            });
+
+        if (error) throw error;
+    },
+
+    async delete(id) {
+        const client = getSupabaseClient();
+        if (!client) return null;
+
+        const { error } = await client
+            .from('grammar')
+            .delete()
+            .match({ id });
+
+        if (error) throw error;
+    }
+};

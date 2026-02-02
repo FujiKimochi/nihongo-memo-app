@@ -134,3 +134,61 @@ export async function generateVerbDetails(verb, apiKey, modelName) {
     throw error;
   }
 }
+
+/**
+ * Generates details for a Japanese grammar point using AI.
+ */
+export async function generateGrammarDetails(grammarPoint, apiKey, modelName) {
+  if (!apiKey) throw new Error("API Key is missing");
+
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const selectedModel = modelName || getModelName();
+  const model = genAI.getGenerativeModel({ model: selectedModel });
+
+  const prompt = `
+    You are a Japanese language tutor specialized in teaching Traditional Chinese speakers.
+    The user is learning the grammar point: "${grammarPoint}".
+
+    Please provide the following information in strict JSON format.
+    **CRITICAL**: All explanations and meanings must be in **Traditional Chinese (繁體中文)**.
+
+    1. "grammar_point": The grammar point itself.
+    2. "meaning": Concise meaning in Traditional Chinese.
+    3. "explanation": Detailed usage explanation in Traditional Chinese.
+    4. "connection": How it connects to other parts of speech (e.g., V-te + ..., Noun + ...).
+    5. "examples": An array of 5 example sentences. Each object MUST have:
+       - "jp": The Japanese sentence.
+       - "ruby": The Japanese sentence with <ruby> tags for Kanji furigana.
+       - "zh": The Traditional Chinese translation.
+
+    Example output structure:
+    {
+      "grammar_point": "～ほうがいい",
+      "meaning": "最好...、還是...比較好",
+      "explanation": "用於提出建議或勸告，表示在兩種以上的選項中選擇某個行為比較好。",
+      "connection": "動詞過去式（た形）+ ほうがいい / 動詞否定式（ない形）+ ほうがいい",
+      "examples": [
+        { 
+          "jp": "薬を飲んだほうがいいです。", 
+          "ruby": "<ruby>藥<rt>くすり</rt></ruby>を<ruby>飲<rt>の</rt></ruby>んだほうがいいです。", 
+          "zh": "還是吃藥比較好。" 
+        }
+      ]
+    }
+
+    Ensure valid JSON and no markdown formatting.
+  `;
+
+  try {
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error("Invalid response format from AI");
+    return JSON.parse(jsonMatch[0]);
+  } catch (error) {
+    console.error("AI Grammar Generation Error:", error);
+    throw error;
+  }
+}

@@ -2,7 +2,7 @@
     "homepage": "https://FujiKimochi.github.io/nihongo-memo-app/",
     "name": "nihongo-memo",
     "private": true,
-    "version": "0.3.0",
+    "version": "0.4.0-dev",
     "type": "module",
     "scripts": {
         "dev": "vite",
