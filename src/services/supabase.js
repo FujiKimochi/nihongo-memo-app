@@ -108,6 +108,9 @@ export const grammarSupabaseService = {
             explanation: row.explanation,
             connection: row.connection,
             examples: row.examples,
+            is_comparison: row.is_comparison,
+            comparison_analysis: row.comparison_analysis,
+            items: row.items,
             addedAt: row.added_at,
             memorized: row.memorized
         }));
@@ -126,6 +129,9 @@ export const grammarSupabaseService = {
                 explanation: item.explanation,
                 connection: item.connection,
                 examples: item.examples,
+                is_comparison: item.is_comparison,
+                comparison_analysis: item.comparison_analysis,
+                items: item.items,
                 added_at: item.addedAt,
                 memorized: item.memorized
             });

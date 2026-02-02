@@ -42,20 +42,20 @@ export function AddGrammarForm({ onAdd, onCancel }) {
     return (
         <div className="glass-card animate-slide-up" style={{ padding: '1.5rem', maxWidth: '600px', margin: '0 auto' }}>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1.5rem', textAlign: 'center' }}>
-                新增文法筆記
+                新增文法或是比較
             </h2>
 
             <form onSubmit={handleAnalyze} className="flex flex-col gap-4">
                 <div className="flex flex-col gap-1">
                     <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-color)' }}>
-                        文法條目 (例如：～ほうがいい)
+                        輸入文法 (多個請用空白或逗號隔開)
                     </label>
                     <div className="flex gap-2">
                         <input
                             type="text"
                             value={grammarPoint}
                             onChange={(e) => setGrammarPoint(e.target.value)}
-                            placeholder="輸入想學習的文法..."
+                            placeholder="如：～ほうがいい ～たらいい"
                             disabled={status === 'generating'}
                             style={{
                                 flex: 1,
@@ -88,19 +88,29 @@ export function AddGrammarForm({ onAdd, onCancel }) {
                 )}
 
                 {preview && (
-                    <div className="mt-4 p-4 bg-indigo-50 rounded-xl border border-indigo-100 animate-fade-in">
-                        <div className="font-bold text-indigo-900 text-lg mb-1">{preview.grammar_point}</div>
-                        <div className="text-indigo-600 font-medium mb-3">{preview.meaning}</div>
+                    <div className="mt-4 p-4 bg-indigo-50 rounded-xl border border-indigo-100 animate-fade-in shadow-inner">
+                        <div className="flex items-center justify-between mb-3">
+                            <div className="font-bold text-indigo-900 text-lg uppercase tracking-tight">
+                                {preview.is_comparison ? '🔍 文法比較解析' : '📖 文法解析'}
+                            </div>
+                            {preview.is_comparison && (
+                                <span className="bg-indigo-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">
+                                    {preview.items?.length} ITEMS
+                                </span>
+                            )}
+                        </div>
 
-                        <div className="text-xs text-gray-500 mb-4 line-clamp-2">
-                            {preview.explanation}
+                        <div className="font-bold text-indigo-900 text-base mb-1">{preview.grammar_point}</div>
+
+                        <div className="text-xs text-gray-500 mb-4 line-clamp-2 leading-relaxed">
+                            {preview.is_comparison ? preview.comparison_analysis : preview.explanation}
                         </div>
 
                         <div className="flex gap-2">
                             <button
                                 type="button"
                                 onClick={handleConfirmAdd}
-                                className="btn btn-primary w-full"
+                                className="btn btn-primary w-full shadow-md"
                             >
                                 確認加入筆記
                             </button>

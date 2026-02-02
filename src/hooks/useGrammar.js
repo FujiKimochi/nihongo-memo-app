@@ -36,10 +36,14 @@ export function useGrammar() {
         const item = {
             id: Date.now().toString(),
             grammarPoint: newGrammar.grammar_point,
-            meaning: newGrammar.meaning,
-            explanation: newGrammar.explanation,
-            connection: newGrammar.connection,
-            examples: newGrammar.examples,
+            meaning: newGrammar.meaning || '',
+            explanation: newGrammar.explanation || '',
+            connection: newGrammar.connection || '',
+            examples: newGrammar.examples || [],
+            // New comparison fields
+            is_comparison: newGrammar.is_comparison || false,
+            comparison_analysis: newGrammar.comparison_analysis || '',
+            items: newGrammar.items || [],
             addedAt: new Date().toISOString(),
             memorized: false,
         };

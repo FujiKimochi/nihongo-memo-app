@@ -136,45 +136,54 @@ export async function generateVerbDetails(verb, apiKey, modelName) {
 }
 
 /**
- * Generates details for a Japanese grammar point using AI.
+ * Generates details for Japanese grammar point(s) using AI.
+ * Supports single grammar point or comparison of multiple points (separated by space or comma).
  */
-export async function generateGrammarDetails(grammarPoint, apiKey, modelName) {
+export async function generateGrammarDetails(grammarInput, apiKey, modelName) {
   if (!apiKey) throw new Error("API Key is missing");
 
   const genAI = new GoogleGenerativeAI(apiKey);
   const selectedModel = modelName || getModelName();
   const model = genAI.getGenerativeModel({ model: selectedModel });
 
-  const prompt = `
+  // Detect multiple grammar points
+  const items = grammarInput.split(/[\s,，、]+/).filter(i => i.trim().length > 0);
+  const isComparison = items.length > 1;
+
+  const prompt = isComparison ? `
     You are a Japanese language tutor specialized in teaching Traditional Chinese speakers.
-    The user is learning the grammar point: "${grammarPoint}".
+    The user wants to compare multiple grammar points: "${items.join(', ')}".
+
+    Please provide the following information in strict JSON format.
+    **CRITICAL**: All explanations and meanings must be in **Traditional Chinese (繁體中文)**.
+
+    1. "grammar_point": A summary string of the compared items (e.g., "${items.join(' vs ')}").
+    2. "is_comparison": true
+    3. "comparison_analysis": A detailed explanation of the differences, nuances, and usage scenarios between these grammar points.
+    4. "items": An array of objects for EACH grammar point. Each object MUST have:
+       - "grammar_point": The specific grammar point.
+       - "meaning": Concise meaning.
+       - "explanation": Detailed usage explanation.
+       - "connection": Connection rules.
+       - "examples": An array of 5 example sentences (jp, ruby, zh).
+
+    Ensure valid JSON and no markdown formatting.
+  ` : `
+    You are a Japanese language tutor specialized in teaching Traditional Chinese speakers.
+    The user is learning the grammar point: "${grammarInput}".
 
     Please provide the following information in strict JSON format.
     **CRITICAL**: All explanations and meanings must be in **Traditional Chinese (繁體中文)**.
 
     1. "grammar_point": The grammar point itself.
-    2. "meaning": Concise meaning in Traditional Chinese.
-    3. "explanation": Detailed usage explanation in Traditional Chinese.
-    4. "connection": How it connects to other parts of speech (e.g., V-te + ..., Noun + ...).
-    5. "examples": An array of 5 example sentences. Each object MUST have:
+    2. "is_comparison": false
+    3. "meaning": Concise meaning in Traditional Chinese.
+    4. "explanation": Detailed usage explanation.
+    5. "connection": Connection rules (e.g., V-te + ...).
+    6. "examples": An array of 5 example sentences. Each object MUST have:
        - "jp": The Japanese sentence.
        - "ruby": The Japanese sentence with <ruby> tags for Kanji furigana.
        - "zh": The Traditional Chinese translation.
-
-    Example output structure:
-    {
-      "grammar_point": "～ほうがいい",
-      "meaning": "最好...、還是...比較好",
-      "explanation": "用於提出建議或勸告，表示在兩種以上的選項中選擇某個行為比較好。",
-      "connection": "動詞過去式（た形）+ ほうがいい / 動詞否定式（ない形）+ ほうがいい",
-      "examples": [
-        { 
-          "jp": "薬を飲んだほうがいいです。", 
-          "ruby": "<ruby>藥<rt>くすり</rt></ruby>を<ruby>飲<rt>の</rt></ruby>んだほうがいいです。", 
-          "zh": "還是吃藥比較好。" 
-        }
-      ]
-    }
 
     Ensure valid JSON and no markdown formatting.
   `;
