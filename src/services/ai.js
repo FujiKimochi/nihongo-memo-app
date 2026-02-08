@@ -201,3 +201,56 @@ export async function generateGrammarDetails(grammarInput, apiKey, modelName) {
     throw error;
   }
 }
+
+/**
+ * Generates a situational dialogue based on a scenario using AI.
+ */
+export async function generateDialogueContext(scenario, apiKey, modelName) {
+  if (!apiKey) throw new Error("API Key is missing");
+
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const selectedModel = modelName || getModelName();
+  const model = genAI.getGenerativeModel({ model: selectedModel });
+
+  const prompt = `
+    You are a Japanese language tutor specialized in teaching Traditional Chinese speakers.
+    The user wants to practice a dialogue in this scenario: "${scenario}".
+
+    Please generate a natural, helpful dialogue (8-10 sentences) between two people (A and B).
+    Provide the result in strict JSON format.
+    **CRITICAL**: All descriptions and translations must be in **Traditional Chinese (繁體中文)**.
+
+    1. "scenario": The scenario name.
+    2. "description": A brief summary of the conversation.
+    3. "dialogues": An array of objects, each representing one line:
+       - "role": "A" or "B".
+       - "jp": The Japanese sentence.
+       - "ruby": The Japanese sentence with <ruby> tags for Kanji furigana.
+       - "zh": The Traditional Chinese translation.
+
+    Structure:
+    {
+      "scenario": "...",
+      "description": "...",
+      "dialogues": [
+        { "role": "A", "jp": "...", "ruby": "...", "zh": "..." },
+        ...
+      ]
+    }
+
+    Ensure valid JSON and no markdown formatting.
+  `;
+
+  try {
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error("Invalid response format from AI");
+    return JSON.parse(jsonMatch[0]);
+  } catch (error) {
+    console.error("AI Dialogue Generation Error:", error);
+    throw error;
+  }
+}
