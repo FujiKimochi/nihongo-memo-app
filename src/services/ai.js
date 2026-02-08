@@ -26,17 +26,37 @@ export async function fetchAvailableModels(apiKey) {
     .map(m => m.name.replace('models/', '')); // Remove 'models/' prefix for cleaner display if desired, but keep full name for API usage if needed. actually API accepts both. let's prefer short name for display
 }
 
-export async function generateVerbDetails(verb, apiKey, modelName) {
+export async function generateVerbDetails(verbInput, apiKey, modelName) {
   if (!apiKey) throw new Error("API Key is missing");
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  // Use provided model name or default
   const selectedModel = modelName || getModelName();
   const model = genAI.getGenerativeModel({ model: selectedModel });
 
-  const prompt = `
+  // Detect multiple verbs
+  const items = verbInput.split(/[\s,，、]+/).filter(i => i.trim().length > 0);
+  const isBatch = items.length > 1;
+
+  const prompt = isBatch ? `
     You are a Japanese language tutor specialized in teaching Traditional Chinese speakers.
-    The user has provided a Japanese verb: "${verb}".
+    The user has provided multiple Japanese verbs: "${items.join(', ')}".
+
+    Please provide the following information for EACH verb in a strict JSON array of objects.
+    **CRITICAL**: All explanations and meanings must be in **Traditional Chinese (繁體中文)**.
+
+    Each object MUST have:
+    1. "kanji": The dictionary form of the verb (with Kanji).
+    2. "kana": The reading in Hiragana (for Furigana usage).
+    3. "meaning": Meaning in Traditional Chinese.
+    4. "type": Verb type (e.g., Godan, Ichidan, Irregular).
+    5. "conjugations": { "polite": {...}, "negative": {...}, "te": {...}, "potential": {...}, "passive": {...}, "causative": {...}, "causativePassive": {...}, "imperative": {...}, "volitional": {...}, "conditionalBa": {...}, "conditionalTara": {...}, "dictionary": {...} }
+       (Each conjugation must include "form", "explanation", and "example": { "jp", "ruby", "zh" })
+    6. "examples": An array of 3 general example sentences (japanese, chinese).
+
+    Return only a valid JSON array: [ {...}, {...} ]. No markdown.
+  ` : `
+    You are a Japanese language tutor specialized in teaching Traditional Chinese speakers.
+    The user has provided a Japanese verb: "${verbInput}".
     
     Please provide the following information in strict JSON format.
     **CRITICAL**: All explanations and meanings must be in **Traditional Chinese (繁體中文)**.
@@ -45,43 +65,10 @@ export async function generateVerbDetails(verb, apiKey, modelName) {
     2. "kana": The reading in Hiragana (for Furigana usage).
     3. "meaning": Meaning in Traditional Chinese.
     4. "type": Verb type (e.g., Godan, Ichidan, Irregular).
-    5. "conjugations": An object containing the following keys. Each key must calculate the form, provide a Chinese explanation, AND provide a short Japanese example sentence using that specific form with its Chinese translation.
-       
-       Required keys:
-       - "polite": { "form": "...", "explanation": "丁寧語 (ます形)", "example": { "jp": "...", "ruby": "HTML formatted string with <ruby>...", "zh": "..." } }
-       - "negative": { "form": "...", "explanation": "否定形 (ない形)", "example": { "jp": "...", "ruby": "...", "zh": "..." } }
-       - "te": { "form": "...", "explanation": "て形 (連接)", "example": { "jp": "...", "ruby": "...", "zh": "..." } }
-       - "potential": { "form": "...", "explanation": "可能形 (能...)", "example": { "jp": "...", "ruby": "...", "zh": "..." } }
-       - "passive": { "form": "...", "explanation": "被動形 (被...)", "example": { "jp": "...", "ruby": "...", "zh": "..." } }
-       - "causative": { "form": "...", "explanation": "使役形 (讓...)", "example": { "jp": "...", "ruby": "...", "zh": "..." } }
-       - "causativePassive": { "form": "...", "explanation": "使役被動 (被迫...)", "example": { "jp": "...", "ruby": "...", "zh": "..." } }
-       - "imperative": { "form": "...", "explanation": "命令形", "example": { "jp": "...", "ruby": "...", "zh": "..." } }
-       - "volitional": { "form": "...", "explanation": "意向形 (吧/打算)", "example": { "jp": "...", "ruby": "...", "zh": "..." } }
-       - "conditionalBa": { "form": "...", "explanation": "假定形 (ば)", "example": { "jp": "...", "ruby": "...", "zh": "..." } }
-       - "conditionalTara": { "form": "...", "explanation": "假定形 (たら)", "example": { "jp": "...", "ruby": "...", "zh": "..." } }
-       - "dictionary": { "form": "...", "explanation": "辭書形 (原形)", "example": { "jp": "...", "ruby": "...", "zh": "..." } }
+    5. "conjugations": { "polite": {...}, "negative": {...}, "te": {...}, "potential": {...}, "passive": {...}, "causative": {...}, "causativePassive": {...}, "imperative": {...}, "volitional": {...}, "conditionalBa": {...}, "conditionalTara": {...}, "dictionary": {...} }
+    6. "examples": An array of 3 general example sentences (japanese, chinese).
 
-    6. "examples": An array of 3 general example sentences using the verb. Each object should have "japanese" and "chinese".
-
-    Example output structure:
-    {
-      "kanji": "食べる",
-      "kana": "たべる",
-      "meaning": "吃",
-      "type": "一段動詞",
-      "conjugations": {
-        "polite": { "form": "食べます", "explanation": "丁寧語 (ます形)", "example": { "jp": "明日、寿司を食べます。", "zh": "明天要吃壽司。" } },
-        "negative": { "form": "食べない", "explanation": "否定形", "example": { "jp": "納豆は食べない。", "zh": "我不吃納豆。" } },
-        "dictionary": { "form": "食べる", "explanation": "辭書形 (原形)", "example": { "jp": "食べることは生きることだ。", "zh": "吃就是活著。" } }
-      },
-      "examples": [
-        { "japanese": "私は寿司を食べます。", "chinese": "我吃壽司。" },
-        { "japanese": "野菜も食べてください。", "chinese": "請也吃蔬菜。" },
-        { "japanese": "よく食べるね。", "chinese": "你真能吃呢。" }
-      ]
-    }
-    
-    Ensure the JSON is valid and contains no markdown formatting.
+    Ensure it's a valid JSON object. No markdown.
   `;
 
   try {
@@ -89,38 +76,33 @@ export async function generateVerbDetails(verb, apiKey, modelName) {
     const response = await result.response;
     const text = response.text();
 
-    // Improve JSON extraction
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    const jsonMatch = text.match(/\[[\s\S]*\]|\{[\s\S]*\}/);
     if (!jsonMatch) {
       console.error("AI Response Text:", text);
       throw new Error("Invalid response format from AI (No JSON found)");
     }
 
-    const jsonString = jsonMatch[0];
-    return JSON.parse(jsonString);
+    const data = JSON.parse(jsonMatch[0]);
+    // Normalize to array for easier handling in caller if batch, but keep object if single for compatibility?
+    // Let's return exactly what AddWordForm expects: either a single object or an array.
+    // Actually, AddWordForm will be updated to handle multiple results if we return an array.
+    return data;
   } catch (error) {
     console.error("AI Generation Error (Primary):", error);
 
-    // If it's the specific 404 error, try fallbacks
     if (error.message.includes('404') || error.message.includes('not found')) {
       const fallbacks = ['gemini-pro', 'gemini-1.5-pro'];
       const currentModel = modelName || getModelName();
-
-      // Remove current model from fallbacks if present
       const retries = fallbacks.filter(m => m !== currentModel);
 
       for (const fallbackName of retries) {
-        console.log(`Trying fallback model: ${fallbackName}`);
         try {
           const fallbackModel = genAI.getGenerativeModel({ model: fallbackName });
           const result = await fallbackModel.generateContent(prompt);
           const response = await result.response;
           const text = response.text();
-
-          // Helper to extract JSON (duplicated logic, but safe)
-          const jsonMatch = text.match(/\{[\s\S]*\}/);
+          const jsonMatch = text.match(/\[[\s\S]*\]|\{[\s\S]*\}/);
           if (jsonMatch) {
-            // Update the saved model preference if this works
             setModelName(fallbackName);
             return JSON.parse(jsonMatch[0]);
           }
@@ -129,8 +111,6 @@ export async function generateVerbDetails(verb, apiKey, modelName) {
         }
       }
     }
-
-    // If all fallbacks fail, throw original error
     throw error;
   }
 }
