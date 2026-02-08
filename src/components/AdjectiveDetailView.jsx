@@ -17,6 +17,12 @@ export function AdjectiveDetailView({ adjective, showHeader = true }) {
 
     if (!adjective) return null;
 
+    const typeLabel = {
+        'i-adj': 'い形容詞',
+        'na-adj': 'な形容詞',
+        'adv': '副詞'
+    }[adjective.type] || adjective.type;
+
     return (
         <div className="w-full animate-fade-in" style={{ textAlign: 'left' }}>
             {showHeader && (
@@ -27,8 +33,9 @@ export function AdjectiveDetailView({ adjective, showHeader = true }) {
                             <span style={{ fontSize: '1.1rem', fontWeight: 400, color: 'var(--text-muted)' }}>{adjective.kana}</span>
                         </h3>
                         <div className="flex items-center gap-2 mt-1">
-                            <div className="text-[10px] bg-rose-100 text-rose-600 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
-                                {adjective.type === 'i-adj' ? 'い形容詞' : 'な形容詞'}
+                            <div className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${adjective.type === 'adv' ? 'bg-amber-100 text-amber-600' : 'bg-rose-100 text-rose-600'
+                                }`}>
+                                {typeLabel}
                             </div>
                             <div style={{ fontSize: '1.25rem', color: 'hsl(var(--indigo-600))', fontWeight: 600 }}>
                                 {adjective.meaning}
@@ -48,8 +55,8 @@ export function AdjectiveDetailView({ adjective, showHeader = true }) {
                 </div>
             )}
 
-            <div className="w-full overflow-x-auto custom-scrollbar">
-                {adjective.conjugations ? (
+            {adjective.conjugations ? (
+                <div className="w-full overflow-x-auto custom-scrollbar">
                     <table className="w-full text-sm" style={{ borderCollapse: 'separate', borderSpacing: '0' }}>
                         <thead className="bg-gray-50 sticky top-0">
                             <tr>
@@ -82,12 +89,32 @@ export function AdjectiveDetailView({ adjective, showHeader = true }) {
                             ))}
                         </tbody>
                     </table>
-                ) : (
-                    <div className="text-center py-8 text-gray-400 bg-gray-50 rounded-lg">
-                        尚無詳細變化資料
+                </div>
+            ) : (
+                <div className="space-y-4">
+                    {!showHeader && (
+                        <div className="flex items-center gap-2 mb-4">
+                            <div className="text-[10px] bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                                {typeLabel}
+                            </div>
+                            <div className="font-bold text-gray-700">{adjective.meaning}</div>
+                        </div>
+                    )}
+                    <div className="bg-gray-50 p-4 rounded-xl">
+                        <div className="text-xs font-bold text-gray-400 mb-3 uppercase tracking-tighter">例句範例</div>
+                        <div className="space-y-3">
+                            {adjective.examples?.map((ex, i) => (
+                                <div key={i} className="border-l-2 border-indigo-200 pl-3">
+                                    <div className="text-sm font-medium text-gray-900 mb-0.5">
+                                        {ex.ruby ? <span dangerouslySetInnerHTML={{ __html: ex.ruby }} /> : ex.jp}
+                                    </div>
+                                    <div className="text-xs text-gray-500">{ex.zh || ex.chinese}</div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 }

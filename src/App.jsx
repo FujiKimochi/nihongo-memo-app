@@ -83,7 +83,7 @@ function App() {
                     {[
                         { id: 'vocabulary', label: '單字', icon: Languages },
                         { id: 'grammar', label: '文法', icon: FileText },
-                        { id: 'adjective', label: '形容詞', icon: Sparkles },
+                        { id: 'adjective', label: '形 / 副詞', icon: Sparkles },
                         { id: 'dialogue', label: '情境', icon: MessageSquare }
                     ].map(cat => (
                         <button

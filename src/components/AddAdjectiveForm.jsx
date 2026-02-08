@@ -47,7 +47,7 @@ export function AddAdjectiveForm({ onAdd, onCancel }) {
     return (
         <div className="glass-card animate-slide-up" style={{ padding: '1.5rem', maxWidth: '600px', margin: '0 auto' }}>
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold">批次新增形容詞</h2>
+                <h2 className="text-xl font-bold">批次新增形容詞 / 副詞</h2>
                 {onCancel && (
                     <button onClick={onCancel} className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
                         <X size={20} />
@@ -57,12 +57,12 @@ export function AddAdjectiveForm({ onAdd, onCancel }) {
 
             <form onSubmit={handleAnalyze} className="flex flex-col gap-4">
                 <div className="flex flex-col gap-1">
-                    <label className="text-sm font-semibold text-gray-700">請輸入形容詞 (可用空白或逗號分開)</label>
+                    <label className="text-sm font-semibold text-gray-700">請輸入形容詞或副詞 (可用空白或逗號分開)</label>
                     <div className="flex gap-2">
                         <input
                             required
                             className="flex-1 p-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none"
-                            placeholder="如：熱い、寒い、綺麗"
+                            placeholder="如：熱い、綺麗、ゆっくり"
                             value={kanjiInput}
                             onChange={e => setKanjiInput(e.target.value)}
                             disabled={isGenerating || status === 'preview'}

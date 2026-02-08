@@ -236,7 +236,7 @@ export async function generateDialogueContext(scenario, apiKey, modelName) {
 }
 
 /**
- * Generates details for Japanese adjective(s) using AI.
+ * Generates details for Japanese adjective(s) or adverb(s) using AI.
  */
 export async function generateAdjectiveDetails(adjectiveInput, apiKey, modelName) {
   if (!apiKey) throw new Error("API Key is missing");
@@ -250,32 +250,27 @@ export async function generateAdjectiveDetails(adjectiveInput, apiKey, modelName
 
   const prompt = isBatch ? `
     You are a Japanese language tutor for Traditional Chinese speakers.
-    Multiple adjectives: "${items.join(', ')}".
+    Input words: "${items.join(', ')}". They could be Adjectives (i-adj, na-adj) or Adverbs (adv).
     Provide a JSON array of objects. 
     **Traditional Chinese (繁體中文)** only for explanations.
 
     Required for EACH:
-    - "kanji", "kana", "meaning", "type" (i-adj or na-adj)
-    - "conjugations": {
-        "negative": { "form", "explanation": "否定形 (ない)", "example": { "jp", "ruby", "zh" } },
-        "past": { "form", "explanation": "過去形 (た)", "example": { "jp", "ruby", "zh" } },
-        "pastNegative": { "form", "explanation": "過去否定形 (なかった)", "example": { "jp", "ruby", "zh" } },
-        "polite": { "form", "explanation": "丁寧語 (禮貌形)", "example": { "jp", "ruby", "zh" } },
-        "politeNegative": { "form", "explanation": "丁寧語否定", "example": { "jp", "ruby", "zh" } },
-        "te": { "form", "explanation": "て形 (中連)", "example": { "jp", "ruby", "zh" } },
-        "adverb": { "form", "explanation": "副詞用法", "example": { "jp", "ruby", "zh" } }
-      }
-    - "examples": Array of 3 sentences (japanese, chinese).
+    - "kanji", "kana", "meaning", "type" (i-adj, na-adj, or adv)
+    - "conjugations": 
+        - If i-adj or na-adj: { "negative", "past", "pastNegative", "polite", "politeNegative", "te", "adverb" } (each with form, explanation, example {jp, ruby, zh})
+        - If adv (Adverb): null
+    - "examples": Array of 3 sentences (jp, ruby, zh).
 
     Return JSON array: [ {...}, {...} ].
   ` : `
     You are a Japanese language tutor for Traditional Chinese speakers.
-    Adjective: "${adjectiveInput}".
+    Input word: "${adjectiveInput}". It could be an Adjective or Adverb.
     Provide a JSON object in Traditional Chinese.
 
-    Include: kanji, kana, meaning, type (i-adj or na-adj).
-    Conjugations needed: negative, past, pastNegative, polite, politeNegative, te, adverb.
-    Add 3 example sentences.
+    Include: kanji, kana, meaning, type (i-adj, na-adj, or adv).
+    If it's an Adjective, provide conjugations (negative, past, pastNegative, polite, politeNegative, te, adverb).
+    If it's an Adverb, conjugations should be null.
+    Add 3 example sentences (with ruby tags for JP).
 
     Return JSON object ONLY.
   `;
