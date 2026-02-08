@@ -51,9 +51,12 @@ export async function generateVerbDetails(verbInput, apiKey, modelName) {
     4. "type": Verb type (e.g., Godan, Ichidan, Irregular).
     5. "conjugations": { "polite": {...}, "negative": {...}, "te": {...}, "potential": {...}, "passive": {...}, "causative": {...}, "causativePassive": {...}, "imperative": {...}, "volitional": {...}, "conditionalBa": {...}, "conditionalTara": {...}, "dictionary": {...} }
        (Each conjugation must include "form", "explanation", and "example": { "jp", "ruby", "zh" })
-    6. "examples": An array of 3 general example sentences (japanese, chinese).
+    6. "examples": An array of 3 objects. Each object: { "jp", "ruby", "zh" }.
 
-    Return only a valid JSON array: [ {...}, {...} ]. No markdown.
+    **CRITICAL**: Every "ruby" field MUST contain the Japanese sentence with HTML <ruby> tags for ALL Kanji furigana.
+    Example: <ruby>私<rt>わたし</rt></ruby>は...
+
+    Return only a valid JSON array: [ {...}, {...} ].
   ` : `
     You are a Japanese language tutor specialized in teaching Traditional Chinese speakers.
     The user has provided a Japanese verb: "${verbInput}".
@@ -61,14 +64,17 @@ export async function generateVerbDetails(verbInput, apiKey, modelName) {
     Please provide the following information in strict JSON format.
     **CRITICAL**: All explanations and meanings must be in **Traditional Chinese (繁體中文)**.
 
-    1. "kanji": The dictionary form of the verb (with Kanji).
-    2. "kana": The reading in Hiragana (for Furigana usage).
-    3. "meaning": Meaning in Traditional Chinese.
-    4. "type": Verb type (e.g., Godan, Ichidan, Irregular).
-    5. "conjugations": { "polite": {...}, "negative": {...}, "te": {...}, "potential": {...}, "passive": {...}, "causative": {...}, "causativePassive": {...}, "imperative": {...}, "volitional": {...}, "conditionalBa": {...}, "conditionalTara": {...}, "dictionary": {...} }
-    6. "examples": An array of 3 general example sentences (japanese, chinese).
+    1. "kanji": The dictionary form (Kanji).
+    2. "kana": Hiragana reading.
+    3. "meaning": Traditional Chinese meaning.
+    4. "type": Verb type.
+    5. "conjugations": { "polite": {...}, "negative": {...}, ... } 
+       Each conjugation: { "form", "explanation", "example": { "jp", "ruby", "zh" } }
+    6. "examples": Array of 3 objects: { "jp", "ruby", "zh" }.
 
-    Ensure it's a valid JSON object. No markdown.
+    **CRITICAL**: Every "ruby" field MUST contain the Japanese sentence with HTML <ruby> tags for ALL Kanji furigana.
+
+    Ensure it's a valid JSON object.
   `;
 
   try {
@@ -132,40 +138,38 @@ export async function generateGrammarDetails(grammarInput, apiKey, modelName) {
 
   const prompt = isComparison ? `
     You are a Japanese language tutor specialized in teaching Traditional Chinese speakers.
-    The user wants to compare multiple grammar points: "${items.join(', ')}".
+    Compare multiple grammar points: "${items.join(', ')}".
 
-    Please provide the following information in strict JSON format.
+    Provide the following in strict JSON:
     **CRITICAL**: All explanations and meanings must be in **Traditional Chinese (繁體中文)**.
 
-    1. "grammar_point": A summary string of the compared items (e.g., "${items.join(' vs ')}").
-    2. "is_comparison": true
-    3. "comparison_analysis": A detailed explanation of the differences, nuances, and usage scenarios between these grammar points.
-    4. "items": An array of objects for EACH grammar point. Each object MUST have:
-       - "grammar_point": The specific grammar point.
-       - "meaning": Concise meaning.
-       - "explanation": Detailed usage explanation.
-       - "connection": Connection rules.
-       - "examples": An array of 5 example sentences (jp, ruby, zh).
+    1. "grammar_point": String summary.
+    2. "meaning": General meaning in Traditional Chinese.
+    3. "explanation": Deep analysis of differences.
+    4. "connection": How to connect with other words.
+    5. "is_comparison": true.
+    6. "comparison_analysis": Detailed comparison table or text.
+    7. "items": Array for each grammar point. Each object: { "grammar": "...", "explanation": "...", "examples": [ { "jp", "ruby", "zh" }, ... ] }
+    
+    **CRITICAL**: Every "ruby" field MUST contain the Japanese sentence with HTML <ruby> tags for ALL Kanji furigana.
 
-    Ensure valid JSON and no markdown formatting.
+    Return JSON ONLY.
   ` : `
     You are a Japanese language tutor specialized in teaching Traditional Chinese speakers.
-    The user is learning the grammar point: "${grammarInput}".
+    Grammar point: "${grammarInput}".
 
-    Please provide the following information in strict JSON format.
+    Provide the following in strict JSON:
     **CRITICAL**: All explanations and meanings must be in **Traditional Chinese (繁體中文)**.
 
-    1. "grammar_point": The grammar point itself.
-    2. "is_comparison": false
-    3. "meaning": Concise meaning in Traditional Chinese.
-    4. "explanation": Detailed usage explanation.
-    5. "connection": Connection rules (e.g., V-te + ...).
-    6. "examples": An array of 5 example sentences. Each object MUST have:
-       - "jp": The Japanese sentence.
-       - "ruby": The Japanese sentence with <ruby> tags for Kanji furigana.
-       - "zh": The Traditional Chinese translation.
+    1. "grammar_point": The grammar point.
+    2. "meaning": Traditional Chinese meaning.
+    3. "explanation": Detailed explanation.
+    4. "connection": Connection rules.
+    5. "examples": Array of 5 sentences: [ { "jp", "ruby", "zh" }, ... ]
+    
+    **CRITICAL**: Every "ruby" field MUST contain the Japanese sentence with HTML <ruby> tags for ALL Kanji furigana.
 
-    Ensure valid JSON and no markdown formatting.
+    Return JSON ONLY.
   `;
 
   try {
@@ -257,9 +261,13 @@ export async function generateAdjectiveDetails(adjectiveInput, apiKey, modelName
     Required for EACH:
     - "kanji", "kana", "meaning", "type" (i-adj, na-adj, or adv)
     - "conjugations": 
-        - If i-adj or na-adj: { "negative", "past", "pastNegative", "polite", "politeNegative", "te", "adverb" } (each with form, explanation, example {jp, ruby, zh})
+        - If i-adj or na-adj: { "negative", "past", "pastNegative", "polite", "politeNegative", "te", "adverb" } 
+          Each conjugation must be an object: { "form", "explanation", "example": { "jp", "ruby", "zh" } }
         - If adv (Adverb): null
-    - "examples": Array of 3 sentences (jp, ruby, zh).
+    - "examples": Array of 3 objects. Each object: { "jp", "ruby", "zh" }.
+
+    **CRITICAL**: Every "ruby" field MUST contain the Japanese sentence with HTML <ruby> tags for ALL Kanji furigana.
+    Example: <ruby>私<rt>わたし</rt></ruby>は...
 
     Return JSON array: [ {...}, {...} ].
   ` : `
@@ -268,9 +276,13 @@ export async function generateAdjectiveDetails(adjectiveInput, apiKey, modelName
     Provide a JSON object in Traditional Chinese.
 
     Include: kanji, kana, meaning, type (i-adj, na-adj, or adv).
-    If it's an Adjective, provide conjugations (negative, past, pastNegative, polite, politeNegative, te, adverb).
-    If it's an Adverb, conjugations should be null.
-    Add 3 example sentences (with ruby tags for JP).
+    - If it's an Adjective, provide "conjugations" with: negative, past, pastNegative, polite, politeNegative, te, adverb.
+      Each conjugation is an object: { "form", "explanation", "example": { "jp", "ruby", "zh" } }
+    - If it's an Adverb, "conjugations" should be null.
+    - Provide "examples": Array of 3 objects: { "jp", "ruby", "zh" }.
+
+    **CRITICAL**: Every "ruby" field MUST contain the Japanese sentence with HTML <ruby> tags for ALL Kanji furigana.
+    Example: <ruby>私<rt>わたし</rt></ruby>は...
 
     Return JSON object ONLY.
   `;
