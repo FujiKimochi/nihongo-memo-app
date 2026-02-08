@@ -25,13 +25,13 @@ export function DialogueDetailView({ dialogue, onSpeak }) {
                         <div className={`flex-1 max-w-[85%] group`}>
                             <div
                                 className={`inline-block p-3 rounded-2xl shadow-sm border ${line.role === 'A'
-                                        ? 'bg-white border-gray-100 rounded-tl-none'
-                                        : 'bg-rose-50 border-rose-100 rounded-tr-none text-left'
+                                    ? 'bg-white border-gray-100 rounded-tl-none'
+                                    : 'bg-rose-50 border-rose-100 rounded-tr-none text-left'
                                     }`}
                                 onClick={() => onSpeak(line.jp)}
                                 style={{ cursor: 'pointer' }}
                             >
-                                <div className="text-gray-900 text-base leading-relaxed mb-1">
+                                <div className="text-gray-900 text-base leading-[2.2] mb-1">
                                     {line.ruby ? (
                                         <span dangerouslySetInnerHTML={{ __html: line.ruby }} />
                                     ) : (

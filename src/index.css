@@ -188,3 +188,14 @@ textarea {
     border-top: 1px solid var(--border-color);
     padding-bottom: env(safe-area-inset-bottom);
 }
+
+/* Ruby / Furigana Styling */
+ruby {
+    ruby-align: center;
+}
+
+rt {
+    font-size: 0.6em;
+    color: hsl(var(--text-muted));
+    user-select: none;
+}
