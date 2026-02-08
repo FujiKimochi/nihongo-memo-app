@@ -1,25 +1,29 @@
 import { useState } from 'react';
-import { BookOpen, PlusCircle, Brain, Settings as SettingsIcon, Languages, FileText, MessageSquare } from 'lucide-react';
+import { BookOpen, PlusCircle, Brain, Settings as SettingsIcon, Languages, FileText, MessageSquare, Sparkles } from 'lucide-react';
 import { useVocabulary } from './hooks/useVocabulary';
 import { useGrammar } from './hooks/useGrammar';
 import { useDialogues } from './hooks/useDialogues';
+import { useAdjectives } from './hooks/useAdjectives';
 import { AddWordForm } from './components/AddWordForm';
 import { AddGrammarForm } from './components/AddGrammarForm';
 import { AddDialogueForm } from './components/AddDialogueForm';
+import { AddAdjectiveForm } from './components/AddAdjectiveForm';
 import { FlashcardDeck } from './components/FlashcardDeck';
 import { GrammarFlashcards } from './components/GrammarFlashcards';
 import { WordList } from './components/WordList';
 import { GrammarList } from './components/GrammarList';
 import { DialogueList } from './components/DialogueList';
+import { AdjectiveList } from './components/AdjectiveList';
 import { Settings } from './components/Settings';
 
 function App() {
     const { words, addWord, deleteWord } = useVocabulary();
     const { grammarItems, addGrammar, deleteGrammar } = useGrammar();
     const { dialogues, addDialogue, deleteDialogue } = useDialogues();
+    const { adjectives, addAdjective, deleteAdjective } = useAdjectives();
 
     const [activeTab, setActiveTab] = useState('list'); // 'list', 'add', 'review', 'settings'
-    const [activeCategory, setActiveCategory] = useState('vocabulary'); // 'vocabulary', 'grammar', 'dialogue'
+    const [activeCategory, setActiveCategory] = useState('vocabulary'); // 'vocabulary', 'grammar', 'adjective', 'dialogue'
 
     const handleAddWord = (word) => {
         addWord(word);
@@ -36,10 +40,16 @@ function App() {
         setActiveTab('list');
     };
 
+    const handleAddAdjective = (adj) => {
+        addAdjective(adj);
+        setActiveTab('list');
+    };
+
     const getCountDisplay = () => {
         switch (activeCategory) {
             case 'vocabulary': return `${words.length} 單字`;
             case 'grammar': return `${grammarItems.length} 文法`;
+            case 'adjective': return `${adjectives.length} 形容詞`;
             case 'dialogue': return `${dialogues.length} 情境`;
             default: return '';
         }
@@ -47,7 +57,7 @@ function App() {
 
     return (
         <div className="flex flex-col min-h-screen">
-            <header className="app-header flex-col items-stretch gap-3">
+            <header className="app-header h-auto py-3 flex-col items-stretch gap-3">
                 <div className="flex justify-between items-center">
                     <h1 style={{ fontSize: '1.25rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <span style={{ color: 'hsl(var(--sakura-500))' }}>✿</span>
@@ -59,37 +69,25 @@ function App() {
                 </div>
 
                 {/* Category Switcher */}
-                <div className="flex bg-gray-100 p-1 rounded-xl">
-                    <button
-                        onClick={() => setActiveCategory('vocabulary')}
-                        className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[13px] font-bold transition-all ${activeCategory === 'vocabulary'
-                            ? 'bg-white text-indigo-600 shadow-sm'
-                            : 'text-gray-500 hover:text-gray-700'
-                            }`}
-                    >
-                        <Languages size={16} />
-                        單字
-                    </button>
-                    <button
-                        onClick={() => setActiveCategory('grammar')}
-                        className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[13px] font-bold transition-all ${activeCategory === 'grammar'
-                            ? 'bg-white text-indigo-600 shadow-sm'
-                            : 'text-gray-500 hover:text-gray-700'
-                            }`}
-                    >
-                        <FileText size={16} />
-                        文法
-                    </button>
-                    <button
-                        onClick={() => setActiveCategory('dialogue')}
-                        className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[13px] font-bold transition-all ${activeCategory === 'dialogue'
-                            ? 'bg-white text-indigo-600 shadow-sm'
-                            : 'text-gray-500 hover:text-gray-700'
-                            }`}
-                    >
-                        <MessageSquare size={16} />
-                        情境
-                    </button>
+                <div className="flex bg-gray-100 p-1 rounded-xl overflow-x-auto no-scrollbar">
+                    {[
+                        { id: 'vocabulary', label: '單字', icon: Languages },
+                        { id: 'grammar', label: '文法', icon: FileText },
+                        { id: 'adjective', label: '形容詞', icon: Sparkles },
+                        { id: 'dialogue', label: '情境', icon: MessageSquare }
+                    ].map(cat => (
+                        <button
+                            key={cat.id}
+                            onClick={() => setActiveCategory(cat.id)}
+                            className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-[13px] font-bold transition-all whitespace-nowrap ${activeCategory === cat.id
+                                ? 'bg-white text-indigo-600 shadow-sm'
+                                : 'text-gray-500 hover:text-gray-700'
+                                }`}
+                        >
+                            <cat.icon size={14} />
+                            {cat.label}
+                        </button>
+                    ))}
                 </div>
             </header>
 
@@ -99,6 +97,8 @@ function App() {
                         <AddWordForm onAdd={handleAddWord} onCancel={() => setActiveTab('list')} />
                     ) : activeCategory === 'grammar' ? (
                         <AddGrammarForm onAdd={handleAddGrammar} onCancel={() => setActiveTab('list')} />
+                    ) : activeCategory === 'adjective' ? (
+                        <AddAdjectiveForm onAdd={handleAddAdjective} onCancel={() => setActiveTab('list')} />
                     ) : (
                         <AddDialogueForm onAdd={handleAddDialogue} onCancel={() => setActiveTab('list')} />
                     )
@@ -121,6 +121,12 @@ function App() {
                             onDelete={deleteGrammar}
                             onAddClick={() => setActiveTab('add')}
                         />
+                    ) : activeCategory === 'adjective' ? (
+                        <AdjectiveList
+                            items={adjectives}
+                            onDelete={deleteAdjective}
+                            onAddClick={() => setActiveTab('add')}
+                        />
                     ) : (
                         <DialogueList
                             items={dialogues}
@@ -135,6 +141,9 @@ function App() {
                         <FlashcardDeck words={words} />
                     ) : activeCategory === 'grammar' ? (
                         <GrammarFlashcards items={grammarItems} />
+                    ) : activeCategory === 'adjective' ? (
+                        // Placeholder or reuse Word flashcards if structure is compatible
+                        <FlashcardDeck words={adjectives} />
                     ) : (
                         <div className="flex flex-col items-center justify-center h-full p-8 text-center text-gray-400">
                             <MessageSquare size={48} className="mb-4 opacity-20" />

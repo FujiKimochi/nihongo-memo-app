@@ -234,3 +234,62 @@ export async function generateDialogueContext(scenario, apiKey, modelName) {
     throw error;
   }
 }
+
+/**
+ * Generates details for Japanese adjective(s) using AI.
+ */
+export async function generateAdjectiveDetails(adjectiveInput, apiKey, modelName) {
+  if (!apiKey) throw new Error("API Key is missing");
+
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const selectedModel = modelName || getModelName();
+  const model = genAI.getGenerativeModel({ model: selectedModel });
+
+  const items = adjectiveInput.split(/[\s,，、]+/).filter(i => i.trim().length > 0);
+  const isBatch = items.length > 1;
+
+  const prompt = isBatch ? `
+    You are a Japanese language tutor for Traditional Chinese speakers.
+    Multiple adjectives: "${items.join(', ')}".
+    Provide a JSON array of objects. 
+    **Traditional Chinese (繁體中文)** only for explanations.
+
+    Required for EACH:
+    - "kanji", "kana", "meaning", "type" (i-adj or na-adj)
+    - "conjugations": {
+        "negative": { "form", "explanation": "否定形 (ない)", "example": { "jp", "ruby", "zh" } },
+        "past": { "form", "explanation": "過去形 (た)", "example": { "jp", "ruby", "zh" } },
+        "pastNegative": { "form", "explanation": "過去否定形 (なかった)", "example": { "jp", "ruby", "zh" } },
+        "polite": { "form", "explanation": "丁寧語 (禮貌形)", "example": { "jp", "ruby", "zh" } },
+        "politeNegative": { "form", "explanation": "丁寧語否定", "example": { "jp", "ruby", "zh" } },
+        "te": { "form", "explanation": "て形 (中連)", "example": { "jp", "ruby", "zh" } },
+        "adverb": { "form", "explanation": "副詞用法", "example": { "jp", "ruby", "zh" } }
+      }
+    - "examples": Array of 3 sentences (japanese, chinese).
+
+    Return JSON array: [ {...}, {...} ].
+  ` : `
+    You are a Japanese language tutor for Traditional Chinese speakers.
+    Adjective: "${adjectiveInput}".
+    Provide a JSON object in Traditional Chinese.
+
+    Include: kanji, kana, meaning, type (i-adj or na-adj).
+    Conjugations needed: negative, past, pastNegative, polite, politeNegative, te, adverb.
+    Add 3 example sentences.
+
+    Return JSON object ONLY.
+  `;
+
+  try {
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+
+    const jsonMatch = text.match(/\[[\s\S]*\]|\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error("Invalid response format from AI");
+    return JSON.parse(jsonMatch[0]);
+  } catch (error) {
+    console.error("AI Adjective Generation Error:", error);
+    throw error;
+  }
+}

@@ -204,3 +204,62 @@ export const dialogueSupabaseService = {
         if (error) throw error;
     }
 };
+
+export const adjectiveSupabaseService = {
+    async fetchAll() {
+        const client = getSupabaseClient();
+        if (!client) return null;
+
+        const { data, error } = await client
+            .from('adjectives')
+            .select('*')
+            .order('added_at', { ascending: false });
+
+        if (error) throw error;
+
+        return data.map(row => ({
+            id: row.id,
+            kanji: row.kanji,
+            kana: row.kana,
+            meaning: row.meaning,
+            type: row.type,
+            conjugations: row.conjugations,
+            examples: row.examples,
+            addedAt: row.added_at,
+            memorized: row.memorized
+        }));
+    },
+
+    async upsert(item) {
+        const client = getSupabaseClient();
+        if (!client) return null;
+
+        const { error } = await client
+            .from('adjectives')
+            .upsert({
+                id: item.id,
+                kanji: item.kanji,
+                kana: item.kana,
+                meaning: item.meaning,
+                type: item.type,
+                conjugations: item.conjugations,
+                examples: item.examples,
+                added_at: item.addedAt,
+                memorized: item.memorized
+            });
+
+        if (error) throw error;
+    },
+
+    async delete(id) {
+        const client = getSupabaseClient();
+        if (!client) return null;
+
+        const { error } = await client
+            .from('adjectives')
+            .delete()
+            .match({ id });
+
+        if (error) throw error;
+    }
+};
