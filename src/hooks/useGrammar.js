@@ -48,9 +48,11 @@ export function useGrammar() {
             memorized: false,
         };
 
-        const updated = [item, ...grammarItems];
-        setGrammarItems(updated);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+        setGrammarItems(prev => {
+            const updated = [item, ...prev];
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+            return updated;
+        });
 
         try {
             await grammarSupabaseService.upsert(item);
@@ -60,9 +62,11 @@ export function useGrammar() {
     };
 
     const deleteGrammar = async (id) => {
-        const updated = grammarItems.filter(item => item.id !== id);
-        setGrammarItems(updated);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+        setGrammarItems(prev => {
+            const updated = prev.filter(item => item.id !== id);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+            return updated;
+        });
 
         try {
             await grammarSupabaseService.delete(id);
@@ -73,16 +77,17 @@ export function useGrammar() {
 
     const toggleMemorized = async (id) => {
         let target = null;
-        const updated = grammarItems.map(item => {
-            if (item.id === id) {
-                target = { ...item, memorized: !item.memorized };
-                return target;
-            }
-            return item;
+        setGrammarItems(prev => {
+            const updated = prev.map(item => {
+                if (item.id === id) {
+                    target = { ...item, memorized: !item.memorized };
+                    return target;
+                }
+                return item;
+            });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+            return updated;
         });
-
-        setGrammarItems(updated);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
 
         if (target) {
             try {

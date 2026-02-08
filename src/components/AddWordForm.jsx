@@ -40,17 +40,16 @@ export function AddWordForm({ onAdd, onCancel }) {
     };
 
     const handleConfirmAll = () => {
-        previews.forEach(data => {
-            const wordEntry = {
-                kanji: data.kanji,
-                kana: data.kana,
-                meaning: data.meaning,
-                type: data.type || 'Verb',
-                conjugations: data.conjugations,
-                examples: data.examples
-            };
-            onAdd(wordEntry);
-        });
+        const wordEntries = previews.map(data => ({
+            kanji: data.kanji,
+            kana: data.kana,
+            meaning: data.meaning,
+            type: data.type || 'Verb',
+            conjugations: data.conjugations,
+            examples: data.examples
+        }));
+
+        onAdd(wordEntries);
 
         setStatus('success');
         setKanjiInput(''); // Clear input

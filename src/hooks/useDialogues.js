@@ -42,9 +42,11 @@ export function useDialogues() {
             memorized: false,
         };
 
-        const updated = [item, ...dialogues];
-        setDialogues(updated);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+        setDialogues(prev => {
+            const updated = [item, ...prev];
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+            return updated;
+        });
 
         try {
             await dialogueSupabaseService.upsert(item);
@@ -54,9 +56,11 @@ export function useDialogues() {
     };
 
     const deleteDialogue = async (id) => {
-        const updated = dialogues.filter(item => item.id !== id);
-        setDialogues(updated);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+        setDialogues(prev => {
+            const updated = prev.filter(item => item.id !== id);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+            return updated;
+        });
 
         try {
             await dialogueSupabaseService.delete(id);
@@ -67,16 +71,17 @@ export function useDialogues() {
 
     const toggleMemorized = async (id) => {
         let target = null;
-        const updated = dialogues.map(item => {
-            if (item.id === id) {
-                target = { ...item, memorized: !item.memorized };
-                return target;
-            }
-            return item;
+        setDialogues(prev => {
+            const updated = prev.map(item => {
+                if (item.id === id) {
+                    target = { ...item, memorized: !item.memorized };
+                    return target;
+                }
+                return item;
+            });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+            return updated;
         });
-
-        setDialogues(updated);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
 
         if (target) {
             try {

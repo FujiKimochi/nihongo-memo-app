@@ -34,7 +34,7 @@ export function AddAdjectiveForm({ onAdd, onCancel }) {
     };
 
     const handleConfirmAll = () => {
-        previews.forEach(p => onAdd(p));
+        onAdd(previews);
         setStatus('success');
         setKanjiInput('');
         setPreviews([]);

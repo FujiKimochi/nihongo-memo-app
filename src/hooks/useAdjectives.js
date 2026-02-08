@@ -37,9 +37,11 @@ export function useAdjectives() {
             memorized: false
         };
 
-        const updated = [newAdj, ...adjectives];
-        setAdjectives(updated);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+        setAdjectives(prev => {
+            const updated = [newAdj, ...prev];
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+            return updated;
+        });
 
         try {
             await adjectiveSupabaseService.upsert(newAdj);
@@ -48,10 +50,36 @@ export function useAdjectives() {
         }
     };
 
+    const addAdjectives = async (newAdjectives) => {
+        const itemsWithMeta = newAdjectives.map(adj => ({
+            ...adj,
+            id: adj.id || crypto.randomUUID(),
+            addedAt: new Date().toISOString(),
+            memorized: false
+        }));
+
+        setAdjectives(prev => {
+            const updated = [...itemsWithMeta, ...prev];
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+            return updated;
+        });
+
+        // Batch upsert to Supabase
+        try {
+            for (const item of itemsWithMeta) {
+                await adjectiveSupabaseService.upsert(item);
+            }
+        } catch (error) {
+            console.error("Supabase batch sync failed:", error);
+        }
+    };
+
     const deleteAdjective = async (id) => {
-        const updated = adjectives.filter(a => a.id !== id);
-        setAdjectives(updated);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+        setAdjectives(prev => {
+            const updated = prev.filter(a => a.id !== id);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+            return updated;
+        });
 
         try {
             await adjectiveSupabaseService.delete(id);
@@ -61,23 +89,32 @@ export function useAdjectives() {
     };
 
     const toggleMemorized = async (id) => {
-        const updated = adjectives.map(a =>
-            a.id === id ? { ...a, memorized: !a.memorized } : a
-        );
-        setAdjectives(updated);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+        let target = null;
+        setAdjectives(prev => {
+            const updated = prev.map(a => {
+                if (a.id === id) {
+                    target = { ...a, memorized: !a.memorized };
+                    return target;
+                }
+                return a;
+            });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+            return updated;
+        });
 
-        const target = updated.find(a => a.id === id);
-        try {
-            await adjectiveSupabaseService.upsert(target);
-        } catch (error) {
-            console.error("Supabase sync failed:", error);
+        if (target) {
+            try {
+                await adjectiveSupabaseService.upsert(target);
+            } catch (error) {
+                console.error("Supabase sync failed:", error);
+            }
         }
     };
 
     return {
         adjectives,
         addAdjective,
+        addAdjectives,
         deleteAdjective,
         toggleMemorized
     };

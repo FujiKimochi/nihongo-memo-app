@@ -51,9 +51,11 @@ export function useVocabulary() {
             memorized: false,
         };
 
-        const updatedWords = [wordEntry, ...words];
-        setWords(updatedWords);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedWords));
+        setWords(prev => {
+            const updated = [wordEntry, ...prev];
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+            return updated;
+        });
 
         try {
             await supabaseService.upsert(wordEntry);
@@ -62,10 +64,42 @@ export function useVocabulary() {
         }
     };
 
+    const addWords = async (newWords) => {
+        const entries = newWords.map((w, index) => ({
+            id: (Date.now() + index).toString(),
+            kanji: w.kanji,
+            kana: w.kana,
+            meaning: w.meaning,
+            example: w.example,
+            type: w.type,
+            conjugations: w.conjugations,
+            examples: w.examples,
+            addedAt: new Date().toISOString(),
+            memorized: false,
+        }));
+
+        setWords(prev => {
+            const updated = [...entries, ...prev];
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+            return updated;
+        });
+
+        // Sync each to cloud (could be optimized further if supabaseService.upsert supported array)
+        try {
+            for (const entry of entries) {
+                await supabaseService.upsert(entry);
+            }
+        } catch (err) {
+            console.error('Failed to batch sync words to cloud:', err);
+        }
+    };
+
     const deleteWord = async (id) => {
-        const updatedWords = words.filter(w => w.id !== id);
-        setWords(updatedWords);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedWords));
+        setWords(prev => {
+            const updated = prev.filter(w => w.id !== id);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+            return updated;
+        });
 
         try {
             await supabaseService.delete(id);
@@ -76,16 +110,17 @@ export function useVocabulary() {
 
     const toggleMemorized = async (id) => {
         let targetWord = null;
-        const updatedWords = words.map(w => {
-            if (w.id === id) {
-                targetWord = { ...w, memorized: !w.memorized };
-                return targetWord;
-            }
-            return w;
+        setWords(prev => {
+            const updated = prev.map(w => {
+                if (w.id === id) {
+                    targetWord = { ...w, memorized: !w.memorized };
+                    return targetWord;
+                }
+                return w;
+            });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+            return updated;
         });
-
-        setWords(updatedWords);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedWords));
 
         if (targetWord) {
             try {
@@ -96,5 +131,5 @@ export function useVocabulary() {
         }
     };
 
-    return { words, addWord, deleteWord, toggleMemorized, isSyncing };
+    return { words, addWord, addWords, deleteWord, toggleMemorized, isSyncing };
 }

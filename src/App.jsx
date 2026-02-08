@@ -45,6 +45,16 @@ function App() {
         setActiveTab('list');
     };
 
+    const handleAddWords = (newWords) => {
+        addWords(newWords);
+        setActiveTab('list');
+    };
+
+    const handleAddAdjectives = (newAdjs) => {
+        addAdjectives(newAdjs);
+        setActiveTab('list');
+    };
+
     const getCountDisplay = () => {
         switch (activeCategory) {
             case 'vocabulary': return `${words.length} 單字`;
@@ -94,11 +104,11 @@ function App() {
             <main className="app-main">
                 {activeTab === 'add' && (
                     activeCategory === 'vocabulary' ? (
-                        <AddWordForm onAdd={handleAddWord} onCancel={() => setActiveTab('list')} />
+                        <AddWordForm onAdd={handleAddWords} onCancel={() => setActiveTab('list')} />
                     ) : activeCategory === 'grammar' ? (
                         <AddGrammarForm onAdd={handleAddGrammar} onCancel={() => setActiveTab('list')} />
                     ) : activeCategory === 'adjective' ? (
-                        <AddAdjectiveForm onAdd={handleAddAdjective} onCancel={() => setActiveTab('list')} />
+                        <AddAdjectiveForm onAdd={handleAddAdjectives} onCancel={() => setActiveTab('list')} />
                     ) : (
                         <AddDialogueForm onAdd={handleAddDialogue} onCancel={() => setActiveTab('list')} />
                     )
