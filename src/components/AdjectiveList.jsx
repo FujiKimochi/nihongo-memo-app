@@ -29,6 +29,7 @@ export function AdjectiveList({ items, onDelete, onAddClick }) {
     return (
         <div className="flex flex-col gap-4">
             {items.map((item) => {
+                // ... (rest of the map logic remains same)
                 const isExpanded = expandedId === item.id;
                 return (
                     <div
@@ -87,6 +88,16 @@ export function AdjectiveList({ items, onDelete, onAddClick }) {
                     </div>
                 );
             })}
+
+            {/* Quick Add Button */}
+            <button
+                onClick={onAddClick}
+                className="btn btn-primary w-full py-4 rounded-2xl shadow-lg shadow-indigo-100 mt-2"
+                style={{ borderStyle: 'dashed', borderWidth: '2px', background: 'transparent', color: 'var(--indigo-600)', borderColor: 'var(--indigo-200)' }}
+            >
+                <Plus size={20} />
+                新增更多形容詞 / 副詞
+            </button>
         </div>
     );
 }
