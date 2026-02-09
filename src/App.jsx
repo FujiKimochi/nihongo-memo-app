@@ -25,11 +25,6 @@ function App() {
     const [activeTab, setActiveTab] = useState('list'); // 'list', 'add', 'review', 'settings'
     const [activeCategory, setActiveCategory] = useState('vocabulary'); // 'vocabulary', 'grammar', 'adjective', 'dialogue'
 
-    const handleAddWord = (word) => {
-        addWord(word);
-        setActiveTab('list');
-    };
-
     const handleAddGrammar = (grammar) => {
         addGrammar(grammar);
         setActiveTab('list');
@@ -37,11 +32,6 @@ function App() {
 
     const handleAddDialogue = (dialogue) => {
         addDialogue(dialogue);
-        setActiveTab('list');
-    };
-
-    const handleAddAdjective = (adj) => {
-        addAdjective(adj);
         setActiveTab('list');
     };
 

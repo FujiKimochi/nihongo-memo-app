@@ -21,6 +21,7 @@ export function AddAdjectiveForm({ onAdd, onCancel }) {
         setStatus('generating');
         try {
             const data = await generateAdjectiveDetails(kanjiInput.trim(), apiKey, getModelName());
+            // Ensure result is always an array
             const results = Array.isArray(data) ? data : [data];
             setPreviews(results);
             setStatus('preview');
