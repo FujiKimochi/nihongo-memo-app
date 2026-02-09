@@ -17,10 +17,10 @@ import { AdjectiveList } from './components/AdjectiveList';
 import { Settings } from './components/Settings';
 
 function App() {
-    const { words, addWord, deleteWord } = useVocabulary();
+    const { words, addWords, deleteWord } = useVocabulary();
     const { grammarItems, addGrammar, deleteGrammar } = useGrammar();
     const { dialogues, addDialogue, deleteDialogue } = useDialogues();
-    const { adjectives, addAdjective, deleteAdjective } = useAdjectives();
+    const { adjectives, addAdjectives, deleteAdjective } = useAdjectives();
 
     const [activeTab, setActiveTab] = useState('list'); // 'list', 'add', 'review', 'settings'
     const [activeCategory, setActiveCategory] = useState('vocabulary'); // 'vocabulary', 'grammar', 'adjective', 'dialogue'
