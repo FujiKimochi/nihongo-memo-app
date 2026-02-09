@@ -3,7 +3,7 @@ import { getApiKey, setApiKey, getModelName, setModelName, fetchAvailableModels 
 import { getSupabaseConfig, setSupabaseConfig } from '../services/supabase';
 import { Database, Cloud, RefreshCw, CheckCircle, AlertCircle, Save, Key, Bot } from 'lucide-react';
 
-import { version } from '../../package.json';
+import { APP_VERSION } from '../app-version';
 
 export function Settings() {
     const [key, setKey] = useState('');
@@ -58,7 +58,7 @@ export function Settings() {
         <div className="flex flex-col gap-6" style={{ padding: '1.5rem' }}>
             <div className="flex justify-between items-end mb-4">
                 <h2 style={{ fontSize: '1.5rem', fontWeight: 700 }}>Settings</h2>
-                <span className="text-sm text-gray-400">v{version}</span>
+                <span className="text-sm text-gray-400">v{APP_VERSION}</span>
             </div>
 
             <div className="glass-card" style={{ padding: '1.5rem' }}>
