@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getApiKey, setApiKey, getModelName, setModelName, fetchAvailableModels } from '../services/ai';
-import { getSupabaseConfig, setSupabaseConfig, getSupabaseClient } from '../services/supabase';
+import { getSupabaseConfig, setSupabaseConfig, getSupabaseClient, settingsSupabaseService } from '../services/supabase';
 import { Database, Cloud, RefreshCw, CheckCircle, AlertCircle, Save, Key, Bot, LogOut, User } from 'lucide-react';
 
 import { APP_VERSION } from '../app-version';
@@ -34,12 +34,39 @@ export function Settings() {
         const sbc = getSupabaseConfig();
         setSupabaseUrl(sbc.url);
         setSupabaseKey(sbc.key);
+
+        // Fetch cloud settings if logged in
+        if (client) {
+            settingsSupabaseService.fetchSettings().then(cloudSettings => {
+                if (cloudSettings) {
+                    if (cloudSettings.gemini_api_key) {
+                        setKey(cloudSettings.gemini_api_key);
+                        setApiKey(cloudSettings.gemini_api_key);
+                    }
+                    if (cloudSettings.ai_model) {
+                        setModel(cloudSettings.ai_model);
+                        setModelName(cloudSettings.ai_model);
+                    }
+                }
+            });
+        }
     }, []);
 
-    const handleSave = () => {
+    const handleSave = async () => {
         setApiKey(key);
         setModelName(model);
         setSupabaseConfig(supabaseUrl, supabaseKey);
+
+        // Also sync to cloud
+        try {
+            await settingsSupabaseService.upsertSettings({
+                geminiApiKey: key,
+                aiModel: model
+            });
+        } catch (err) {
+            console.error('Failed to sync settings to cloud:', err);
+        }
+
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
     };

@@ -274,3 +274,41 @@ export const adjectiveSupabaseService = {
         if (error) throw error;
     }
 };
+
+export const settingsSupabaseService = {
+    async fetchSettings() {
+        const client = getSupabaseClient();
+        if (!client) return null;
+
+        const { data: { user } } = await client.auth.getUser();
+        if (!user) return null;
+
+        const { data, error } = await client
+            .from('user_settings')
+            .select('*')
+            .eq('user_id', user.id)
+            .single();
+
+        if (error && error.code !== 'PGRST116') throw error; // PGRST116 is "not found"
+        return data;
+    },
+
+    async upsertSettings(settings) {
+        const client = getSupabaseClient();
+        if (!client) return null;
+
+        const { data: { user } } = await client.auth.getUser();
+        if (!user) return null;
+
+        const { error } = await client
+            .from('user_settings')
+            .upsert({
+                user_id: user.id,
+                gemini_api_key: settings.geminiApiKey,
+                ai_model: settings.aiModel,
+                updated_at: new Date().toISOString()
+            });
+
+        if (error) throw error;
+    }
+};
