@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getApiKey, setApiKey, getModelName, setModelName, fetchAvailableModels } from '../services/ai';
-import { getSupabaseConfig, setSupabaseConfig } from '../services/supabase';
-import { Database, Cloud, RefreshCw, CheckCircle, AlertCircle, Save, Key, Bot } from 'lucide-react';
+import { getSupabaseConfig, setSupabaseConfig, getSupabaseClient } from '../services/supabase';
+import { Database, Cloud, RefreshCw, CheckCircle, AlertCircle, Save, Key, Bot, LogOut, User } from 'lucide-react';
 
 import { APP_VERSION } from '../app-version';
 
@@ -18,8 +18,15 @@ export function Settings() {
     const [availableModels, setAvailableModels] = useState([]);
     const [isLoadingModels, setIsLoadingModels] = useState(false);
     const [fetchError, setFetchError] = useState(null);
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
+        const client = getSupabaseClient();
+        if (client) {
+            client.auth.getUser().then(({ data: { user } }) => {
+                setUser(user);
+            });
+        }
         const storedKey = getApiKey();
         if (storedKey) setKey(storedKey);
         setModel(getModelName());
@@ -54,12 +61,44 @@ export function Settings() {
         }
     };
 
+    const handleLogout = async () => {
+        const client = getSupabaseClient();
+        if (client) {
+            await client.auth.signOut();
+            window.location.reload(); // Hard reload to clear all states
+        }
+    };
+
     return (
         <div className="flex flex-col gap-6" style={{ padding: '1.5rem' }}>
             <div className="flex justify-between items-end mb-4">
                 <h2 style={{ fontSize: '1.5rem', fontWeight: 700 }}>Settings</h2>
                 <span className="text-sm text-gray-400">v{APP_VERSION}</span>
             </div>
+
+            {/* User Account Section */}
+            {user && (
+                <div className="glass-card" style={{ padding: '1.25rem', border: '1px solid var(--indigo-100)', background: 'linear-gradient(to bottom right, #ffffff, #f5f3ff)' }}>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center">
+                                <User size={20} />
+                            </div>
+                            <div>
+                                <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">目前登入帳戶</p>
+                                <p className="text-gray-900 font-medium">{user.email}</p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={handleLogout}
+                            className="p-2 text-gray-400 hover:text-red-500 transition-colors tooltip"
+                            title="登出"
+                        >
+                            <LogOut size={20} />
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <div className="glass-card" style={{ padding: '1.5rem' }}>
                 <h3 className="flex items-center gap-2" style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1rem' }}>

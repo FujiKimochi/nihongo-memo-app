@@ -19,11 +19,22 @@ export const getSupabaseClient = () => {
     const { url, key } = getSupabaseConfig();
     if (!url || !key) return null;
 
-    // Only re-create if config changed or not exists
     if (!supabaseClient) {
-        supabaseClient = createClient(url, key);
+        supabaseClient = createClient(url, key, {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true,
+                detectSessionInUrl: true
+            }
+        });
     }
     return supabaseClient;
+};
+
+export const onAuthStateChange = (callback) => {
+    const client = getSupabaseClient();
+    if (!client) return { data: { subscription: null } };
+    return client.auth.onAuthStateChange(callback);
 };
 
 // Map DB row to local word object

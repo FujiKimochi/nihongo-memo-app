@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { onAuthStateChange, getSupabaseClient } from './services/supabase';
+import { Auth } from './components/Auth';
 import { BookOpen, PlusCircle, Brain, Settings as SettingsIcon, Languages, FileText, MessageSquare, Sparkles } from 'lucide-react';
 import { useVocabulary } from './hooks/useVocabulary';
 import { useGrammar } from './hooks/useGrammar';
@@ -24,6 +26,28 @@ function App() {
 
     const [activeTab, setActiveTab] = useState('list'); // 'list', 'add', 'review', 'settings'
     const [activeCategory, setActiveCategory] = useState('vocabulary'); // 'vocabulary', 'grammar', 'adjective', 'dialogue'
+    const [session, setSession] = useState(null);
+
+    useEffect(() => {
+        // Get initial session
+        const client = getSupabaseClient();
+        if (client) {
+            client.auth.getSession().then(({ data: { session } }) => {
+                setSession(session);
+            });
+        }
+
+        const { data: { subscription } } = onAuthStateChange((_event, session) => {
+            setSession(session);
+        });
+
+        return () => subscription?.unsubscribe();
+    }, []);
+
+    // If not logged in, show Auth screen
+    if (!session) {
+        return <Auth />;
+    }
 
     const handleAddGrammar = (grammar) => {
         addGrammar(grammar);
