@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { onAuthStateChange, getSupabaseClient } from './services/supabase';
+import { onAuthStateChange, getSupabaseClient, settingsSupabaseService } from './services/supabase';
+import { setApiKey, setModelName } from './services/ai';
 import { Auth } from './components/Auth';
 import { BookOpen, PlusCircle, Brain, Settings as SettingsIcon, Languages, FileText, MessageSquare, Sparkles } from 'lucide-react';
 import { useVocabulary } from './hooks/useVocabulary';
@@ -39,6 +40,15 @@ function App() {
 
         const { data: { subscription } } = onAuthStateChange((_event, session) => {
             setSession(session);
+            if (session) {
+                // Auto-sync settings when user logs in
+                settingsSupabaseService.fetchSettings().then(cloudSettings => {
+                    if (cloudSettings) {
+                        if (cloudSettings.gemini_api_key) setApiKey(cloudSettings.gemini_api_key);
+                        if (cloudSettings.ai_model) setModelName(cloudSettings.ai_model);
+                    }
+                });
+            }
         });
 
         return () => subscription?.unsubscribe();

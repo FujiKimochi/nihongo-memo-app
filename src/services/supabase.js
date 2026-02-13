@@ -81,9 +81,12 @@ export const supabaseService = {
         const client = getSupabaseClient();
         if (!client) return null;
 
+        const { data: { user } } = await client.auth.getUser();
+        if (!user) return null;
+
         const { error } = await client
             .from('vocabulary')
-            .upsert(mapToDb(word));
+            .upsert({ ...mapToDb(word), user_id: user.id });
 
         if (error) throw error;
     },
@@ -131,6 +134,9 @@ export const grammarSupabaseService = {
         const client = getSupabaseClient();
         if (!client) return null;
 
+        const { data: { user } } = await client.auth.getUser();
+        if (!user) return null;
+
         const { error } = await client
             .from('grammar')
             .upsert({
@@ -144,7 +150,8 @@ export const grammarSupabaseService = {
                 comparison_analysis: item.comparison_analysis,
                 items: item.items,
                 added_at: item.addedAt,
-                memorized: item.memorized
+                memorized: item.memorized,
+                user_id: user.id
             });
 
         if (error) throw error;
@@ -189,6 +196,9 @@ export const dialogueSupabaseService = {
         const client = getSupabaseClient();
         if (!client) return null;
 
+        const { data: { user } } = await client.auth.getUser();
+        if (!user) return null;
+
         const { error } = await client
             .from('dialogues')
             .upsert({
@@ -197,7 +207,8 @@ export const dialogueSupabaseService = {
                 description: item.description,
                 dialogue_data: item.dialogueData,
                 added_at: item.addedAt,
-                memorized: item.memorized
+                memorized: item.memorized,
+                user_id: user.id
             });
 
         if (error) throw error;
@@ -245,6 +256,9 @@ export const adjectiveSupabaseService = {
         const client = getSupabaseClient();
         if (!client) return null;
 
+        const { data: { user } } = await client.auth.getUser();
+        if (!user) return null;
+
         const { error } = await client
             .from('adjectives')
             .upsert({
@@ -256,7 +270,8 @@ export const adjectiveSupabaseService = {
                 conjugations: item.conjugations,
                 examples: item.examples,
                 added_at: item.addedAt,
-                memorized: item.memorized
+                memorized: item.memorized,
+                user_id: user.id
             });
 
         if (error) throw error;
