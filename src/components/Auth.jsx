@@ -14,10 +14,11 @@ export function Auth({ onSession }) {
 
         try {
             setLoading(true);
+            const redirectTo = window.location.origin + window.location.pathname;
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: window.location.origin + window.location.pathname
+                    redirectTo: redirectTo
                 }
             });
             if (error) throw error;
