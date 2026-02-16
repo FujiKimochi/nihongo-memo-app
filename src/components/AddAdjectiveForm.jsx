@@ -21,10 +21,18 @@ export function AddAdjectiveForm({ onAdd, onCancel }) {
         setStatus('generating');
         try {
             const data = await generateAdjectiveDetails(kanjiInput.trim(), apiKey, getModelName());
-            // Ensure result is always an array
             const results = Array.isArray(data) ? data : [data];
-            setPreviews(results);
-            setStatus('preview');
+
+            // Automatically save
+            onAdd(results);
+
+            setStatus('success');
+            setKanjiInput('');
+
+            setTimeout(() => {
+                setStatus('idle');
+                if (onCancel) onCancel();
+            }, 1000);
         } catch (error) {
             console.error(error);
             alert(`AI 分析失敗：${error.message}`);
@@ -32,17 +40,6 @@ export function AddAdjectiveForm({ onAdd, onCancel }) {
         } finally {
             setIsGenerating(false);
         }
-    };
-
-    const handleConfirmAll = () => {
-        onAdd(previews);
-        setStatus('success');
-        setKanjiInput('');
-        setPreviews([]);
-        setTimeout(() => {
-            setStatus('idle');
-            if (onCancel) onCancel();
-        }, 1000);
     };
 
     return (
@@ -73,7 +70,7 @@ export function AddAdjectiveForm({ onAdd, onCancel }) {
                             className="btn btn-primary shadow-lg shadow-indigo-100"
                             disabled={isGenerating || !apiKey || !kanjiInput.trim() || status === 'preview'}
                         >
-                            {isGenerating ? <Loader2 className="animate-spin" size={20} /> : <><Sparkles size={20} /> AI 分析</>}
+                            {isGenerating ? <Loader2 className="animate-spin" size={20} /> : <><Sparkles size={20} /> AI 分析並儲存</>}
                         </button>
                     </div>
                 </div>
@@ -84,38 +81,7 @@ export function AddAdjectiveForm({ onAdd, onCancel }) {
                     </div>
                 )}
 
-                {previews.length > 0 && (
-                    <div className="mt-2 animate-fade-in">
-                        <div className="font-bold text-indigo-900 text-sm mb-3 flex items-center justify-between">
-                            <span>🔍 AI 解析結果：</span>
-                            <button onClick={() => { setPreviews([]); setStatus('idle'); }} className="text-xs text-gray-400 hover:text-red-500">重新輸入</button>
-                        </div>
-                        <div className="space-y-3 max-h-64 overflow-y-auto pr-2 custom-scrollbar mb-6">
-                            {previews.map((p, idx) => (
-                                <div key={idx} className="bg-indigo-50 border border-indigo-100 p-3 rounded-xl flex items-center justify-between">
-                                    <div>
-                                        <div className="flex items-center gap-2">
-                                            <span className="font-bold text-indigo-900">{p.kanji}</span>
-                                            <span className="text-xs text-indigo-400">({p.kana})</span>
-                                        </div>
-                                        <div className="text-xs text-gray-500">{p.meaning}</div>
-                                    </div>
-                                    <div className="text-[10px] bg-indigo-200 text-indigo-700 px-2 py-0.5 rounded-full font-bold">
-                                        {p.type}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <button
-                            type="button"
-                            onClick={handleConfirmAll}
-                            className="w-full btn btn-primary shadow-xl py-3"
-                            style={{ background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)' }}
-                        >
-                            確認並全部儲存 ({previews.length})
-                        </button>
-                    </div>
-                )}
+                {/* Previews removed for automated flow */}
 
                 {status === 'success' && (
                     <div className="text-green-600 text-center font-bold animate-bounce mt-4">✨ 儲存成功！</div>

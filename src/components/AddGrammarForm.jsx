@@ -24,19 +24,22 @@ export function AddGrammarForm({ onAdd, onCancel }) {
 
         try {
             const result = await generateGrammarDetails(grammarPoint.trim(), apiKey);
-            setPreview(result);
-            setStatus('idle');
+
+            // Automatically add
+            onAdd(result);
+
+            setStatus('success');
+            setGrammarPoint('');
+
+            setTimeout(() => {
+                setStatus('idle');
+                if (onCancel) onCancel();
+            }, 1000);
         } catch (err) {
             console.error(err);
             setError(err.message || 'AI 生成失敗，請重試');
             setStatus('error');
         }
-    };
-
-    const handleConfirmAdd = () => {
-        if (!preview) return;
-        onAdd(preview);
-        onCancel(); // Close form
     };
 
     return (
@@ -75,7 +78,7 @@ export function AddGrammarForm({ onAdd, onCancel }) {
                             ) : (
                                 <Sparkles size={18} />
                             )}
-                            AI 解析
+                            AI 分析並儲存
                         </button>
                     </div>
                 </div>
@@ -87,42 +90,10 @@ export function AddGrammarForm({ onAdd, onCancel }) {
                     </div>
                 )}
 
-                {preview && (
-                    <div className="mt-4 p-4 bg-indigo-50 rounded-xl border border-indigo-100 animate-fade-in shadow-inner">
-                        <div className="flex items-center justify-between mb-3">
-                            <div className="font-bold text-indigo-900 text-lg uppercase tracking-tight">
-                                {preview.is_comparison ? '🔍 文法比較解析' : '📖 文法解析'}
-                            </div>
-                            {preview.is_comparison && (
-                                <span className="bg-indigo-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">
-                                    {preview.items?.length} ITEMS
-                                </span>
-                            )}
-                        </div>
+                {/* Preview removed for automated flow */}
 
-                        <div className="font-bold text-indigo-900 text-base mb-1">{preview.grammar_point}</div>
-
-                        <div className="text-xs text-gray-500 mb-4 line-clamp-2 leading-relaxed">
-                            {preview.is_comparison ? preview.comparison_analysis : preview.explanation}
-                        </div>
-
-                        <div className="flex gap-2">
-                            <button
-                                type="button"
-                                onClick={handleConfirmAdd}
-                                className="btn btn-primary w-full shadow-md"
-                            >
-                                確認加入筆記
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setPreview(null)}
-                                className="btn btn-ghost border border-indigo-200 text-indigo-600 px-4"
-                            >
-                                重試
-                            </button>
-                        </div>
-                    </div>
+                {status === 'success' && (
+                    <div className="text-green-600 text-center font-bold animate-bounce mt-4">✨ 儲存成功！</div>
                 )}
 
                 <button

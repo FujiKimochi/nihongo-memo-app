@@ -19,7 +19,7 @@ export function AddWordForm({ onAdd, onCancel }) {
 
         setIsGenerating(true);
         setStatus('generating');
-        setPreviews([]); // Reset
+        setPreviews([]);
 
         try {
             const modelName = getModelName();
@@ -27,8 +27,29 @@ export function AddWordForm({ onAdd, onCancel }) {
 
             // AI might return a single object or an array - normalize to array
             const results = Array.isArray(data) ? data : [data];
-            setPreviews(results);
-            setStatus('preview');
+
+            // Map to word entries format
+            const wordEntries = results.map(p => ({
+                kanji: p.kanji,
+                kana: p.kana,
+                meaning: p.meaning,
+                type: p.type || 'Verb',
+                conjugations: p.conjugations,
+                examples: p.examples
+            }));
+
+            // Automatically save
+            onAdd(wordEntries);
+
+            setStatus('success');
+            setKanjiInput('');
+
+            // Success feedback and auto-close
+            setTimeout(() => {
+                setStatus('idle');
+                if (onCancel) onCancel();
+            }, 1000);
+
         } catch (error) {
             console.error(error);
             const msg = error.message || "Unknown error";
@@ -37,28 +58,6 @@ export function AddWordForm({ onAdd, onCancel }) {
         } finally {
             setIsGenerating(false);
         }
-    };
-
-    const handleConfirmAll = () => {
-        const wordEntries = previews.map(data => ({
-            kanji: data.kanji,
-            kana: data.kana,
-            meaning: data.meaning,
-            type: data.type || 'Verb',
-            conjugations: data.conjugations,
-            examples: data.examples
-        }));
-
-        onAdd(wordEntries);
-
-        setStatus('success');
-        setKanjiInput(''); // Clear input
-        setPreviews([]); // Clear previews
-
-        setTimeout(() => {
-            setStatus('idle');
-            if (onCancel) onCancel(); // Close form after batch success
-        }, 1000);
     };
 
     return (
@@ -96,7 +95,7 @@ export function AddWordForm({ onAdd, onCancel }) {
                             ) : (
                                 <>
                                     <Sparkles size={20} />
-                                    AI 分析
+                                    AI 分析並儲存
                                 </>
                             )}
                         </button>
@@ -109,55 +108,7 @@ export function AddWordForm({ onAdd, onCancel }) {
                     </div>
                 )}
 
-                {previews.length > 0 && (
-                    <div className="mt-2 animate-fade-in">
-                        <div className="font-bold text-indigo-900 text-sm mb-3 flex items-center justify-between">
-                            <span>🔍 AI 準備好 {previews.length} 個單字解析：</span>
-                            <button
-                                type="button"
-                                onClick={() => { setPreviews([]); setStatus('idle'); }}
-                                className="text-xs text-gray-400 font-normal hover:text-red-500"
-                            >
-                                清除重新輸入
-                            </button>
-                        </div>
-
-                        <div className="space-y-3 max-h-64 overflow-y-auto pr-2 custom-scrollbar mb-6">
-                            {previews.map((p, idx) => (
-                                <div key={idx} className="bg-indigo-50 border border-indigo-100 p-3 rounded-xl flex items-center justify-between group transform transition-all">
-                                    <div className="flex-1">
-                                        <div className="flex items-center gap-2">
-                                            <span className="font-bold text-indigo-900">{p.kanji}</span>
-                                            <span className="text-xs text-indigo-400">({p.kana})</span>
-                                        </div>
-                                        <div className="text-xs text-gray-500 line-clamp-1">{p.meaning}</div>
-                                    </div>
-                                    <div className="text-[10px] bg-indigo-200 text-indigo-700 px-2 py-0.5 rounded-full font-bold">
-                                        {p.type || '動詞'}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-
-                        <div className="flex gap-2">
-                            <button
-                                type="button"
-                                onClick={handleConfirmAll}
-                                className="flex-1 btn btn-primary shadow-xl"
-                                style={{ background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)' }}
-                            >
-                                確認並全部儲存 ({previews.length})
-                            </button>
-                            <button
-                                type="button"
-                                onClick={onCancel}
-                                className="px-6 btn btn-ghost border border-gray-200"
-                            >
-                                取消
-                            </button>
-                        </div>
-                    </div>
-                )}
+                {/* Previews removed in automation mode to keep UI clean during success */}
 
                 {status === 'success' && (
                     <div className="text-green-600 text-center font-bold animate-bounce mt-4">

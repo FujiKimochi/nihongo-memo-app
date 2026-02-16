@@ -24,19 +24,22 @@ export function AddDialogueForm({ onAdd, onCancel }) {
 
         try {
             const result = await generateDialogueContext(scenario.trim(), apiKey);
-            setPreview(result);
-            setStatus('idle');
+
+            // Automatically add
+            onAdd(result);
+
+            setStatus('success');
+            setScenario('');
+
+            setTimeout(() => {
+                setStatus('idle');
+                if (onCancel) onCancel();
+            }, 1000);
         } catch (err) {
             console.error(err);
             setError(err.message || 'AI 生成失敗，請重試');
             setStatus('error');
         }
-    };
-
-    const handleConfirmAdd = () => {
-        if (!preview) return;
-        onAdd(preview);
-        onCancel();
     };
 
     return (
@@ -70,7 +73,7 @@ export function AddDialogueForm({ onAdd, onCancel }) {
                             ) : (
                                 <Sparkles size={18} />
                             )}
-                            AI 生成
+                            AI 生成並儲存
                         </button>
                     </div>
                     <p className="text-[10px] text-gray-400 mt-1 pl-1">
@@ -85,49 +88,7 @@ export function AddDialogueForm({ onAdd, onCancel }) {
                     </div>
                 )}
 
-                {preview && (
-                    <div className="mt-4 p-5 bg-gradient-to-br from-indigo-50 to-white rounded-2xl border border-indigo-100 animate-fade-in shadow-inner">
-                        <div className="flex items-center gap-2 mb-3">
-                            <div className="bg-indigo-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold uppercase">
-                                PREVIEW
-                            </div>
-                            <h3 className="font-bold text-indigo-900">{preview.scenario}</h3>
-                        </div>
-
-                        <p className="text-sm text-gray-500 mb-6 italic leading-relaxed">
-                            "{preview.description}"
-                        </p>
-
-                        <div className="space-y-3 mb-6">
-                            {preview.dialogues?.slice(0, 3).map((line, idx) => (
-                                <div key={idx} className="flex gap-2 text-xs">
-                                    <span className="font-bold text-indigo-600">{line.role}:</span>
-                                    <span className="text-gray-600 truncate">{line.jp}</span>
-                                </div>
-                            ))}
-                            <div className="text-[10px] text-gray-300 italic flex items-center gap-1">
-                                <ChevronRight size={10} /> 還有另外 {preview.dialogues?.length - 3} 句對話...
-                            </div>
-                        </div>
-
-                        <div className="flex gap-2">
-                            <button
-                                type="button"
-                                onClick={handleConfirmAdd}
-                                className="btn btn-primary w-full shadow-md"
-                            >
-                                確認並儲存對話
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setPreview(null)}
-                                className="btn btn-ghost border border-indigo-200 text-indigo-600 px-4"
-                            >
-                                重試
-                            </button>
-                        </div>
-                    </div>
-                )}
+                {/* Preview removed for automated flow */}
 
                 <button
                     type="button"
