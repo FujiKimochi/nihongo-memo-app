@@ -90,6 +90,10 @@ export function AddDialogueForm({ onAdd, onCancel }) {
 
                 {/* Preview removed for automated flow */}
 
+                {status === 'success' && (
+                    <div className="text-green-600 text-center font-bold animate-bounce mt-4">✨ 儲存成功！</div>
+                )}
+
                 <button
                     type="button"
                     onClick={onCancel}
