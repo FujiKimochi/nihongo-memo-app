@@ -15,7 +15,7 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
                     <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-sm">
                         {index + 1}
                     </div>
-                    <h3 className="text-xl font-bold text-indigo-900">{item.grammar_point || item.grammarPoint}</h3>
+                    <h3 className="text-xl font-bold text-indigo-900">{item.grammar || item.grammar_point || item.grammarPoint}</h3>
                 </div>
             )}
 
@@ -242,7 +242,7 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
                                     {/* Grammar Point Name */}
                                     <td style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#fff', verticalAlign: 'top', width: '10%' }}>
                                         <span style={{ color: '#4338ca', fontWeight: 700, fontSize: '1rem', whiteSpace: 'nowrap' }}>
-                                            {idx + 1}. {item.grammar_point || item.grammarPoint}
+                                            {idx + 1}. {item.grammar || item.grammar_point || item.grammarPoint}
                                         </span>
                                     </td>
 
