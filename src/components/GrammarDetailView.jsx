@@ -168,55 +168,49 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
                     <table className="w-full text-sm text-left border-collapse border border-indigo-200 min-w-[600px]">
                         <thead>
                             <tr>
-                                <th className="p-4 border border-indigo-200 bg-indigo-50/50 w-24 min-w-[6rem] sticky left-0 z-10 text-indigo-900 font-bold">
+                                <th className="p-4 border border-indigo-200 bg-indigo-50/50 text-indigo-900 font-bold whitespace-nowrap">
                                     比較項目
                                 </th>
-                                {grammar.items?.map((item, idx) => (
-                                    <th key={idx} className="p-4 border border-indigo-200 bg-white min-w-[200px] text-indigo-700 font-bold text-lg">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs">
-                                                {idx + 1}
-                                            </div>
-                                            {item.grammar_point || item.grammarPoint}
-                                        </div>
-                                    </th>
-                                ))}
+                                <th className="p-4 border border-indigo-200 bg-indigo-50/50 text-indigo-900 font-bold whitespace-nowrap">
+                                    用法說明
+                                </th>
+                                <th className="p-4 border border-indigo-200 bg-indigo-50/50 text-indigo-900 font-bold whitespace-nowrap">
+                                    接續方式
+                                </th>
+                                <th className="p-4 border border-indigo-200 bg-indigo-50/50 text-indigo-900 font-bold whitespace-nowrap">
+                                    例句
+                                </th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-indigo-200">
-                            {/* Explanation Row */}
-                            <tr>
-                                <td className="p-4 font-bold text-gray-500 bg-gray-50/50 sticky left-0 z-10 border border-indigo-200 border-r-indigo-200">
-                                    用法說明
-                                </td>
-                                {grammar.items?.map((item, idx) => (
-                                    <td key={idx} className="p-4 align-top text-gray-800 leading-relaxed bg-white border border-indigo-200">
+                            {grammar.items?.map((item, idx) => (
+                                <tr key={idx}>
+                                    {/* Grammar Point Name */}
+                                    <td className="p-4 border border-indigo-200 bg-white align-top">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                                                {idx + 1}
+                                            </div>
+                                            <span className="text-indigo-700 font-bold text-lg whitespace-nowrap">
+                                                {item.grammar_point || item.grammarPoint}
+                                            </span>
+                                        </div>
+                                    </td>
+
+                                    {/* Explanation */}
+                                    <td className="p-4 border border-indigo-200 bg-white align-top text-gray-800 leading-relaxed">
                                         {item.explanation}
                                     </td>
-                                ))}
-                            </tr>
 
-                            {/* Connection Row */}
-                            <tr>
-                                <td className="p-4 font-bold text-gray-500 bg-gray-50/50 sticky left-0 z-10 border border-indigo-200 border-r-indigo-200">
-                                    接續方式
-                                </td>
-                                {grammar.items?.map((item, idx) => (
-                                    <td key={idx} className="p-4 align-top bg-white border border-indigo-200">
+                                    {/* Connection */}
+                                    <td className="p-4 border border-indigo-200 bg-white align-top">
                                         <div className="inline-block px-3 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-bold border border-indigo-100">
                                             {item.connection}
                                         </div>
                                     </td>
-                                ))}
-                            </tr>
 
-                            {/* Examples Row */}
-                            <tr>
-                                <td className="p-4 font-bold text-gray-500 bg-gray-50/50 sticky left-0 z-10 border border-indigo-200 border-r-indigo-200">
-                                    例句
-                                </td>
-                                {grammar.items?.map((item, idx) => (
-                                    <td key={idx} className="p-4 align-top bg-white border border-indigo-200">
+                                    {/* Examples */}
+                                    <td className="p-4 border border-indigo-200 bg-white align-top">
                                         <div className="flex flex-col gap-4">
                                             {item.examples?.map((ex, exIdx) => (
                                                 <div key={exIdx} className="group relative pl-3 border-l-2 border-indigo-100 hover:border-indigo-300 transition-colors">
@@ -241,8 +235,8 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
                                             ))}
                                         </div>
                                     </td>
-                                ))}
-                            </tr>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 </div>
