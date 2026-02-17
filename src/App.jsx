@@ -18,6 +18,7 @@ import { GrammarList } from './components/GrammarList';
 import { DialogueList } from './components/DialogueList';
 import { AdjectiveList } from './components/AdjectiveList';
 import { Settings } from './components/Settings';
+import { ReloadPrompt } from './components/ReloadPrompt';
 
 function App() {
     const { words, addWords, deleteWord } = useVocabulary();
@@ -25,7 +26,7 @@ function App() {
     const { dialogues, addDialogue, deleteDialogue } = useDialogues();
     const { adjectives, addAdjectives, deleteAdjective } = useAdjectives();
 
-    const [activeTab, setActiveTab] = useState('list'); // 'list', 'add', 'review', 'settings'
+    const [activeTab, setActiveTab] = useState('add'); // 'list', 'add', 'review', 'settings'
     const [activeCategory, setActiveCategory] = useState('vocabulary'); // 'vocabulary', 'grammar', 'adjective', 'dialogue'
     const [session, setSession] = useState(null);
 
@@ -224,6 +225,7 @@ function App() {
                     <span style={{ fontSize: '0.75rem' }}>設定</span>
                 </button>
             </nav>
+            <ReloadPrompt />
         </div>
     );
 }
