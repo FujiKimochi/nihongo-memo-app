@@ -29,7 +29,9 @@ export function AdjectiveList({ items, onDelete, onAddClick }) {
     return (
         <div className="flex flex-col gap-4">
             {items.map((item) => {
-                // ... (rest of the map logic remains same)
+                // Safety check
+                if (!item || !item.kanji) return null;
+
                 const isExpanded = expandedId === item.id;
                 return (
                     <div

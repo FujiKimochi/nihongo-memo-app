@@ -71,26 +71,29 @@ export function AdjectiveDetailView({ adjective, showHeader = true }) {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-indigo-500/30">
-                                {Object.entries(adjective.conjugations).map(([key, data]) => (
-                                    <tr key={key} className="border-b border-indigo-500/30 hover:bg-indigo-600/50 transition-colors">
-                                        <td className="px-4 py-2 font-bold text-white whitespace-nowrap">
-                                            {ADJ_CONJUGATION_MAP[key] || key}
-                                        </td>
-                                        <td className="px-4 py-2 font-medium text-indigo-50 whitespace-nowrap">
-                                            {data.form}
-                                        </td>
-                                        <td className="px-4 py-2 text-indigo-100 whitespace-nowrap">
-                                            {data.example?.ruby ? (
-                                                <span dangerouslySetInnerHTML={{ __html: data.example.ruby }} />
-                                            ) : (
-                                                data.example?.jp || <span className="opacity-50">-</span>
-                                            )}
-                                        </td>
-                                        <td className="px-4 py-2 text-indigo-300 whitespace-nowrap">
-                                            {data.example?.zh || <span className="opacity-50">-</span>}
-                                        </td>
-                                    </tr>
-                                ))}
+                                {Object.entries(adjective.conjugations).map(([key, data]) => {
+                                    if (!data) return null;
+                                    return (
+                                        <tr key={key} className="border-b border-indigo-500/30 hover:bg-indigo-600/50 transition-colors">
+                                            <td className="px-4 py-2 font-bold text-white whitespace-nowrap">
+                                                {ADJ_CONJUGATION_MAP[key] || key}
+                                            </td>
+                                            <td className="px-4 py-2 font-medium text-indigo-50 whitespace-nowrap">
+                                                {data.form}
+                                            </td>
+                                            <td className="px-4 py-2 text-indigo-100 whitespace-nowrap">
+                                                {data.example?.ruby ? (
+                                                    <span dangerouslySetInnerHTML={{ __html: data.example.ruby }} />
+                                                ) : (
+                                                    data.example?.jp || <span className="opacity-50">-</span>
+                                                )}
+                                            </td>
+                                            <td className="px-4 py-2 text-indigo-300 whitespace-nowrap">
+                                                {data.example?.zh || <span className="opacity-50">-</span>}
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>
