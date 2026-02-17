@@ -210,99 +210,107 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
                 </div>
             )}
 
-            {grammar.is_comparison ? (
-                <div style={{ overflowX: 'auto' }}>
-                    <table style={{
-                        width: '100%',
-                        fontSize: '0.875rem',
-                        textAlign: 'left',
-                        borderCollapse: 'collapse',
-                        border: '1px solid #c7d2fe',
-                        minWidth: '600px'
-                    }}>
-                        <thead>
-                            <tr>
-                                <th style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#eef2ff', color: '#312e81', fontWeight: 700, whiteSpace: 'nowrap', width: '10%' }}>
-                                    比較項目
-                                </th>
-                                <th style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#eef2ff', color: '#312e81', fontWeight: 700, whiteSpace: 'nowrap', width: '15%' }}>
-                                    用法說明
-                                </th>
-                                <th style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#eef2ff', color: '#312e81', fontWeight: 700, whiteSpace: 'nowrap' }}>
-                                    接續方式
-                                </th>
-                                <th style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#eef2ff', color: '#312e81', fontWeight: 700, whiteSpace: 'nowrap', width: '45%' }}>
-                                    例句
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {grammar.items?.map((item, idx) => (
-                                <tr key={idx}>
-                                    {/* Grammar Point Name */}
-                                    <td style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#fff', verticalAlign: 'top', width: '10%' }}>
-                                        <span style={{ color: '#4338ca', fontWeight: 700, fontSize: '1rem', whiteSpace: 'nowrap' }}>
-                                            {idx + 1}. {item.grammar || item.grammar_point || item.grammarPoint}
-                                        </span>
-                                    </td>
+            {grammar.is_comparison ? (() => {
+                const hasConnections = grammar.items?.some(item => item.connection && item.connection.trim() !== '');
 
-                                    {/* Explanation */}
-                                    <td style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#fff', verticalAlign: 'top', color: '#1f2937', lineHeight: 1.6 }}>
-                                        {item.explanation || '-'}
-                                    </td>
-
-                                    {/* Connection */}
-                                    <td style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#fff', verticalAlign: 'top' }}>
-                                        {item.connection ? (
-                                            <span style={{
-                                                display: 'inline-block', padding: '4px 10px',
-                                                background: '#eef2ff', color: '#4338ca',
-                                                borderRadius: '8px', fontSize: '0.75rem', fontWeight: 700,
-                                                border: '1px solid #e0e7ff'
-                                            }}>
-                                                {item.connection}
-                                            </span>
-                                        ) : (
-                                            <span style={{ color: '#9ca3af' }}>-</span>
-                                        )}
-                                    </td>
-
-                                    {/* Examples */}
-                                    <td style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#fff', verticalAlign: 'top' }}>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                            {item.examples?.map((ex, exIdx) => (
-                                                <div key={exIdx} style={{ paddingLeft: '10px', borderLeft: '2px solid #e0e7ff' }}>
-                                                    <div style={{ color: '#111827', fontWeight: 500, marginBottom: '4px' }}>
-                                                        {ex.ruby ? (
-                                                            <span dangerouslySetInnerHTML={{ __html: ex.ruby }} />
-                                                        ) : (
-                                                            ex.jp
-                                                        )}
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                speak(ex.jp);
-                                                            }}
-                                                            style={{
-                                                                marginLeft: '8px', background: 'none', border: 'none',
-                                                                color: '#818cf8', cursor: 'pointer', padding: 0,
-                                                                display: 'inline-flex', verticalAlign: 'middle'
-                                                            }}
-                                                        >
-                                                            <Volume2 size={14} />
-                                                        </button>
-                                                    </div>
-                                                    <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>{ex.zh}</div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </td>
+                return (
+                    <div style={{ overflowX: 'auto' }}>
+                        <table style={{
+                            width: '100%',
+                            fontSize: '0.875rem',
+                            textAlign: 'left',
+                            borderCollapse: 'collapse',
+                            border: '1px solid #c7d2fe',
+                            minWidth: '600px'
+                        }}>
+                            <thead>
+                                <tr>
+                                    <th style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#eef2ff', color: '#312e81', fontWeight: 700, whiteSpace: 'nowrap', width: '10%' }}>
+                                        比較項目
+                                    </th>
+                                    <th style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#eef2ff', color: '#312e81', fontWeight: 700, whiteSpace: 'nowrap', width: hasConnections ? '15%' : '25%' }}>
+                                        用法說明
+                                    </th>
+                                    {hasConnections && (
+                                        <th style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#eef2ff', color: '#312e81', fontWeight: 700, whiteSpace: 'nowrap' }}>
+                                            接續方式
+                                        </th>
+                                    )}
+                                    <th style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#eef2ff', color: '#312e81', fontWeight: 700, whiteSpace: 'nowrap', width: hasConnections ? '45%' : '65%' }}>
+                                        例句
+                                    </th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            ) : (
+                            </thead>
+                            <tbody>
+                                {grammar.items?.map((item, idx) => (
+                                    <tr key={idx}>
+                                        {/* Grammar Point Name */}
+                                        <td style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#fff', verticalAlign: 'top', width: '10%' }}>
+                                            <span style={{ color: '#4338ca', fontWeight: 700, fontSize: '1rem', whiteSpace: 'nowrap' }}>
+                                                {idx + 1}. {item.grammar || item.grammar_point || item.grammarPoint}
+                                            </span>
+                                        </td>
+
+                                        {/* Explanation */}
+                                        <td style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#fff', verticalAlign: 'top', color: '#1f2937', lineHeight: 1.6 }}>
+                                            {item.explanation || '-'}
+                                        </td>
+
+                                        {/* Connection */}
+                                        {hasConnections && (
+                                            <td style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#fff', verticalAlign: 'top' }}>
+                                                {item.connection ? (
+                                                    <span style={{
+                                                        display: 'inline-block', padding: '4px 10px',
+                                                        background: '#eef2ff', color: '#4338ca',
+                                                        borderRadius: '8px', fontSize: '0.75rem', fontWeight: 700,
+                                                        border: '1px solid #e0e7ff'
+                                                    }}>
+                                                        {item.connection}
+                                                    </span>
+                                                ) : (
+                                                    <span style={{ color: '#9ca3af' }}>-</span>
+                                                )}
+                                            </td>
+                                        )}
+
+                                        {/* Examples */}
+                                        <td style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#fff', verticalAlign: 'top' }}>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                                {item.examples?.map((ex, exIdx) => (
+                                                    <div key={exIdx} style={{ paddingLeft: '10px', borderLeft: '2px solid #e0e7ff' }}>
+                                                        <div style={{ color: '#111827', fontWeight: 500, marginBottom: '4px' }}>
+                                                            {ex.ruby ? (
+                                                                <span dangerouslySetInnerHTML={{ __html: ex.ruby }} />
+                                                            ) : (
+                                                                ex.jp
+                                                            )}
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    speak(ex.jp);
+                                                                }}
+                                                                style={{
+                                                                    marginLeft: '8px', background: 'none', border: 'none',
+                                                                    color: '#818cf8', cursor: 'pointer', padding: 0,
+                                                                    display: 'inline-flex', verticalAlign: 'middle'
+                                                                }}
+                                                            >
+                                                                <Volume2 size={14} />
+                                                            </button>
+                                                        </div>
+                                                        <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>{ex.zh}</div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                );
+            })() : (
                 renderGrammarItem(grammar)
             )}
         </div>
