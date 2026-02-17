@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LogIn, Sparkles, Languages, Save, Database, Key, HelpCircle } from 'lucide-react';
+import { LogIn, Sparkles, Languages, Save, Database, Key, HelpCircle, ChevronRight } from 'lucide-react';
 import { getSupabaseClient, setSupabaseConfig } from '../services/supabase';
 import { APP_VERSION } from '../app-version';
 import { SetupGuide } from './SetupGuide';
