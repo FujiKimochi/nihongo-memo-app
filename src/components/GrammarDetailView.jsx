@@ -91,15 +91,15 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
             {grammar.is_comparison && grammar.comparison_analysis && (
                 <div style={{
                     marginBottom: '2rem', padding: '1.25rem',
-                    background: 'linear-gradient(135deg, #4f46e5, #4338ca)',
-                    color: 'white', borderRadius: '1rem',
-                    boxShadow: '0 10px 25px -5px rgba(79, 70, 229, 0.3)',
-                    border: '1px solid rgba(129, 140, 248, 0.2)'
+                    background: '#fff',
+                    color: '#1f2937', borderRadius: '1rem',
+                    boxShadow: '0 2px 8px -2px rgba(0, 0, 0, 0.08)',
+                    border: '1px solid #e0e7ff'
                 }}>
                     <h4 style={{
                         display: 'flex', alignItems: 'center', gap: '8px',
                         fontWeight: 700, marginBottom: '12px',
-                        color: '#c7d2fe', textTransform: 'uppercase',
+                        color: '#4338ca', textTransform: 'uppercase',
                         letterSpacing: '0.05em', fontSize: '0.75rem'
                     }}>
                         <Volume2 size={16} /> 文法差異比較
@@ -148,16 +148,16 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
                                         <table style={{
                                             width: '100%', fontSize: '0.875rem',
                                             textAlign: 'left', borderCollapse: 'collapse',
-                                            border: '1px solid rgba(129, 140, 248, 0.4)'
+                                            border: '1px solid #c7d2fe'
                                         }}>
                                             <thead>
                                                 <tr>
                                                     {analysisData.headers.map((header, idx) => (
                                                         <th key={idx} style={{
                                                             padding: '10px 14px', fontWeight: 700,
-                                                            whiteSpace: 'nowrap', color: '#e0e7ff',
-                                                            background: 'rgba(30, 27, 75, 0.3)',
-                                                            border: '1px solid rgba(129, 140, 248, 0.4)',
+                                                            whiteSpace: 'nowrap', color: '#312e81',
+                                                            background: '#eef2ff',
+                                                            border: '1px solid #c7d2fe',
                                                             fontSize: '0.75rem', textTransform: 'uppercase'
                                                         }}>
                                                             {header}
@@ -179,8 +179,8 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
                                                             return (
                                                                 <td key={colIdx} style={{
                                                                     padding: '10px 14px',
-                                                                    border: '1px solid rgba(129, 140, 248, 0.4)',
-                                                                    color: colIdx === 0 ? '#fff' : '#c7d2fe',
+                                                                    border: '1px solid #c7d2fe',
+                                                                    color: colIdx === 0 ? '#312e81' : '#374151',
                                                                     fontWeight: colIdx === 0 ? 700 : 400,
                                                                     whiteSpace: colIdx === 0 ? 'nowrap' : 'normal'
                                                                 }}>
@@ -192,7 +192,7 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
                                                 ))}
                                             </tbody>
                                         </table>
-                                        <div style={{ marginTop: '8px', fontSize: '0.75rem', color: '#a5b4fc', opacity: 0.75 }}>
+                                        <div style={{ marginTop: '8px', fontSize: '0.75rem', color: '#6366f1', opacity: 0.75 }}>
                                             * 表格由 AI 生成，向右滑動可查看更多
                                         </div>
                                     </div>
