@@ -48,100 +48,222 @@ export function Auth({ onSession }) {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-[80vh] p-6 text-center">
-            <div className="w-20 h-20 bg-indigo-600 rounded-3xl shadow-xl shadow-indigo-200 flex items-center justify-center mb-8 animate-float">
-                <Languages size={40} className="text-white" />
+        <div style={{
+            minHeight: '100vh',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '24px',
+            background: 'linear-gradient(135deg, #f5f7ff 0%, #fff 100%)',
+            textAlign: 'center'
+        }}>
+            {/* Logo and Header */}
+            <div style={{ marginBottom: '40px' }}>
+                <div style={{
+                    width: '80px',
+                    height: '80px',
+                    margin: '0 auto 24px',
+                    background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+                    borderRadius: '24px',
+                    boxShadow: '0 20px 25px -5px rgba(79, 70, 229, 0.2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }} className="animate-float">
+                    <Languages size={40} style={{ color: '#fff' }} />
+                </div>
+                <h1 style={{ fontSize: '2.25rem', fontWeight: 800, color: '#111827', margin: '0 0 8px 0' }}>
+                    Nihongo Memo
+                </h1>
+                <p style={{ color: '#6b7280', fontSize: '1rem', maxWidth: '300px', margin: '0 auto' }}>
+                    您的專屬日文學習隨身本。<br />
+                    登入即可同步所有單字與文法。
+                </p>
             </div>
 
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Nihongo Memo</h1>
-            <p className="text-gray-500 mb-10 max-w-xs">
-                您的專屬日文學習隨身本。登入即可同步所有單字與文法。
-            </p>
+            {/* Main Action Area */}
+            <div style={{ width: '100%', maxWidth: '400px', marginBottom: '48px' }}>
+                {showConfig ? (
+                    <div style={{
+                        background: '#fff',
+                        padding: '28px',
+                        borderRadius: '24px',
+                        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                        border: '1px solid #e5e7eb',
+                        textAlign: 'left'
+                    }} className="animate-in slide-in-from-bottom-5 fade-in">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#eef2ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4f46e5' }}>
+                                <Database size={18} />
+                            </div>
+                            <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#111827', margin: 0 }}>
+                                設定資料庫連線
+                            </h3>
+                        </div>
 
-            {showConfig ? (
-                <div className="w-full max-w-sm glass-card p-6 animate-in slide-in-from-bottom-5 fade-in">
-                    <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center justify-center gap-2">
-                        <Database size={18} />
-                        設定資料庫連線
-                    </h3>
-                    <p className="text-xs text-gray-500 mb-4 text-left">
-                        檢測到缺少 Supabase 設定（可能是清除快取導致）。請手動輸入以恢復連線。
-                    </p>
-                    <div className="flex flex-col gap-3 mb-4">
-                        <div className="text-left">
-                            <label className="text-xs font-bold text-gray-600 ml-1">Project URL</label>
-                            <input
-                                type="text"
-                                value={supabaseUrl}
-                                onChange={(e) => setSupabaseUrl(e.target.value)}
-                                placeholder="https://your-project.supabase.co"
-                                className="w-full p-2 rounded-lg border border-gray-200 text-sm bg-white/50"
-                            />
+                        <div style={{ padding: '12px', background: '#fef2f2', borderRadius: '12px', border: '1px solid #fee2e2', color: '#991b1b', fontSize: '0.75rem', marginBottom: '20px', lineHeight: 1.5 }}>
+                            <strong>連線中斷：</strong> 檢測到缺少 Supabase 設定（可能是清除快取導致）。請手動輸入以恢復連線。
                         </div>
-                        <div className="text-left">
-                            <label className="text-xs font-bold text-gray-600 ml-1">Anon Key</label>
-                            <input
-                                type="password"
-                                value={supabaseKey}
-                                onChange={(e) => setSupabaseKey(e.target.value)}
-                                placeholder="your-anon-key"
-                                className="w-full p-2 rounded-lg border border-gray-200 text-sm bg-white/50"
-                            />
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#374151', marginBottom: '6px', marginLeft: '4px' }}>PROJECT URL</label>
+                                <input
+                                    type="text"
+                                    value={supabaseUrl}
+                                    onChange={(e) => setSupabaseUrl(e.target.value)}
+                                    placeholder="https://your-project.supabase.co"
+                                    style={{
+                                        width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #d1d5db',
+                                        fontSize: '0.875rem', background: '#f9fafb', outline: 'none'
+                                    }}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#374151', marginBottom: '6px', marginLeft: '4px' }}>ANON KEY</label>
+                                <input
+                                    type="password"
+                                    value={supabaseKey}
+                                    onChange={(e) => setSupabaseKey(e.target.value)}
+                                    placeholder="your-anon-key"
+                                    style={{
+                                        width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #d1d5db',
+                                        fontSize: '0.875rem', background: '#f9fafb', outline: 'none'
+                                    }}
+                                />
+                            </div>
                         </div>
+
+                        <button
+                            onClick={handleSaveConfig}
+                            style={{
+                                width: '100%', background: '#4f46e5', color: '#fff',
+                                padding: '14px', borderRadius: '12px', border: 'none',
+                                fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                gap: '8px', cursor: 'pointer', transition: 'all 0.2s'
+                            }}
+                            onMouseOver={e => e.currentTarget.style.background = '#4338ca'}
+                            onMouseOut={e => e.currentTarget.style.background = '#4f46e5'}
+                        >
+                            <Save size={18} />
+                            儲存並繼續
+                        </button>
                     </div>
+                ) : (
                     <button
-                        onClick={handleSaveConfig}
-                        className="btn btn-primary w-full py-2 rounded-lg flex items-center justify-center gap-2"
+                        onClick={handleGoogleLogin}
+                        disabled={loading}
+                        style={{
+                            width: '100%', background: '#4f46e5', color: '#fff',
+                            padding: '18px', borderRadius: '20px', border: 'none',
+                            fontSize: '1rem', fontWeight: 700, letterSpacing: '0.025em',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            gap: '12px', cursor: loading ? 'default' : 'pointer',
+                            boxShadow: '0 10px 15px -3px rgba(79, 70, 229, 0.3)',
+                            transition: 'all 0.2s', opacity: loading ? 0.8 : 1
+                        }}
+                        className="hover:scale-[1.02] active:scale-[0.98]"
                     >
-                        <Save size={16} />
-                        儲存並繼續
+                        {loading ? (
+                            <div style={{ width: '20px', height: '20px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%' }} className="animate-spin" />
+                        ) : (
+                            <>
+                                <LogIn size={20} />
+                                使用 Google 帳號登入
+                            </>
+                        )}
                     </button>
-                </div>
-            ) : (
-                <button
-                    onClick={handleGoogleLogin}
-                    disabled={loading}
-                    className="btn btn-primary w-full max-w-sm py-4 rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-indigo-100 hover:scale-[1.02] active:scale-[0.98] transition-all"
-                >
-                    {loading ? (
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    ) : (
-                        <>
-                            <LogIn size={20} />
-                            使用 Google 帳號登入
-                        </>
-                    )}
-                </button>
-            )}
+                )}
+            </div>
 
-            <div className="mt-12 grid grid-cols-2 gap-4 w-full max-w-sm">
-                <div className="glass-card p-4 flex flex-col items-center gap-2">
-                    <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
-                        <Sparkles size={20} />
+            {/* Features Info */}
+            <div style={{
+                width: '100%', maxWidth: '500px',
+                display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px',
+                marginBottom: '40px'
+            }}>
+                <div style={{
+                    background: 'rgba(255, 255, 255, 0.7)',
+                    backdropFilter: 'blur(8px)',
+                    padding: '20px',
+                    borderRadius: '24px',
+                    border: '1px solid #eef2ff',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '12px',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
+                }}>
+                    <div style={{ width: '48px', height: '48px', background: '#e0e7ff', color: '#4338ca', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Sparkles size={24} />
                     </div>
-                    <span className="text-xs font-bold text-gray-700">AI 自動解析</span>
+                    <div>
+                        <div style={{ fontWeight: 800, fontSize: '0.875rem', color: '#1f2937' }}>AI 自動解析</div>
+                        <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '2px' }}>自動生成語法與例句</div>
+                    </div>
                 </div>
-                <div className="glass-card p-4 flex flex-col items-center gap-2">
-                    <div className="w-10 h-10 bg-green-50 text-green-600 rounded-xl flex items-center justify-center">
-                        <LogIn size={20} />
+                <div style={{
+                    background: 'rgba(255, 255, 255, 0.7)',
+                    backdropFilter: 'blur(8px)',
+                    padding: '20px',
+                    borderRadius: '24px',
+                    border: '1px solid #fdf2f8',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '12px',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
+                }}>
+                    <div style={{ width: '48px', height: '48px', background: '#fce7f3', color: '#be185d', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <LogIn size={24} />
                     </div>
-                    <span className="text-xs font-bold text-gray-700">跨裝置同步</span>
+                    <div>
+                        <div style={{ fontWeight: 800, fontSize: '0.875rem', color: '#1f2937' }}>跨裝置同步</div>
+                        <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '2px' }}>隨地複習，雲端存取</div>
+                    </div>
                 </div>
             </div>
 
-            <div className="mt-6">
+            {/* Help and Footer */}
+            <div style={{
+                borderTop: '1px solid #e5e7eb',
+                paddingTop: '32px',
+                width: '100%',
+                maxWidth: '400px'
+            }}>
                 <button
                     onClick={() => setShowGuide(true)}
-                    className="text-sm text-indigo-600 font-bold flex items-center justify-center gap-1 hover:underline"
+                    style={{
+                        padding: '10px 20px', borderRadius: '12px',
+                        background: '#fff', border: '1px solid #e0e7ff',
+                        color: '#4f46e5', fontWeight: 700, fontSize: '0.875rem',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                        margin: '0 auto 24px', cursor: 'pointer', transition: 'all 0.2s'
+                    }}
+                    onMouseOver={e => {
+                        e.currentTarget.style.background = '#f5f7ff';
+                        e.currentTarget.style.borderColor = '#c7d2fe';
+                    }}
+                    onMouseOut={e => {
+                        e.currentTarget.style.background = '#fff';
+                        e.currentTarget.style.borderColor = '#e0e7ff';
+                    }}
                 >
-                    <HelpCircle size={16} />
+                    <HelpCircle size={18} />
                     第一次使用？查看設定教學
                 </button>
-            </div>
 
-            <p className="mt-8 text-xs text-gray-400">
-                v{APP_VERSION} 登入即代表您同意本工具存取您的公開個人資訊以進行身分識別。
-            </p>
+                <p style={{ fontSize: '0.75rem', color: '#9ca3af', lineHeight: 1.6 }}>
+                    <span style={{
+                        display: 'inline-block', padding: '2px 8px', background: '#f3f4f6',
+                        borderRadius: '6px', color: '#4b5563', fontWeight: 600, marginRight: '8px'
+                    }}>
+                        v{APP_VERSION}
+                    </span>
+                    登入即代表您同意本工具存取您的公開個人資訊以進行身分識別。
+                </p>
+            </div>
 
             {showGuide && <SetupGuide onClose={() => setShowGuide(false)} />}
         </div>
