@@ -164,8 +164,87 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
             )}
 
             {grammar.is_comparison ? (
-                <div className="space-y-4">
-                    {grammar.items?.map((item, idx) => renderGrammarItem(item, idx, true))}
+                <div className="overflow-x-auto custom-scrollbar">
+                    <table className="w-full text-sm text-left border-collapse min-w-[600px]">
+                        <thead>
+                            <tr>
+                                <th className="p-4 border-b-2 border-indigo-100 bg-indigo-50/50 w-24 min-w-[6rem] sticky left-0 z-10 text-indigo-900 font-bold">
+                                    比較項目
+                                </th>
+                                {grammar.items?.map((item, idx) => (
+                                    <th key={idx} className="p-4 border-b-2 border-indigo-100 bg-white min-w-[200px] text-indigo-700 font-bold text-lg">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs">
+                                                {idx + 1}
+                                            </div>
+                                            {item.grammar_point || item.grammarPoint}
+                                        </div>
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                            {/* Explanation Row */}
+                            <tr>
+                                <td className="p-4 font-bold text-gray-500 bg-gray-50/50 sticky left-0 z-10 border-r border-gray-100">
+                                    用法說明
+                                </td>
+                                {grammar.items?.map((item, idx) => (
+                                    <td key={idx} className="p-4 align-top text-gray-800 leading-relaxed bg-white">
+                                        {item.explanation}
+                                    </td>
+                                ))}
+                            </tr>
+
+                            {/* Connection Row */}
+                            <tr>
+                                <td className="p-4 font-bold text-gray-500 bg-gray-50/50 sticky left-0 z-10 border-r border-gray-100">
+                                    接續方式
+                                </td>
+                                {grammar.items?.map((item, idx) => (
+                                    <td key={idx} className="p-4 align-top bg-white">
+                                        <div className="inline-block px-3 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-bold border border-indigo-100">
+                                            {item.connection}
+                                        </div>
+                                    </td>
+                                ))}
+                            </tr>
+
+                            {/* Examples Row */}
+                            <tr>
+                                <td className="p-4 font-bold text-gray-500 bg-gray-50/50 sticky left-0 z-10 border-r border-gray-100">
+                                    例句
+                                </td>
+                                {grammar.items?.map((item, idx) => (
+                                    <td key={idx} className="p-4 align-top bg-white">
+                                        <div className="flex flex-col gap-4">
+                                            {item.examples?.map((ex, exIdx) => (
+                                                <div key={exIdx} className="group relative pl-3 border-l-2 border-indigo-100 hover:border-indigo-300 transition-colors">
+                                                    <div className="text-gray-900 font-medium mb-1">
+                                                        {ex.ruby ? (
+                                                            <span dangerouslySetInnerHTML={{ __html: ex.ruby }} />
+                                                        ) : (
+                                                            ex.jp
+                                                        )}
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                speak(ex.jp);
+                                                            }}
+                                                            className="ml-2 inline-flex opacity-0 group-hover:opacity-100 transition-opacity text-indigo-400 hover:text-indigo-600"
+                                                        >
+                                                            <Volume2 size={14} />
+                                                        </button>
+                                                    </div>
+                                                    <div className="text-gray-500 text-xs">{ex.zh}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </td>
+                                ))}
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             ) : (
                 renderGrammarItem(grammar)
