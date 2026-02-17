@@ -222,7 +222,7 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
                     }}>
                         <thead>
                             <tr>
-                                <th style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#eef2ff', color: '#312e81', fontWeight: 700, whiteSpace: 'nowrap' }}>
+                                <th style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#eef2ff', color: '#312e81', fontWeight: 700, whiteSpace: 'nowrap', width: '10%' }}>
                                     比較項目
                                 </th>
                                 <th style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#eef2ff', color: '#312e81', fontWeight: 700, whiteSpace: 'nowrap', width: '15%' }}>
@@ -240,20 +240,10 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
                             {grammar.items?.map((item, idx) => (
                                 <tr key={idx}>
                                     {/* Grammar Point Name */}
-                                    <td style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#fff', verticalAlign: 'top' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            <div style={{
-                                                width: '24px', height: '24px', borderRadius: '50%',
-                                                background: '#e0e7ff', color: '#4f46e5',
-                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                fontSize: '12px', fontWeight: 700, flexShrink: 0
-                                            }}>
-                                                {idx + 1}
-                                            </div>
-                                            <span style={{ color: '#4338ca', fontWeight: 700, fontSize: '1.1rem', whiteSpace: 'nowrap' }}>
-                                                {item.grammar_point || item.grammarPoint}
-                                            </span>
-                                        </div>
+                                    <td style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#fff', verticalAlign: 'top', width: '10%' }}>
+                                        <span style={{ color: '#4338ca', fontWeight: 700, fontSize: '1rem', whiteSpace: 'nowrap' }}>
+                                            {idx + 1}. {item.grammar_point || item.grammarPoint}
+                                        </span>
                                     </td>
 
                                     {/* Explanation */}
