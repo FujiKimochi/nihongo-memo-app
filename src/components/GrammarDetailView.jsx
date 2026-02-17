@@ -232,11 +232,11 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
                                         用法說明
                                     </th>
                                     {hasConnections && (
-                                        <th style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#eef2ff', color: '#312e81', fontWeight: 700, whiteSpace: 'nowrap' }}>
+                                        <th style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#eef2ff', color: '#312e81', fontWeight: 700, whiteSpace: 'nowrap', width: '20%' }}>
                                             接續方式
                                         </th>
                                     )}
-                                    <th style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#eef2ff', color: '#312e81', fontWeight: 700, whiteSpace: 'nowrap', width: hasConnections ? '45%' : '65%' }}>
+                                    <th style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#eef2ff', color: '#312e81', fontWeight: 700, whiteSpace: 'nowrap', width: hasConnections ? '55%' : '65%' }}>
                                         例句
                                     </th>
                                 </tr>
