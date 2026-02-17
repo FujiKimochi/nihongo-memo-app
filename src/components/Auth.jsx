@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { LogIn, Sparkles, Languages, Save, Database, Key } from 'lucide-react';
+import { LogIn, Sparkles, Languages, Save, Database, Key, HelpCircle } from 'lucide-react';
 import { getSupabaseClient, setSupabaseConfig } from '../services/supabase';
 import { APP_VERSION } from '../app-version';
+import { SetupGuide } from './SetupGuide';
 
 export function Auth({ onSession }) {
     const [loading, setLoading] = useState(false);
     const [showConfig, setShowConfig] = useState(false);
+    const [showGuide, setShowGuide] = useState(false);
     const [supabaseUrl, setSupabaseUrl] = useState('');
     const [supabaseKey, setSupabaseKey] = useState('');
 
@@ -127,9 +129,21 @@ export function Auth({ onSession }) {
                 </div>
             </div>
 
+            <div className="mt-6">
+                <button
+                    onClick={() => setShowGuide(true)}
+                    className="text-sm text-indigo-600 font-bold flex items-center justify-center gap-1 hover:underline"
+                >
+                    <HelpCircle size={16} />
+                    第一次使用？查看設定教學
+                </button>
+            </div>
+
             <p className="mt-8 text-xs text-gray-400">
                 v{APP_VERSION} 登入即代表您同意本工具存取您的公開個人資訊以進行身分識別。
             </p>
+
+            {showGuide && <SetupGuide onClose={() => setShowGuide(false)} />}
         </div>
     );
 }
