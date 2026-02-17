@@ -7,109 +7,141 @@ export function SetupGuide({ onClose }) {
     const steps = [
         {
             title: "歡迎！如何開始使用？",
-            icon: <Sparkles size={32} className="text-indigo-500" />,
+            icon: <Sparkles size={32} style={{ color: '#6366f1' }} />,
             content: (
-                <div className="space-y-4">
-                    <p>Nihongo Memo 是一個完全免費、無需伺服器維護的日文學習工具。</p>
-                    <p>為了保障您的資料隱私與擁有權，我們採用<b>「自帶資料庫 (BYOD)」</b>模式。</p>
-                    <p>這代表您需要申請兩個免費的服務來驅動這個 App：</p>
-                    <ol className="list-decimal list-inside space-y-2 text-left ml-4 font-medium">
-                        <li><b>Supabase</b>：免費的雲端資料庫，用來儲存您的單字與文法。</li>
-                        <li><b>Google Gemini</b>：免費的 AI 模型，用來自動生成例句與變化。</li>
-                    </ol>
-                    <div className="bg-indigo-50 p-3 rounded-lg text-sm text-indigo-700">
-                        別擔心！這兩個服務都有永久免費額度，且申請過程只需約 5 分鐘。
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <p style={{ margin: 0, lineHeight: 1.6 }}>Nihongo Memo 是一個完全免費、無需伺服器維護的日文學習工具。</p>
+                    <div style={{ padding: '16px', background: '#f5f7ff', borderRadius: '16px', border: '1px solid #e0e7ff' }}>
+                        <p style={{ margin: '0 0 12px 0', fontWeight: 700, color: '#4338ca' }}>「自帶資料庫 (BYOD)」模式</p>
+                        <p style={{ margin: 0, fontSize: '0.875rem', lineHeight: 1.6 }}>為了保障您的資料隱私與擁有權，您需要申請兩個免費的服務來驅動這個 App：</p>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {[
+                            { name: 'Supabase', desc: '雲端資料庫，儲存您的單字與文法' },
+                            { name: 'Google Gemini', desc: 'AI 模型，自動生成例句與變化' }
+                        ].map((item, idx) => (
+                            <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', background: '#fff', border: '1px solid #f3f4f6', borderRadius: '12px' }}>
+                                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#4f46e5' }}>{idx + 1}</div>
+                                <div>
+                                    <div style={{ fontWeight: 700, fontSize: '0.875rem' }}>{item.name}</div>
+                                    <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>{item.desc}</div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div style={{ background: '#ecfdf5', padding: '12px', borderRadius: '12px', fontSize: '0.8125rem', color: '#065f46', textAlign: 'center' }}>
+                        ✨ 兩項服務均有<strong>永久免費額度</strong>，申請只需 5 分鐘。
                     </div>
                 </div>
             )
         },
         {
-            title: "步驟一：取得 Supabase 資料庫",
-            icon: <Database size={32} className="text-green-500" />,
+            title: "步驟一：連結 Supabase 資料庫",
+            icon: <Database size={32} style={{ color: '#10b981' }} />,
             content: (
-                <div className="space-y-4 text-left">
-                    <p>用來同步所有裝置上的學習紀錄。</p>
-                    <ol className="space-y-4 text-sm">
-                        <li className="flex gap-3">
-                            <span className="bg-gray-100 w-6 h-6 rounded-full flex items-center justify-center shrink-0 fw-bold">1</span>
-                            <div>
-                                前往 <a href="https://supabase.com/" target="_blank" rel="noopener noreferrer" className="text-indigo-600 underline font-bold flex items-center gap-1 inline-flex">
-                                    Supabase 官網 <ExternalLink size={12} />
-                                </a> 並註冊/登入。
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <div style={{ borderLeft: '4px solid #10b981', paddingLeft: '16px' }}>
+                            <p style={{ margin: '0 0 4px 0', fontSize: '0.75rem', fontWeight: 700, color: '#047857' }}>訪問官網</p>
+                            <a
+                                href="https://supabase.com/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                    display: 'inline-flex', alignItems: 'center', gap: '8px',
+                                    background: '#10b981', color: '#fff', textDecoration: 'none',
+                                    padding: '10px 20px', borderRadius: '12px', fontWeight: 700, fontSize: '0.875rem',
+                                    boxShadow: '0 4px 6px -1px rgba(16, 185, 129, 0.2)'
+                                }}
+                            >
+                                前往 Supabase 官網 <ExternalLink size={16} />
+                            </a>
+                        </div>
+
+                        <div style={{ borderLeft: '4px solid #e5e7eb', paddingLeft: '16px' }}>
+                            <p style={{ margin: '0 0 4px 0', fontSize: '0.75rem', fontWeight: 700, color: '#6b7280' }}>設定步驟</p>
+                            <p style={{ margin: 0, fontSize: '0.875rem', lineHeight: 1.6 }}>
+                                註冊後點擊 <b>"New Project"</b>，建立完成後至 <b>"Project Settings" &gt; "API"</b>。
+                            </p>
+                        </div>
+                    </div>
+
+                    <div style={{ background: '#f9fafb', padding: '16px', borderRadius: '16px', border: '1px dashed #d1d5db' }}>
+                        <p style={{ margin: '0 0 8px 0', fontSize: '0.75rem', fontWeight: 700, color: '#374151' }}>🔑 複製兩項關鍵資訊</p>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.8125rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px', background: '#fff', borderRadius: '8px' }}>
+                                <span style={{ color: '#6b7280' }}>1. URL</span>
+                                <span style={{ fontWeight: 700, color: '#111827' }}>Project URL</span>
                             </div>
-                        </li>
-                        <li className="flex gap-3">
-                            <span className="bg-gray-100 w-6 h-6 rounded-full flex items-center justify-center shrink-0 fw-bold">2</span>
-                            <div>點擊 <b>"New Project"</b>，輸入任意名稱 (例如 NihongoMemo) 與密碼。</div>
-                        </li>
-                        <li className="flex gap-3">
-                            <span className="bg-gray-100 w-6 h-6 rounded-full flex items-center justify-center shrink-0 fw-bold">3</span>
-                            <div>
-                                等待專案建立完成後，點擊左側選單的 <b>"Project Settings"</b> (齒輪圖示) &gt; <b>"API"</b>。
+                            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px', background: '#fff', borderRadius: '8px' }}>
+                                <span style={{ color: '#6b7280' }}>2. Key</span>
+                                <span style={{ fontWeight: 700, color: '#111827' }}>anon public key</span>
                             </div>
-                        </li>
-                        <li className="flex gap-3">
-                            <span className="bg-gray-100 w-6 h-6 rounded-full flex items-center justify-center shrink-0 fw-bold">4</span>
-                            <div className="bg-gray-50 p-2 rounded w-full border border-gray-200">
-                                複製以下兩項資訊：<br />
-                                1. <b>Project URL</b> (網址)<br />
-                                2. <b>anon public key</b> (金鑰)
-                            </div>
-                        </li>
-                    </ol>
+                        </div>
+                    </div>
                 </div>
             )
         },
         {
             title: "步驟二：取得 Google AI 金鑰",
-            icon: <Key size={32} className="text-blue-500" />,
+            icon: <Key size={32} style={{ color: '#3b82f6' }} />,
             content: (
-                <div className="space-y-4 text-left">
-                    <p>用來自動分析單字、生成例句。</p>
-                    <ol className="space-y-4 text-sm">
-                        <li className="flex gap-3">
-                            <span className="bg-gray-100 w-6 h-6 rounded-full flex items-center justify-center shrink-0 fw-bold">1</span>
-                            <div>
-                                前往 <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-indigo-600 underline font-bold flex items-center gap-1 inline-flex">
-                                    Google AI Studio <ExternalLink size={12} />
-                                </a>。
-                            </div>
-                        </li>
-                        <li className="flex gap-3">
-                            <span className="bg-gray-100 w-6 h-6 rounded-full flex items-center justify-center shrink-0 fw-bold">2</span>
-                            <div>登入您的 Google 帳號。</div>
-                        </li>
-                        <li className="flex gap-3">
-                            <span className="bg-gray-100 w-6 h-6 rounded-full flex items-center justify-center shrink-0 fw-bold">3</span>
-                            <div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <div style={{ borderLeft: '4px solid #3b82f6', paddingLeft: '16px' }}>
+                            <p style={{ margin: '0 0 4px 0', fontSize: '0.75rem', fontWeight: 700, color: '#1d4ed8' }}>取得金鑰</p>
+                            <a
+                                href="https://aistudio.google.com/app/apikey"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                    display: 'inline-flex', alignItems: 'center', gap: '8px',
+                                    background: '#3b82f6', color: '#fff', textDecoration: 'none',
+                                    padding: '10px 20px', borderRadius: '12px', fontWeight: 700, fontSize: '0.875rem',
+                                    boxShadow: '0 4px 6px -1px rgba(59, 130, 246, 0.2)'
+                                }}
+                            >
+                                前往 Google AI Studio <ExternalLink size={16} />
+                            </a>
+                        </div>
+
+                        <div style={{ borderLeft: '4px solid #e5e7eb', paddingLeft: '16px' }}>
+                            <p style={{ margin: '0 0 4px 0', fontSize: '0.75rem', fontWeight: 700, color: '#6b7280' }}>設定步驟</p>
+                            <p style={{ margin: 0, fontSize: '0.875rem', lineHeight: 1.6 }}>
                                 點擊 <b>"Create API Key"</b> &gt; <b>"Create API key in new project"</b>。
-                            </div>
-                        </li>
-                        <li className="flex gap-3">
-                            <span className="bg-gray-100 w-6 h-6 rounded-full flex items-center justify-center shrink-0 fw-bold">4</span>
-                            <div className="bg-gray-50 p-2 rounded w-full border border-gray-200">
-                                複製生成的 <b>API Key</b> (以 AIza 開頭的字串)。
-                            </div>
-                        </li>
-                    </ol>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div style={{ background: '#f9fafb', padding: '16px', borderRadius: '16px', border: '1px dashed #d1d5db' }}>
+                        <p style={{ margin: '0 0 8px 0', fontSize: '0.75rem', fontWeight: 700, color: '#374151' }}>🔑 複製關鍵字串</p>
+                        <div style={{ padding: '12px', background: '#fff', borderRadius: '8px', fontSize: '0.8125rem', textAlign: 'center', color: '#1d4ed8', fontWeight: 700 }}>
+                            以 "AIza..." 開頭的字串
+                        </div>
+                    </div>
                 </div>
             )
         },
         {
-            title: "完成！開始設定",
-            icon: <Sparkles size={32} className="text-yellow-500" />,
+            title: "完成！開始享受學習",
+            icon: <Sparkles size={32} style={{ color: '#f59e0b' }} />,
             content: (
-                <div className="space-y-4">
-                    <p>您現在已經準備好所有需要的資訊了！</p>
-                    <div className="bg-green-50 p-4 rounded-xl space-y-2 text-green-900">
-                        <p className="font-bold">接下來：</p>
-                        <ol className="list-decimal list-inside text-sm">
-                            <li>如果是第一次登入，系統會請您輸入 <b>Supabase URL</b> 與 <b>Key</b>。</li>
-                            <li>登入後，在「設定」頁面輸入您的 <b>Google API Key</b>。</li>
-                        </ol>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <div style={{ padding: '20px', background: '#ecfdf5', borderRadius: '20px', border: '1px solid #d1fae5' }}>
+                        <p style={{ margin: '0 0 16px 0', fontWeight: 800, color: '#065f46', fontSize: '1rem' }}>接下來的操作：</p>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                            <div style={{ display: 'flex', gap: '12px' }}>
+                                <div style={{ width: '24px', height: '24px', background: '#34d399', color: '#fff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', flexShrink: 0 }}>1</div>
+                                <p style={{ margin: 0, fontSize: '0.875rem', color: '#064e3b' }}>第一次登入時，輸入 <b>Supabase</b> 的 URL 與 Key。</p>
+                            </div>
+                            <div style={{ display: 'flex', gap: '12px' }}>
+                                <div style={{ width: '24px', height: '24px', background: '#34d399', color: '#fff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', flexShrink: 0 }}>2</div>
+                                <p style={{ margin: 0, fontSize: '0.875rem', color: '#064e3b' }}>登入後，在 App 內的<b>「設定」</b>頁面貼上 <b>Gemini API Key</b>。</p>
+                            </div>
+                        </div>
                     </div>
-                    <p className="text-sm text-gray-500">
-                        這些設定只會儲存在您自己的瀏覽器中，我們不會留存任何資料。
+                    <p style={{ margin: 0, fontSize: '0.75rem', color: '#6b7280', textAlign: 'center', lineHeight: 1.5 }}>
+                        所有設定皆加密儲存於您的本地瀏覽器，<br />我們絕不會收集您的任何資料。
                     </p>
                 </div>
             )
@@ -117,46 +149,65 @@ export function SetupGuide({ onClose }) {
     ];
 
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-            <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+        <div style={{
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)',
+            zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px'
+        }}>
+            <div style={{
+                background: '#fff', borderRadius: '28px', width: '100%', maxWidth: '440px',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', overflow: 'hidden',
+                display: 'flex', flexDirection: 'column', maxHeight: '90vh'
+            }} className="animate-in zoom-in-95 duration-200">
+                {/* Progress Bar */}
+                <div style={{ height: '4px', background: '#f3f4f6', width: '100%' }}>
+                    <div style={{
+                        height: '100%', background: 'linear-gradient(90deg, #4f46e5, #7c3aed)',
+                        width: `${(step / steps.length) * 100}%`, transition: 'width 0.3s ease'
+                    }} />
+                </div>
+
                 {/* Header */}
-                <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                    <div className="flex items-center gap-2 font-bold text-gray-700">
-                        {steps[step - 1].icon}
-                        <span>新手教學 ({step}/{steps.length})</span>
+                <div style={{ padding: '24px 24px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ width: '48px', height: '48px', borderRadius: '16px', background: '#f5f7ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            {steps[step - 1].icon}
+                        </div>
+                        <div>
+                            <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                STEP {step} OF {steps.length}
+                            </div>
+                            <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#111827', margin: 0 }}>新手教學</h2>
+                        </div>
                     </div>
-                    <button onClick={onClose} className="p-1 hover:bg-gray-200 rounded-full transition-colors">
-                        <X size={20} className="text-gray-500" />
+                    <button
+                        onClick={onClose}
+                        style={{ padding: '10px', background: '#f3f4f6', border: 'none', borderRadius: '50%', cursor: 'pointer', display: 'flex' }}
+                    >
+                        <X size={20} color="#6b7280" />
                     </button>
                 </div>
 
                 {/* Content */}
-                <div className="p-6 min-h-[300px] flex flex-col">
-                    <h2 className="text-xl font-bold mb-4 text-gray-900">{steps[step - 1].title}</h2>
-                    <div className="text-gray-600 flex-1">
+                <div style={{ padding: '0 24px 24px', overflowY: 'auto', flex: 1 }}>
+                    <h3 style={{ fontSize: '1.125rem', fontWeight: 800, color: '#111827', margin: '0 0 20px 0' }}>{steps[step - 1].title}</h3>
+                    <div style={{ color: '#374151' }}>
                         {steps[step - 1].content}
                     </div>
                 </div>
 
                 {/* Footer */}
-                <div className="p-4 border-t border-gray-100 flex justify-between items-center bg-gray-50">
+                <div style={{ padding: '20px 24px', borderTop: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fafafa' }}>
                     <button
                         onClick={() => setStep(s => Math.max(1, s - 1))}
-                        className={`text-sm font-medium px-4 py-2 rounded-lg transition-colors ${step === 1 ? 'invisible' : 'text-gray-500 hover:bg-gray-200'
-                            }`}
+                        style={{
+                            padding: '10px 16px', borderRadius: '12px', border: 'none',
+                            background: '#fff', color: '#4b5563', fontWeight: 700, fontSize: '0.875rem',
+                            cursor: 'pointer', visibility: step === 1 ? 'hidden' : 'visible',
+                            border: '1px solid #e5e7eb'
+                        }}
                     >
                         上一頁
                     </button>
-
-                    <div className="flex gap-1">
-                        {steps.map((_, i) => (
-                            <div
-                                key={i}
-                                className={`w-2 h-2 rounded-full transition-colors ${i + 1 === step ? 'bg-indigo-500' : 'bg-gray-300'
-                                    }`}
-                            />
-                        ))}
-                    </div>
 
                     <button
                         onClick={() => {
@@ -166,10 +217,17 @@ export function SetupGuide({ onClose }) {
                                 onClose();
                             }
                         }}
-                        className="bg-indigo-600 text-white text-sm font-bold px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-1"
+                        style={{
+                            padding: '12px 24px', borderRadius: '14px', border: 'none',
+                            background: step === steps.length ? '#10b981' : '#4f46e5', color: '#fff',
+                            fontWeight: 800, fontSize: '0.875rem', cursor: 'pointer',
+                            display: 'flex', alignItems: 'center', gap: '8px',
+                            boxShadow: '0 4px 6px -1px rgba(79, 70, 229, 0.2)',
+                            transition: 'all 0.2s'
+                        }}
                     >
-                        {step === steps.length ? '我知道了' : '下一步'}
-                        {step < steps.length && <ArrowRight size={16} />}
+                        {step === steps.length ? '我準備好了！' : '下一步'}
+                        {step < steps.length && <ArrowRight size={18} />}
                     </button>
                 </div>
             </div>

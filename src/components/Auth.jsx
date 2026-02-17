@@ -177,6 +177,56 @@ export function Auth({ onSession }) {
                 )}
             </div>
 
+            {/* Setup Guide Banner - Highly Prominent */}
+            <div
+                onClick={() => setShowGuide(true)}
+                style={{
+                    width: '100%', maxWidth: '400px',
+                    margin: '0 auto 40px',
+                    padding: '24px',
+                    background: 'linear-gradient(135deg, #e0e7ff 0%, #f5f7ff 100%)',
+                    borderRadius: '24px',
+                    border: '1px solid #c7d2fe',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '16px',
+                    textAlign: 'left',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 10px 15px -3px rgba(79, 70, 229, 0.1)'
+                }}
+                onMouseOver={e => {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 12px 20px -5px rgba(79, 70, 229, 0.15)';
+                }}
+                onMouseOut={e => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(79, 70, 229, 0.1)';
+                }}
+            >
+                <div style={{
+                    width: '48px', height: '48px',
+                    background: '#fff',
+                    borderRadius: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#4f46e5',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+                    flexShrink: 0
+                }}>
+                    <HelpCircle size={24} />
+                </div>
+                <div>
+                    <div style={{ fontSize: '1rem', fontWeight: 800, color: '#1e1b4b', marginBottom: '2px' }}>
+                        第一次使用此App？
+                    </div>
+                    <div style={{ fontSize: '0.8125rem', color: '#4338ca', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        點此查看新手設定指南 <ChevronRight size={14} />
+                    </div>
+                </div>
+            </div>
+
             {/* Features Info */}
             <div style={{
                 width: '100%', maxWidth: '500px',
@@ -225,45 +275,15 @@ export function Auth({ onSession }) {
                 </div>
             </div>
 
-            {/* Help and Footer */}
-            <div style={{
-                borderTop: '1px solid #e5e7eb',
-                paddingTop: '32px',
-                width: '100%',
-                maxWidth: '400px'
-            }}>
-                <button
-                    onClick={() => setShowGuide(true)}
-                    style={{
-                        padding: '10px 20px', borderRadius: '12px',
-                        background: '#fff', border: '1px solid #e0e7ff',
-                        color: '#4f46e5', fontWeight: 700, fontSize: '0.875rem',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                        margin: '0 auto 24px', cursor: 'pointer', transition: 'all 0.2s'
-                    }}
-                    onMouseOver={e => {
-                        e.currentTarget.style.background = '#f5f7ff';
-                        e.currentTarget.style.borderColor = '#c7d2fe';
-                    }}
-                    onMouseOut={e => {
-                        e.currentTarget.style.background = '#fff';
-                        e.currentTarget.style.borderColor = '#e0e7ff';
-                    }}
-                >
-                    <HelpCircle size={18} />
-                    第一次使用？查看設定教學
-                </button>
-
-                <p style={{ fontSize: '0.75rem', color: '#9ca3af', lineHeight: 1.6 }}>
-                    <span style={{
-                        display: 'inline-block', padding: '2px 8px', background: '#f3f4f6',
-                        borderRadius: '6px', color: '#4b5563', fontWeight: 600, marginRight: '8px'
-                    }}>
-                        v{APP_VERSION}
-                    </span>
-                    登入即代表您同意本工具存取您的公開個人資訊以進行身分識別。
-                </p>
-            </div>
+            <p style={{ fontSize: '0.75rem', color: '#9ca3af', lineHeight: 1.6 }}>
+                <span style={{
+                    display: 'inline-block', padding: '2px 8px', background: '#f3f4f6',
+                    borderRadius: '6px', color: '#4b5563', fontWeight: 600, marginRight: '8px'
+                }}>
+                    v{APP_VERSION}
+                </span>
+                登入即代表您同意本工具存取您的公開個人資訊以進行身分識別。
+            </p>
 
             {showGuide && <SetupGuide onClose={() => setShowGuide(false)} />}
         </div>
