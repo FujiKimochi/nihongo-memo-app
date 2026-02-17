@@ -165,14 +165,14 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
 
             {grammar.is_comparison ? (
                 <div className="overflow-x-auto custom-scrollbar">
-                    <table className="w-full text-sm text-left border-collapse min-w-[600px]">
+                    <table className="w-full text-sm text-left border-collapse border border-indigo-200 min-w-[600px]">
                         <thead>
                             <tr>
-                                <th className="p-4 border-b-2 border-indigo-100 bg-indigo-50/50 w-24 min-w-[6rem] sticky left-0 z-10 text-indigo-900 font-bold">
+                                <th className="p-4 border border-indigo-200 bg-indigo-50/50 w-24 min-w-[6rem] sticky left-0 z-10 text-indigo-900 font-bold">
                                     比較項目
                                 </th>
                                 {grammar.items?.map((item, idx) => (
-                                    <th key={idx} className="p-4 border-b-2 border-indigo-100 bg-white min-w-[200px] text-indigo-700 font-bold text-lg">
+                                    <th key={idx} className="p-4 border border-indigo-200 bg-white min-w-[200px] text-indigo-700 font-bold text-lg">
                                         <div className="flex items-center gap-2">
                                             <div className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs">
                                                 {idx + 1}
@@ -183,14 +183,14 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
                                 ))}
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y divide-indigo-200">
                             {/* Explanation Row */}
                             <tr>
-                                <td className="p-4 font-bold text-gray-500 bg-gray-50/50 sticky left-0 z-10 border-r border-gray-100">
+                                <td className="p-4 font-bold text-gray-500 bg-gray-50/50 sticky left-0 z-10 border border-indigo-200 border-r-indigo-200">
                                     用法說明
                                 </td>
                                 {grammar.items?.map((item, idx) => (
-                                    <td key={idx} className="p-4 align-top text-gray-800 leading-relaxed bg-white">
+                                    <td key={idx} className="p-4 align-top text-gray-800 leading-relaxed bg-white border border-indigo-200">
                                         {item.explanation}
                                     </td>
                                 ))}
@@ -198,11 +198,11 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
 
                             {/* Connection Row */}
                             <tr>
-                                <td className="p-4 font-bold text-gray-500 bg-gray-50/50 sticky left-0 z-10 border-r border-gray-100">
+                                <td className="p-4 font-bold text-gray-500 bg-gray-50/50 sticky left-0 z-10 border border-indigo-200 border-r-indigo-200">
                                     接續方式
                                 </td>
                                 {grammar.items?.map((item, idx) => (
-                                    <td key={idx} className="p-4 align-top bg-white">
+                                    <td key={idx} className="p-4 align-top bg-white border border-indigo-200">
                                         <div className="inline-block px-3 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-bold border border-indigo-100">
                                             {item.connection}
                                         </div>
@@ -212,11 +212,11 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
 
                             {/* Examples Row */}
                             <tr>
-                                <td className="p-4 font-bold text-gray-500 bg-gray-50/50 sticky left-0 z-10 border-r border-gray-100">
+                                <td className="p-4 font-bold text-gray-500 bg-gray-50/50 sticky left-0 z-10 border border-indigo-200 border-r-indigo-200">
                                     例句
                                 </td>
                                 {grammar.items?.map((item, idx) => (
-                                    <td key={idx} className="p-4 align-top bg-white">
+                                    <td key={idx} className="p-4 align-top bg-white border border-indigo-200">
                                         <div className="flex flex-col gap-4">
                                             {item.examples?.map((ex, exIdx) => (
                                                 <div key={exIdx} className="group relative pl-3 border-l-2 border-indigo-100 hover:border-indigo-300 transition-colors">
