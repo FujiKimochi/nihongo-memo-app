@@ -89,27 +89,77 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
             )}
 
             {grammar.is_comparison && grammar.comparison_analysis && (
-                <div className="mb-8 p-5 bg-gradient-to-br from-indigo-600 to-indigo-700 text-white rounded-2xl shadow-lg border border-indigo-400/20">
-                    <h4 className="flex items-center gap-2 font-bold mb-3 text-indigo-100 uppercase tracking-wider text-xs">
+                <div style={{
+                    marginBottom: '2rem', padding: '1.25rem',
+                    background: 'linear-gradient(135deg, #4f46e5, #4338ca)',
+                    color: 'white', borderRadius: '1rem',
+                    boxShadow: '0 10px 25px -5px rgba(79, 70, 229, 0.3)',
+                    border: '1px solid rgba(129, 140, 248, 0.2)'
+                }}>
+                    <h4 style={{
+                        display: 'flex', alignItems: 'center', gap: '8px',
+                        fontWeight: 700, marginBottom: '12px',
+                        color: '#c7d2fe', textTransform: 'uppercase',
+                        letterSpacing: '0.05em', fontSize: '0.75rem'
+                    }}>
                         <Volume2 size={16} /> 文法差異比較
                     </h4>
 
                     {(() => {
-                        try {
-                            // Attempt to parse JSON if it's a string, or use as is if object
-                            const analysisData = typeof grammar.comparison_analysis === 'string'
-                                ? JSON.parse(grammar.comparison_analysis)
-                                : grammar.comparison_analysis;
+                        // Helper: parse markdown table string
+                        const parseMarkdownTable = (text) => {
+                            const lines = text.trim().split('\n').filter(l => l.trim());
+                            if (lines.length < 3) return null; // need header, separator, at least 1 row
 
-                            // Check if it has the expected table structure
+                            const parseLine = (line) => line.split('|').map(c => c.trim()).filter(c => c);
+                            const headers = parseLine(lines[0]);
+
+                            // Check if line[1] is a separator (contains ---)
+                            if (!lines[1].includes('---')) return null;
+
+                            const rows = lines.slice(2).map(line => {
+                                const cells = parseLine(line);
+                                const obj = {};
+                                headers.forEach((h, i) => { obj[h] = cells[i] || ''; });
+                                return obj;
+                            });
+
+                            return { headers, rows };
+                        };
+
+                        try {
+                            let analysisData = null;
+
+                            if (typeof grammar.comparison_analysis === 'string') {
+                                // Try JSON first
+                                try {
+                                    analysisData = JSON.parse(grammar.comparison_analysis);
+                                } catch (jsonErr) {
+                                    // Try markdown table
+                                    analysisData = parseMarkdownTable(grammar.comparison_analysis);
+                                }
+                            } else {
+                                analysisData = grammar.comparison_analysis;
+                            }
+
                             if (analysisData && analysisData.headers && analysisData.rows) {
                                 return (
-                                    <div className="overflow-x-auto">
-                                        <table className="w-full text-sm text-left text-indigo-100">
-                                            <thead className="text-xs text-indigo-200 uppercase bg-indigo-800/30">
+                                    <div style={{ overflowX: 'auto' }}>
+                                        <table style={{
+                                            width: '100%', fontSize: '0.875rem',
+                                            textAlign: 'left', borderCollapse: 'collapse',
+                                            border: '1px solid rgba(129, 140, 248, 0.4)'
+                                        }}>
+                                            <thead>
                                                 <tr>
                                                     {analysisData.headers.map((header, idx) => (
-                                                        <th key={idx} className="px-4 py-2 font-bold whitespace-nowrap">
+                                                        <th key={idx} style={{
+                                                            padding: '10px 14px', fontWeight: 700,
+                                                            whiteSpace: 'nowrap', color: '#e0e7ff',
+                                                            background: 'rgba(30, 27, 75, 0.3)',
+                                                            border: '1px solid rgba(129, 140, 248, 0.4)',
+                                                            fontSize: '0.75rem', textTransform: 'uppercase'
+                                                        }}>
                                                             {header}
                                                         </th>
                                                     ))}
@@ -117,26 +167,23 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
                                             </thead>
                                             <tbody>
                                                 {analysisData.rows.map((row, rowIdx) => (
-                                                    <tr key={rowIdx} className="border-b border-indigo-500/30 hover:bg-indigo-600/50">
+                                                    <tr key={rowIdx}>
                                                         {analysisData.headers.map((header, colIdx) => {
-                                                            // Map header to object key. The provided JSON example uses keys matching headers or 'item' for first col
-                                                            // Example: headers=["比較項目", "かなり", "めちゃくちゃ"], rows=[{item: "...", "かなり": "...", "めちゃくちゃ": "..."}]
-                                                            // We need a robust way to map.
-
-                                                            // Strategy: 
-                                                            // 1. If it's the first column (header[0]), usually 'item' or the header name itself.
-                                                            // 2. Otherwise assume key matches header name.
-
                                                             let cellContent = '';
                                                             if (colIdx === 0) {
-                                                                // Try 'item' first, then the header name itself
                                                                 cellContent = row['item'] || row[header] || row['項目'] || '';
                                                             } else {
                                                                 cellContent = row[header] || '';
                                                             }
 
                                                             return (
-                                                                <td key={colIdx} className={`px-4 py-2 ${colIdx === 0 ? 'font-bold text-white whitespace-nowrap' : ''}`}>
+                                                                <td key={colIdx} style={{
+                                                                    padding: '10px 14px',
+                                                                    border: '1px solid rgba(129, 140, 248, 0.4)',
+                                                                    color: colIdx === 0 ? '#fff' : '#c7d2fe',
+                                                                    fontWeight: colIdx === 0 ? 700 : 400,
+                                                                    whiteSpace: colIdx === 0 ? 'nowrap' : 'normal'
+                                                                }}>
                                                                     {cellContent}
                                                                 </td>
                                                             );
@@ -145,7 +192,7 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
                                                 ))}
                                             </tbody>
                                         </table>
-                                        <div className="mt-2 text-xs text-indigo-300 opacity-75">
+                                        <div style={{ marginTop: '8px', fontSize: '0.75rem', color: '#a5b4fc', opacity: 0.75 }}>
                                             * 表格由 AI 生成，向右滑動可查看更多
                                         </div>
                                     </div>
@@ -153,11 +200,11 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
                             }
 
                             // Fallback if parsed but not table structure
-                            return <p className="leading-relaxed font-medium whitespace-pre-wrap">{typeof analysisData === 'string' ? analysisData : JSON.stringify(analysisData)}</p>;
+                            return <p style={{ lineHeight: 1.6, fontWeight: 500, whiteSpace: 'pre-wrap' }}>{typeof analysisData === 'string' ? analysisData : JSON.stringify(analysisData)}</p>;
 
                         } catch (e) {
                             // Fallback if not JSON
-                            return <p className="leading-relaxed font-medium whitespace-pre-wrap">{grammar.comparison_analysis}</p>;
+                            return <p style={{ lineHeight: 1.6, fontWeight: 500, whiteSpace: 'pre-wrap' }}>{grammar.comparison_analysis}</p>;
                         }
                     })()}
                 </div>
