@@ -1,1 +1,0 @@
-if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/nihongo-memo-app/sw.js', { scope: '/nihongo-memo-app/' })})}
