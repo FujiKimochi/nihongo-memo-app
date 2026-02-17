@@ -225,13 +225,13 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
                                 <th style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#eef2ff', color: '#312e81', fontWeight: 700, whiteSpace: 'nowrap' }}>
                                     比較項目
                                 </th>
-                                <th style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#eef2ff', color: '#312e81', fontWeight: 700, whiteSpace: 'nowrap' }}>
+                                <th style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#eef2ff', color: '#312e81', fontWeight: 700, whiteSpace: 'nowrap', width: '15%' }}>
                                     用法說明
                                 </th>
                                 <th style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#eef2ff', color: '#312e81', fontWeight: 700, whiteSpace: 'nowrap' }}>
                                     接續方式
                                 </th>
-                                <th style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#eef2ff', color: '#312e81', fontWeight: 700, whiteSpace: 'nowrap' }}>
+                                <th style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#eef2ff', color: '#312e81', fontWeight: 700, whiteSpace: 'nowrap', width: '45%' }}>
                                     例句
                                 </th>
                             </tr>
