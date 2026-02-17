@@ -164,57 +164,78 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
             )}
 
             {grammar.is_comparison ? (
-                <div className="overflow-x-auto custom-scrollbar">
-                    <table className="w-full text-sm text-left border-collapse border border-indigo-200 min-w-[600px]">
+                <div style={{ overflowX: 'auto' }}>
+                    <table style={{
+                        width: '100%',
+                        fontSize: '0.875rem',
+                        textAlign: 'left',
+                        borderCollapse: 'collapse',
+                        border: '1px solid #c7d2fe',
+                        minWidth: '600px'
+                    }}>
                         <thead>
                             <tr>
-                                <th className="p-4 border border-indigo-200 bg-indigo-50/50 text-indigo-900 font-bold whitespace-nowrap">
+                                <th style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#eef2ff', color: '#312e81', fontWeight: 700, whiteSpace: 'nowrap' }}>
                                     比較項目
                                 </th>
-                                <th className="p-4 border border-indigo-200 bg-indigo-50/50 text-indigo-900 font-bold whitespace-nowrap">
+                                <th style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#eef2ff', color: '#312e81', fontWeight: 700, whiteSpace: 'nowrap' }}>
                                     用法說明
                                 </th>
-                                <th className="p-4 border border-indigo-200 bg-indigo-50/50 text-indigo-900 font-bold whitespace-nowrap">
+                                <th style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#eef2ff', color: '#312e81', fontWeight: 700, whiteSpace: 'nowrap' }}>
                                     接續方式
                                 </th>
-                                <th className="p-4 border border-indigo-200 bg-indigo-50/50 text-indigo-900 font-bold whitespace-nowrap">
+                                <th style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#eef2ff', color: '#312e81', fontWeight: 700, whiteSpace: 'nowrap' }}>
                                     例句
                                 </th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-indigo-200">
+                        <tbody>
                             {grammar.items?.map((item, idx) => (
                                 <tr key={idx}>
                                     {/* Grammar Point Name */}
-                                    <td className="p-4 border border-indigo-200 bg-white align-top">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                                    <td style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#fff', verticalAlign: 'top' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <div style={{
+                                                width: '24px', height: '24px', borderRadius: '50%',
+                                                background: '#e0e7ff', color: '#4f46e5',
+                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                fontSize: '12px', fontWeight: 700, flexShrink: 0
+                                            }}>
                                                 {idx + 1}
                                             </div>
-                                            <span className="text-indigo-700 font-bold text-lg whitespace-nowrap">
+                                            <span style={{ color: '#4338ca', fontWeight: 700, fontSize: '1.1rem', whiteSpace: 'nowrap' }}>
                                                 {item.grammar_point || item.grammarPoint}
                                             </span>
                                         </div>
                                     </td>
 
                                     {/* Explanation */}
-                                    <td className="p-4 border border-indigo-200 bg-white align-top text-gray-800 leading-relaxed">
-                                        {item.explanation}
+                                    <td style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#fff', verticalAlign: 'top', color: '#1f2937', lineHeight: 1.6 }}>
+                                        {item.explanation || '-'}
                                     </td>
 
                                     {/* Connection */}
-                                    <td className="p-4 border border-indigo-200 bg-white align-top">
-                                        <div className="inline-block px-3 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-bold border border-indigo-100">
-                                            {item.connection}
-                                        </div>
+                                    <td style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#fff', verticalAlign: 'top' }}>
+                                        {item.connection ? (
+                                            <span style={{
+                                                display: 'inline-block', padding: '4px 10px',
+                                                background: '#eef2ff', color: '#4338ca',
+                                                borderRadius: '8px', fontSize: '0.75rem', fontWeight: 700,
+                                                border: '1px solid #e0e7ff'
+                                            }}>
+                                                {item.connection}
+                                            </span>
+                                        ) : (
+                                            <span style={{ color: '#9ca3af' }}>-</span>
+                                        )}
                                     </td>
 
                                     {/* Examples */}
-                                    <td className="p-4 border border-indigo-200 bg-white align-top">
-                                        <div className="flex flex-col gap-4">
+                                    <td style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#fff', verticalAlign: 'top' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                             {item.examples?.map((ex, exIdx) => (
-                                                <div key={exIdx} className="group relative pl-3 border-l-2 border-indigo-100 hover:border-indigo-300 transition-colors">
-                                                    <div className="text-gray-900 font-medium mb-1">
+                                                <div key={exIdx} style={{ paddingLeft: '10px', borderLeft: '2px solid #e0e7ff' }}>
+                                                    <div style={{ color: '#111827', fontWeight: 500, marginBottom: '4px' }}>
                                                         {ex.ruby ? (
                                                             <span dangerouslySetInnerHTML={{ __html: ex.ruby }} />
                                                         ) : (
@@ -225,12 +246,16 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
                                                                 e.stopPropagation();
                                                                 speak(ex.jp);
                                                             }}
-                                                            className="ml-2 inline-flex opacity-0 group-hover:opacity-100 transition-opacity text-indigo-400 hover:text-indigo-600"
+                                                            style={{
+                                                                marginLeft: '8px', background: 'none', border: 'none',
+                                                                color: '#818cf8', cursor: 'pointer', padding: 0,
+                                                                display: 'inline-flex', verticalAlign: 'middle'
+                                                            }}
                                                         >
                                                             <Volume2 size={14} />
                                                         </button>
                                                     </div>
-                                                    <div className="text-gray-500 text-xs">{ex.zh}</div>
+                                                    <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>{ex.zh}</div>
                                                 </div>
                                             ))}
                                         </div>
