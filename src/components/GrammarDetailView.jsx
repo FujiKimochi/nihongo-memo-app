@@ -93,9 +93,73 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
                     <h4 className="flex items-center gap-2 font-bold mb-3 text-indigo-100 uppercase tracking-wider text-xs">
                         <Volume2 size={16} /> 文法差異比較
                     </h4>
-                    <p className="leading-relaxed font-medium">
-                        {grammar.comparison_analysis}
-                    </p>
+
+                    {(() => {
+                        try {
+                            // Attempt to parse JSON if it's a string, or use as is if object
+                            const analysisData = typeof grammar.comparison_analysis === 'string'
+                                ? JSON.parse(grammar.comparison_analysis)
+                                : grammar.comparison_analysis;
+
+                            // Check if it has the expected table structure
+                            if (analysisData && analysisData.headers && analysisData.rows) {
+                                return (
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-sm text-left text-indigo-100">
+                                            <thead className="text-xs text-indigo-200 uppercase bg-indigo-800/30">
+                                                <tr>
+                                                    {analysisData.headers.map((header, idx) => (
+                                                        <th key={idx} className="px-4 py-2 font-bold whitespace-nowrap">
+                                                            {header}
+                                                        </th>
+                                                    ))}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {analysisData.rows.map((row, rowIdx) => (
+                                                    <tr key={rowIdx} className="border-b border-indigo-500/30 hover:bg-indigo-600/50">
+                                                        {analysisData.headers.map((header, colIdx) => {
+                                                            // Map header to object key. The provided JSON example uses keys matching headers or 'item' for first col
+                                                            // Example: headers=["比較項目", "かなり", "めちゃくちゃ"], rows=[{item: "...", "かなり": "...", "めちゃくちゃ": "..."}]
+                                                            // We need a robust way to map.
+
+                                                            // Strategy: 
+                                                            // 1. If it's the first column (header[0]), usually 'item' or the header name itself.
+                                                            // 2. Otherwise assume key matches header name.
+
+                                                            let cellContent = '';
+                                                            if (colIdx === 0) {
+                                                                // Try 'item' first, then the header name itself
+                                                                cellContent = row['item'] || row[header] || row['項目'] || '';
+                                                            } else {
+                                                                cellContent = row[header] || '';
+                                                            }
+
+                                                            return (
+                                                                <td key={colIdx} className={`px-4 py-2 ${colIdx === 0 ? 'font-bold text-white whitespace-nowrap' : ''}`}>
+                                                                    {cellContent}
+                                                                </td>
+                                                            );
+                                                        })}
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                        <div className="mt-2 text-xs text-indigo-300 opacity-75">
+                                            * 表格由 AI 生成，向右滑動可查看更多
+                                        </div>
+                                    </div>
+                                );
+                            }
+
+                            // Fallback if parsed but not table structure
+                            return <p className="leading-relaxed font-medium whitespace-pre-wrap">{typeof analysisData === 'string' ? analysisData : JSON.stringify(analysisData)}</p>;
+
+                        } catch (e) {
+                            // Fallback if not JSON
+                            return <p className="leading-relaxed font-medium whitespace-pre-wrap">{grammar.comparison_analysis}</p>;
+                        }
+                    })()}
                 </div>
             )}
 
