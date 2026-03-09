@@ -34,7 +34,19 @@
     /* Font Families */
     --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
     --font-jp: 'Noto Sans JP', sans-serif;
-    /* We will need to load this */
+
+    /* Periodic Table Kana Colors */
+    --kana-vowel: 0 0% 95%;       /* White/Gray for vowels only */
+    --kana-k: 350 85% 94%;        /* Soft Red/Pink */
+    --kana-s: 25 90% 92%;         /* Soft Orange */
+    --kana-t: 45 90% 90%;         /* Soft Yellow */
+    --kana-n: 120 40% 92%;        /* Soft Green */
+    --kana-h: 180 40% 92%;        /* Soft Teal */
+    --kana-m: 210 60% 92%;        /* Soft Blue */
+    --kana-y: 260 60% 94%;        /* Soft Purple */
+    --kana-r: 320 60% 94%;        /* Soft Magenta */
+    --kana-w: 0 0% 92%;           /* Gray */
+    --kana-n-single: 0 0% 88%;    /* Darker Gray */
 }
 
 body {
@@ -199,3 +211,47 @@ rt {
     color: hsl(var(--text-muted));
     user-select: none;
 }
+
+/* Kana Chart Periodic Utilities */
+.kana-grid {
+    display: grid;
+    /* 1 column for row header + 5 columns for Kana */
+    grid-template-columns: 24px repeat(5, minmax(0, 1fr));
+    gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+    .kana-grid {
+        grid-template-columns: 32px repeat(5, minmax(0, 1fr));
+        gap: 0.75rem;
+    }
+}
+
+.kana-card {
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.kana-card:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-md);
+    z-index: 10;
+}
+
+.kana-card:active {
+    transform: scale(0.95);
+}
+
+.bg-kana-vowel { background-color: hsl(var(--kana-vowel)); }
+.bg-kana-k { background-color: hsl(var(--kana-k)); }
+.bg-kana-s { background-color: hsl(var(--kana-s)); }
+.bg-kana-t { background-color: hsl(var(--kana-t)); }
+.bg-kana-n { background-color: hsl(var(--kana-n)); }
+.bg-kana-h { background-color: hsl(var(--kana-h)); }
+.bg-kana-m { background-color: hsl(var(--kana-m)); }
+.bg-kana-y { background-color: hsl(var(--kana-y)); }
+.bg-kana-r { background-color: hsl(var(--kana-r)); }
+.bg-kana-w { background-color: hsl(var(--kana-w)); }
+.bg-kana-n-single { background-color: hsl(var(--kana-n-single)); }
