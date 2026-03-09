@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { onAuthStateChange, getSupabaseClient, settingsSupabaseService } from './services/supabase';
 import { setApiKey, setModelName } from './services/ai';
 import { Auth } from './components/Auth';
-import { BookOpen, PlusCircle, Brain, Settings as SettingsIcon, Languages, FileText, MessageSquare, Sparkles } from 'lucide-react';
+import { BookOpen, PlusCircle, Brain, Settings as SettingsIcon, Languages, FileText, MessageSquare, Sparkles, Grid } from 'lucide-react';
 import { useVocabulary } from './hooks/useVocabulary';
 import { useGrammar } from './hooks/useGrammar';
 import { useDialogues } from './hooks/useDialogues';
@@ -19,6 +19,7 @@ import { DialogueList } from './components/DialogueList';
 import { AdjectiveList } from './components/AdjectiveList';
 import { Settings } from './components/Settings';
 import { ReloadPrompt } from './components/ReloadPrompt';
+import { KanaChart } from './components/KanaChart';
 
 function App() {
     const { words, addWords, deleteWord } = useVocabulary();
@@ -104,26 +105,28 @@ function App() {
                 </div>
 
                 {/* Category Switcher */}
-                <div className="flex bg-gray-100 p-1 rounded-xl overflow-x-auto no-scrollbar">
-                    {[
-                        { id: 'vocabulary', label: '單字', icon: Languages },
-                        { id: 'grammar', label: '文法', icon: FileText },
-                        { id: 'adjective', label: '形 / 副詞', icon: Sparkles },
-                        { id: 'dialogue', label: '情境', icon: MessageSquare }
-                    ].map(cat => (
-                        <button
-                            key={cat.id}
-                            onClick={() => setActiveCategory(cat.id)}
-                            className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-[13px] font-bold transition-all whitespace-nowrap ${activeCategory === cat.id
-                                ? 'bg-white text-indigo-600 shadow-sm'
-                                : 'text-gray-500 hover:text-gray-700'
-                                }`}
-                        >
-                            <cat.icon size={14} />
-                            {cat.label}
-                        </button>
-                    ))}
-                </div>
+                {activeTab !== 'kana' && activeTab !== 'settings' && (
+                    <div className="flex bg-gray-100 p-1 rounded-xl overflow-x-auto no-scrollbar">
+                        {[
+                            { id: 'vocabulary', label: '單字', icon: Languages },
+                            { id: 'grammar', label: '文法', icon: FileText },
+                            { id: 'adjective', label: '形 / 副詞', icon: Sparkles },
+                            { id: 'dialogue', label: '情境', icon: MessageSquare }
+                        ].map(cat => (
+                            <button
+                                key={cat.id}
+                                onClick={() => setActiveCategory(cat.id)}
+                                className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-[13px] font-bold transition-all whitespace-nowrap ${activeCategory === cat.id
+                                    ? 'bg-white text-indigo-600 shadow-sm'
+                                    : 'text-gray-500 hover:text-gray-700'
+                                    }`}
+                            >
+                                <cat.icon size={14} />
+                                {cat.label}
+                            </button>
+                        ))}
+                    </div>
+                )}
             </header>
 
             <main className="app-main">
@@ -141,6 +144,10 @@ function App() {
 
                 {activeTab === 'settings' && (
                     <Settings />
+                )}
+
+                {activeTab === 'kana' && (
+                    <KanaChart />
                 )}
 
                 {activeTab === 'list' && (
@@ -214,6 +221,15 @@ function App() {
                 >
                     <Brain size={24} />
                     <span style={{ fontSize: '0.75rem' }}>複習</span>
+                </button>
+
+                <button
+                    className="flex flex-col items-center gap-1"
+                    style={{ color: activeTab === 'kana' ? 'hsl(var(--indigo-500))' : 'var(--text-muted)' }}
+                    onClick={() => setActiveTab('kana')}
+                >
+                    <Grid size={24} />
+                    <span style={{ fontSize: '0.75rem' }}>五十音</span>
                 </button>
 
                 <button
