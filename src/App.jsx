@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { onAuthStateChange, getSupabaseClient, settingsSupabaseService } from './services/supabase';
-import { setApiKey, setModelName } from './services/ai';
+import { setModelName } from './services/ai';
 import { Auth } from './components/Auth';
 import { BookOpen, PlusCircle, Brain, Settings as SettingsIcon, Languages, FileText, MessageSquare, Sparkles, Grid } from 'lucide-react';
 import { useVocabulary } from './hooks/useVocabulary';
@@ -46,7 +46,6 @@ function App() {
                 // Auto-sync settings when user logs in
                 settingsSupabaseService.fetchSettings().then(cloudSettings => {
                     if (cloudSettings) {
-                        if (cloudSettings.gemini_api_key) setApiKey(cloudSettings.gemini_api_key);
                         if (cloudSettings.ai_model) setModelName(cloudSettings.ai_model);
                     }
                 });

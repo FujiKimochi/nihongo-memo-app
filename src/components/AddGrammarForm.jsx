@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Sparkles, Loader2, AlertCircle } from 'lucide-react';
-import { generateGrammarDetails, getApiKey, getModelName } from '../services/ai';
+import { generateGrammarDetails } from '../services/ai';
 
 export function AddGrammarForm({ onAdd, onCancel }) {
     const [grammarPoint, setGrammarPoint] = useState('');
@@ -12,18 +12,11 @@ export function AddGrammarForm({ onAdd, onCancel }) {
         e.preventDefault();
         if (!grammarPoint.trim()) return;
 
-        const apiKey = getApiKey();
-        if (!apiKey) {
-            setError('請先到設定頁面輸入 API Key');
-            setStatus('error');
-            return;
-        }
-
         setStatus('generating');
         setError('');
 
         try {
-            const result = await generateGrammarDetails(grammarPoint.trim(), apiKey);
+            const result = await generateGrammarDetails(grammarPoint.trim());
 
             // Automatically add
             onAdd(result);

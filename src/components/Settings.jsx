@@ -26,8 +26,6 @@ export function Settings() {
                 setUser(user);
             });
         }
-        const storedKey = getApiKey();
-        if (storedKey) setKey(storedKey);
         setModel(getModelName());
 
         const sbc = getSupabaseConfig();

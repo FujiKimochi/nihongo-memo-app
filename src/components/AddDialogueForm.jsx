@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Sparkles, Loader2, AlertCircle, MessageSquare, ChevronRight } from 'lucide-react';
-import { generateDialogueContext, getApiKey } from '../services/ai';
+import { generateDialogueContext } from '../services/ai';
 
 export function AddDialogueForm({ onAdd, onCancel }) {
     const [scenario, setScenario] = useState('');
@@ -12,18 +12,11 @@ export function AddDialogueForm({ onAdd, onCancel }) {
         e.preventDefault();
         if (!scenario.trim()) return;
 
-        const apiKey = getApiKey();
-        if (!apiKey) {
-            setError('請先到設定頁面輸入 API Key');
-            setStatus('error');
-            return;
-        }
-
         setStatus('generating');
         setError('');
 
         try {
-            const result = await generateDialogueContext(scenario.trim(), apiKey);
+            const result = await generateDialogueContext(scenario.trim());
 
             // Automatically add
             onAdd(result);

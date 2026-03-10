@@ -1,26 +1,21 @@
 import React, { useState } from 'react';
 import { Sparkles, Loader2, X, AlertCircle } from 'lucide-react';
-import { generateAdjectiveDetails, getApiKey, getModelName } from '../services/ai';
+import { generateAdjectiveDetails } from '../services/ai';
 
 export function AddAdjectiveForm({ onAdd, onCancel }) {
     const [kanjiInput, setKanjiInput] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
     const [status, setStatus] = useState('idle'); // 'idle', 'generating', 'preview', 'success', 'error'
     const [previews, setPreviews] = useState([]);
-    const apiKey = getApiKey();
 
     const handleAnalyze = async (e) => {
         e.preventDefault();
         if (!kanjiInput.trim()) return;
-        if (!apiKey) {
-            alert("請先在設定頁面輸入 API Key");
-            return;
-        }
 
         setIsGenerating(true);
         setStatus('generating');
         try {
-            const data = await generateAdjectiveDetails(kanjiInput.trim(), apiKey, getModelName());
+            const data = await generateAdjectiveDetails(kanjiInput.trim());
             const results = Array.isArray(data) ? data : [data];
 
             // Automatically save
@@ -68,18 +63,14 @@ export function AddAdjectiveForm({ onAdd, onCancel }) {
                         <button
                             type="submit"
                             className="btn btn-primary shadow-lg shadow-indigo-100"
-                            disabled={isGenerating || !apiKey || !kanjiInput.trim() || status === 'preview'}
+                            disabled={isGenerating || !kanjiInput.trim() || status === 'preview'}
                         >
                             {isGenerating ? <Loader2 className="animate-spin" size={20} /> : <><Sparkles size={20} /> AI 分析並儲存</>}
                         </button>
                     </div>
                 </div>
 
-                {!apiKey && (
-                    <div className="bg-yellow-50 text-yellow-700 p-3 rounded-xl text-xs border border-yellow-100 flex items-center gap-2">
-                        <AlertCircle size={14} /> 請先至設定頁面輸入 API Key
-                    </div>
-                )}
+
 
                 {/* Previews removed for automated flow */}
 

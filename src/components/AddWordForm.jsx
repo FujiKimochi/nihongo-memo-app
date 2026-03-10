@@ -1,29 +1,23 @@
 import React, { useState } from 'react';
 import { Plus, X, Sparkles, Loader2 } from 'lucide-react';
-import { generateVerbDetails, getApiKey, getModelName } from '../services/ai';
+import { generateVerbDetails } from '../services/ai';
 
 export function AddWordForm({ onAdd, onCancel }) {
     const [kanjiInput, setKanjiInput] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
     const [status, setStatus] = useState('idle'); // 'idle', 'generating', 'success', 'error'
     const [previews, setPreviews] = useState([]); // List of generated words
-    const apiKey = getApiKey();
 
     const handleAnalyze = async (e) => {
         e.preventDefault();
         if (!kanjiInput.trim()) return;
-        if (!apiKey) {
-            alert("請先在設定頁面輸入 API Key");
-            return;
-        }
 
         setIsGenerating(true);
         setStatus('generating');
         setPreviews([]);
 
         try {
-            const modelName = getModelName();
-            const data = await generateVerbDetails(kanjiInput.trim(), apiKey, modelName);
+            const data = await generateVerbDetails(kanjiInput.trim());
 
             // AI might return a single object or an array - normalize to array
             const results = Array.isArray(data) ? data : [data];
@@ -88,7 +82,7 @@ export function AddWordForm({ onAdd, onCancel }) {
                         <button
                             type="submit"
                             className="btn btn-primary shadow-lg shadow-indigo-100"
-                            disabled={isGenerating || !apiKey || !kanjiInput.trim() || status === 'preview'}
+                            disabled={isGenerating || !kanjiInput.trim() || status === 'preview'}
                         >
                             {isGenerating ? (
                                 <Loader2 className="animate-spin" size={20} />
@@ -102,11 +96,7 @@ export function AddWordForm({ onAdd, onCancel }) {
                     </div>
                 </div>
 
-                {!apiKey && (
-                    <div className="bg-yellow-50 text-yellow-700 p-3 rounded-xl text-xs border border-yellow-100 flex items-center gap-2">
-                        <span>⚠️ 請先至設定頁面輸入 API Key 以啟用分析功能</span>
-                    </div>
-                )}
+
 
                 {/* Previews removed in automation mode to keep UI clean during success */}
 
