@@ -1,43 +1,52 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getSupabaseClient } from './supabase';
 
-const STORAGE_KEY_API = 'nihongo-memo-api-key';
+// We no longer need local storage keys for API since it's handled by backend
 const STORAGE_KEY_MODEL = 'nihongo-memo-model-name';
 
-export const getApiKey = () => localStorage.getItem(STORAGE_KEY_API);
-export const setApiKey = (key) => localStorage.setItem(STORAGE_KEY_API, key);
-
-export const getModelName = () => localStorage.getItem(STORAGE_KEY_MODEL) || 'gemini-1.5-flash';
+export const getModelName = () => localStorage.getItem(STORAGE_KEY_MODEL) || 'gemini-2.5-flash';
 export const setModelName = (name) => localStorage.setItem(STORAGE_KEY_MODEL, name);
 
-export async function fetchAvailableModels(apiKey) {
-  if (!apiKey) throw new Error("API Key is missing");
-
-  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch models: ${response.statusText}`);
-  }
-
-  const data = await response.json();
-  if (!data.models) return [];
-
-  // Filter for models that support generateContent
-  return data.models
-    .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"))
-    .map(m => m.name.replace('models/', '')); // Remove 'models/' prefix for cleaner display if desired, but keep full name for API usage if needed. actually API accepts both. let's prefer short name for display
+// Kept for UI compatibility if needed, but we don't strictly "fetch" them from user key anymore.
+// We can just return a hardcoded list of supported backend models.
+export async function fetchAvailableModels() {
+  return [
+    { name: 'gemini-2.5-flash', displayName: 'Gemini 2.5 Flash (Fast)' },
+    { name: 'gemini-2.5-pro', displayName: 'Gemini 2.5 Pro (Accurate)' },
+    { name: 'gemini-1.5-flash', displayName: 'Gemini 1.5 Flash' },
+    { name: 'gemini-1.5-pro', displayName: 'Gemini 1.5 Pro' }
+  ];
 }
 
-export async function generateVerbDetails(verbInput, apiKey, modelName) {
-  if (!apiKey) throw new Error("API Key is missing");
+async function invokeAIAssistant(messages) {
+  const supabase = getSupabaseClient();
+  if (!supabase) throw new Error("Supabase client not initialized.");
 
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const selectedModel = modelName || getModelName();
-  const model = genAI.getGenerativeModel({ model: selectedModel });
+  const modelName = getModelName();
 
-  // Detect multiple verbs
+  const { data, error } = await supabase.functions.invoke('ai-assistant', {
+    body: {
+      messages,
+      modelName
+    }
+  });
+
+  if (error) {
+    console.error("Edge Function Error:", error);
+    throw new Error(error.message || "Failed to invoke AI assistant.");
+  }
+
+  if (!data || !data.response) {
+    throw new Error("Invalid response format from AI Edge Function.");
+  }
+
+  return data.response;
+}
+
+export async function generateVerbDetails(verbInput) {
   const items = verbInput.split(/[\s,，、]+/).filter(i => i.trim().length > 0);
   const isBatch = items.length > 1;
 
-  const prompt = isBatch ? `
+  const promptText = isBatch ? `
     You are a Japanese language tutor specialized in teaching Traditional Chinese speakers.
     The user has provided multiple Japanese verbs: "${items.join(', ')}".
 
@@ -78,65 +87,29 @@ export async function generateVerbDetails(verbInput, apiKey, modelName) {
   `;
 
   try {
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    const responseText = await invokeAIAssistant([{ role: 'user', content: promptText }]);
 
-    const jsonMatch = text.match(/\[[\s\S]*\]|\{[\s\S]*\}/);
+    const jsonMatch = responseText.match(/\[[\s\S]*\]|\{[\s\S]*\}/);
     if (!jsonMatch) {
-      console.error("AI Response Text:", text);
+      console.error("AI Response Text:", responseText);
       throw new Error("Invalid response format from AI (No JSON found)");
     }
 
-    const data = JSON.parse(jsonMatch[0]);
-    // Normalize to array for easier handling in caller if batch, but keep object if single for compatibility?
-    // Let's return exactly what AddWordForm expects: either a single object or an array.
-    // Actually, AddWordForm will be updated to handle multiple results if we return an array.
-    return data;
+    return JSON.parse(jsonMatch[0]);
   } catch (error) {
     console.error("AI Generation Error (Primary):", error);
-
-    if (error.message.includes('404') || error.message.includes('not found')) {
-      const fallbacks = ['gemini-pro', 'gemini-1.5-pro'];
-      const currentModel = modelName || getModelName();
-      const retries = fallbacks.filter(m => m !== currentModel);
-
-      for (const fallbackName of retries) {
-        try {
-          const fallbackModel = genAI.getGenerativeModel({ model: fallbackName });
-          const result = await fallbackModel.generateContent(prompt);
-          const response = await result.response;
-          const text = response.text();
-          const jsonMatch = text.match(/\[[\s\S]*\]|\{[\s\S]*\}/);
-          if (jsonMatch) {
-            setModelName(fallbackName);
-            return JSON.parse(jsonMatch[0]);
-          }
-        } catch (fallbackError) {
-          console.warn(`Fallback ${fallbackName} failed:`, fallbackError);
-        }
-      }
-    }
     throw error;
   }
 }
 
 /**
  * Generates details for Japanese grammar point(s) using AI.
- * Supports single grammar point or comparison of multiple points (separated by space or comma).
  */
-export async function generateGrammarDetails(grammarInput, apiKey, modelName) {
-  if (!apiKey) throw new Error("API Key is missing");
-
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const selectedModel = modelName || getModelName();
-  const model = genAI.getGenerativeModel({ model: selectedModel });
-
-  // Detect multiple grammar points
+export async function generateGrammarDetails(grammarInput) {
   const items = grammarInput.split(/[\s,，、]+/).filter(i => i.trim().length > 0);
   const isComparison = items.length > 1;
 
-  const prompt = isComparison ? `
+  const promptText = isComparison ? `
     You are a Japanese language tutor specialized in teaching Traditional Chinese speakers.
     Compare multiple grammar points: "${items.join(', ')}".
 
@@ -173,11 +146,9 @@ export async function generateGrammarDetails(grammarInput, apiKey, modelName) {
   `;
 
   try {
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    const responseText = await invokeAIAssistant([{ role: 'user', content: promptText }]);
 
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("Invalid response format from AI");
     return JSON.parse(jsonMatch[0]);
   } catch (error) {
@@ -189,14 +160,8 @@ export async function generateGrammarDetails(grammarInput, apiKey, modelName) {
 /**
  * Generates a situational dialogue based on a scenario using AI.
  */
-export async function generateDialogueContext(scenario, apiKey, modelName) {
-  if (!apiKey) throw new Error("API Key is missing");
-
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const selectedModel = modelName || getModelName();
-  const model = genAI.getGenerativeModel({ model: selectedModel });
-
-  const prompt = `
+export async function generateDialogueContext(scenario) {
+  const promptText = `
     You are a Japanese language tutor specialized in teaching Traditional Chinese speakers.
     The user wants to practice a dialogue in this scenario: "${scenario}".
 
@@ -226,11 +191,9 @@ export async function generateDialogueContext(scenario, apiKey, modelName) {
   `;
 
   try {
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    const responseText = await invokeAIAssistant([{ role: 'user', content: promptText }]);
 
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("Invalid response format from AI");
     return JSON.parse(jsonMatch[0]);
   } catch (error) {
@@ -242,17 +205,11 @@ export async function generateDialogueContext(scenario, apiKey, modelName) {
 /**
  * Generates details for Japanese adjective(s) or adverb(s) using AI.
  */
-export async function generateAdjectiveDetails(adjectiveInput, apiKey, modelName) {
-  if (!apiKey) throw new Error("API Key is missing");
-
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const selectedModel = modelName || getModelName();
-  const model = genAI.getGenerativeModel({ model: selectedModel });
-
+export async function generateAdjectiveDetails(adjectiveInput) {
   const items = adjectiveInput.split(/[\s,，、]+/).filter(i => i.trim().length > 0);
   const isBatch = items.length > 1;
 
-  const prompt = isBatch ? `
+  const promptText = isBatch ? `
     You are a Japanese language tutor for Traditional Chinese speakers.
     Input words: "${items.join(', ')}". They could be Adjectives (i-adj, na-adj) or Adverbs (adv).
     Provide a JSON array of objects. 
@@ -288,11 +245,9 @@ export async function generateAdjectiveDetails(adjectiveInput, apiKey, modelName
   `;
 
   try {
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    const responseText = await invokeAIAssistant([{ role: 'user', content: promptText }]);
 
-    const jsonMatch = text.match(/\[[\s\S]*\]|\{[\s\S]*\}/);
+    const jsonMatch = responseText.match(/\[[\s\S]*\]|\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("Invalid response format from AI");
     return JSON.parse(jsonMatch[0]);
   } catch (error) {

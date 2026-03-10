@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { getApiKey, setApiKey, getModelName, setModelName, fetchAvailableModels } from '../services/ai';
+import { getModelName, setModelName, fetchAvailableModels } from '../services/ai';
 import { getSupabaseConfig, setSupabaseConfig, getSupabaseClient, settingsSupabaseService } from '../services/supabase';
-import { Database, Cloud, RefreshCw, CheckCircle, AlertCircle, Save, Key, Bot, LogOut, User } from 'lucide-react';
+import { Database, Cloud, RefreshCw, CheckCircle, AlertCircle, Save, Bot, LogOut, User } from 'lucide-react';
 
 import { APP_VERSION } from '../app-version';
 
 export function Settings() {
-    const [key, setKey] = useState('');
     const [model, setModel] = useState('');
     const [saved, setSaved] = useState(false);
 
@@ -39,10 +38,6 @@ export function Settings() {
         if (client) {
             settingsSupabaseService.fetchSettings().then(cloudSettings => {
                 if (cloudSettings) {
-                    if (cloudSettings.gemini_api_key) {
-                        setKey(cloudSettings.gemini_api_key);
-                        setApiKey(cloudSettings.gemini_api_key);
-                    }
                     if (cloudSettings.ai_model) {
                         setModel(cloudSettings.ai_model);
                         setModelName(cloudSettings.ai_model);
@@ -53,14 +48,12 @@ export function Settings() {
     }, []);
 
     const handleSave = async () => {
-        setApiKey(key);
         setModelName(model);
         setSupabaseConfig(supabaseUrl, supabaseKey);
 
         // Also sync to cloud
         try {
             await settingsSupabaseService.upsertSettings({
-                geminiApiKey: key,
                 aiModel: model
             });
         } catch (err) {
@@ -72,12 +65,11 @@ export function Settings() {
     };
 
     const handleFetchModels = async () => {
-        if (!key) return;
         setIsLoadingModels(true);
         setFetchError(null);
         try {
-            const models = await fetchAvailableModels(key);
-            setAvailableModels(models);
+            const models = await fetchAvailableModels();
+            setAvailableModels(models.map(m => m.name)); // Update state with model names
             // If current model is not in list (and list is not empty), maybe suggest the first one?
             // For now just show the list
         } catch (err) {
@@ -129,37 +121,17 @@ export function Settings() {
 
             <div className="glass-card" style={{ padding: '1.5rem' }}>
                 <h3 className="flex items-center gap-2" style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1rem' }}>
-                    <Key size={20} className="text-indigo-500" />
-                    Google Gemini API Key
+                    <Bot size={20} className="text-indigo-500" />
+                    AI Model Settings
                 </h3>
 
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1rem' }}>
-                    To enable automatic verb conjugation and examples, please enter your free Gemini API Key.
-                    <br />
-                    (Stored locally on your device)
+                    Choose the backend AI model for word generation and analysis.
                 </p>
 
                 <div className="flex flex-col gap-3">
-                    <input
-                        type="password"
-                        value={key}
-                        onChange={(e) => setKey(e.target.value)}
-                        placeholder="Enter your API Key here..."
-                        style={{
-                            padding: '0.75rem',
-                            borderRadius: 'var(--radius-md)',
-                            border: '1px solid var(--border-color)',
-                            background: 'rgba(255,255,255,0.5)',
-                            fontFamily: 'monospace'
-                        }}
-                    />
-
-                    <div className="flex items-center gap-2 mt-4" style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.5rem' }}>
-                        <Bot size={20} className="text-indigo-500" />
-                        AI Model
-                    </div>
                     <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
-                        If you encounter 404 errors, try changing this. (e.g. gemini-1.5-flash, gemini-pro)
+                        If you encounter slow responses, try switching to a different model like gemini-1.5-flash.
                     </p>
                     <input
                         type="text"
@@ -180,7 +152,7 @@ export function Settings() {
                     <div className="flex gap-2 items-center" style={{ marginTop: '0.5rem' }}>
                         <button
                             onClick={handleFetchModels}
-                            disabled={!key || isLoadingModels}
+                            disabled={isLoadingModels}
                             className="btn btn-sm"
                             style={{
                                 fontSize: '0.8rem',
@@ -234,20 +206,9 @@ export function Settings() {
                         className="btn btn-primary"
                         style={{ alignSelf: 'flex-start' }}
                     >
-                        {saved ? 'Saved!' : 'Save Key'}
+                        {saved ? 'Saved!' : 'Save Settings'}
                         <Save size={18} />
                     </button>
-                </div>
-
-                <div style={{ marginTop: '1.5rem', fontSize: '0.85rem' }}>
-                    <a
-                        href="https://aistudio.google.com/app/apikey"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ color: 'hsl(var(--indigo-500))', textDecoration: 'underline' }}
-                    >
-                        Get a free API Key →
-                    </a>
                 </div>
             </div>
 

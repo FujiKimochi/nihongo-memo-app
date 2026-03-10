@@ -13,12 +13,11 @@ export function SetupGuide({ onClose }) {
                     <p style={{ margin: 0, lineHeight: 1.6 }}>Nihongo Memo 是一個完全免費、無需伺服器維護的日文學習工具。</p>
                     <div style={{ padding: '16px', background: '#f5f7ff', borderRadius: '16px', border: '1px solid #e0e7ff' }}>
                         <p style={{ margin: '0 0 12px 0', fontWeight: 700, color: '#4338ca' }}>「自帶資料庫 (BYOD)」模式</p>
-                        <p style={{ margin: 0, fontSize: '0.875rem', lineHeight: 1.6 }}>為了保障您的資料隱私與擁有權，您需要申請兩個免費的服務來驅動這個 App：</p>
+                        <p style={{ margin: 0, fontSize: '0.875rem', lineHeight: 1.6 }}>為了保障您的資料隱私與擁有權，您需要申請一個免費的服務來驅動這個 App：</p>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {[
-                            { name: 'Supabase', desc: '雲端資料庫，儲存您的單字與文法' },
-                            { name: 'Google Gemini', desc: 'AI 模型，自動生成例句與變化' }
+                            { name: 'Supabase', desc: '雲端資料庫，儲存您的單字與文法' }
                         ].map((item, idx) => (
                             <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', background: '#fff', border: '1px solid #f3f4f6', borderRadius: '12px' }}>
                                 <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#4f46e5' }}>{idx + 1}</div>
@@ -30,7 +29,7 @@ export function SetupGuide({ onClose }) {
                         ))}
                     </div>
                     <div style={{ background: '#ecfdf5', padding: '12px', borderRadius: '12px', fontSize: '0.8125rem', color: '#065f46', textAlign: 'center' }}>
-                        ✨ 兩項服務均有<strong>永久免費額度</strong>，申請只需 5 分鐘。
+                        ✨ 此服務有<strong>永久免費額度</strong>，申請只需 5 分鐘。
                     </div>
                 </div>
             )
@@ -83,46 +82,6 @@ export function SetupGuide({ onClose }) {
             )
         },
         {
-            title: "步驟二：取得 Google AI 金鑰",
-            icon: <Key size={32} style={{ color: '#3b82f6' }} />,
-            content: (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        <div style={{ borderLeft: '4px solid #3b82f6', paddingLeft: '16px' }}>
-                            <p style={{ margin: '0 0 4px 0', fontSize: '0.75rem', fontWeight: 700, color: '#1d4ed8' }}>取得金鑰</p>
-                            <a
-                                href="https://aistudio.google.com/app/apikey"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style={{
-                                    display: 'inline-flex', alignItems: 'center', gap: '8px',
-                                    background: '#3b82f6', color: '#fff', textDecoration: 'none',
-                                    padding: '10px 20px', borderRadius: '12px', fontWeight: 700, fontSize: '0.875rem',
-                                    boxShadow: '0 4px 6px -1px rgba(59, 130, 246, 0.2)'
-                                }}
-                            >
-                                前往 Google AI Studio <ExternalLink size={16} />
-                            </a>
-                        </div>
-
-                        <div style={{ borderLeft: '4px solid #e5e7eb', paddingLeft: '16px' }}>
-                            <p style={{ margin: '0 0 4px 0', fontSize: '0.75rem', fontWeight: 700, color: '#6b7280' }}>設定步驟</p>
-                            <p style={{ margin: 0, fontSize: '0.875rem', lineHeight: 1.6 }}>
-                                點擊 <b>"Create API Key"</b> &gt; <b>"Create API key in new project"</b>。
-                            </p>
-                        </div>
-                    </div>
-
-                    <div style={{ background: '#f9fafb', padding: '16px', borderRadius: '16px', border: '1px dashed #d1d5db' }}>
-                        <p style={{ margin: '0 0 8px 0', fontSize: '0.75rem', fontWeight: 700, color: '#374151' }}>🔑 複製關鍵字串</p>
-                        <div style={{ padding: '12px', background: '#fff', borderRadius: '8px', fontSize: '0.8125rem', textAlign: 'center', color: '#1d4ed8', fontWeight: 700 }}>
-                            以 "AIza..." 開頭的字串
-                        </div>
-                    </div>
-                </div>
-            )
-        },
-        {
             title: "完成！開始享受學習",
             icon: <Sparkles size={32} style={{ color: '#f59e0b' }} />,
             content: (
@@ -132,11 +91,7 @@ export function SetupGuide({ onClose }) {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                             <div style={{ display: 'flex', gap: '12px' }}>
                                 <div style={{ width: '24px', height: '24px', background: '#34d399', color: '#fff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', flexShrink: 0 }}>1</div>
-                                <p style={{ margin: 0, fontSize: '0.875rem', color: '#064e3b' }}>第一次登入時，輸入 <b>Supabase</b> 的 URL 與 Key。</p>
-                            </div>
-                            <div style={{ display: 'flex', gap: '12px' }}>
-                                <div style={{ width: '24px', height: '24px', background: '#34d399', color: '#fff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', flexShrink: 0 }}>2</div>
-                                <p style={{ margin: 0, fontSize: '0.875rem', color: '#064e3b' }}>登入後，在 App 內的<b>「設定」</b>頁面貼上 <b>Gemini API Key</b>。</p>
+                                <p style={{ margin: 0, fontSize: '0.875rem', color: '#064e3b' }}>第一次登入時，輸入 <b>Supabase</b> 的 URL 與 Key 即可開始使用！AI 功能會自動為您運作。</p>
                             </div>
                         </div>
                     </div>
