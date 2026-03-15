@@ -5,19 +5,19 @@ const STORAGE_KEY_MODEL = 'nihongo-memo-model-name';
 
 export const getModelName = () => {
   const model = localStorage.getItem(STORAGE_KEY_MODEL);
-  if (!model || model === 'gemini-2.5-flash' || model === 'gemini-2.5-pro' || model === 'gemini-2.0-flash') {
-    return 'gemini-1.5-flash';
+  // All older models (1.5, 2.0) are deprecated as of early 2026
+  if (!model || model.includes('gemini-1.5') || model.includes('gemini-2.0')) {
+    return 'gemini-2.5-flash';
   }
   return model;
 };
 export const setModelName = (name) => localStorage.setItem(STORAGE_KEY_MODEL, name);
 
-// Kept for UI compatibility if needed, but we don't strictly "fetch" them from user key anymore.
-// We can just return a hardcoded list of supported backend models.
+// Currently available Gemini models (March 2026)
 export async function fetchAvailableModels() {
   return [
-    { name: 'gemini-1.5-flash', displayName: 'Gemini 1.5 Flash (推薦・快速)' },
-    { name: 'gemini-1.5-pro', displayName: 'Gemini 1.5 Pro (精確)' },
+    { name: 'gemini-2.5-flash', displayName: 'Gemini 2.5 Flash (推薦・快速)' },
+    { name: 'gemini-2.5-pro', displayName: 'Gemini 2.5 Pro (精確)' },
   ];
 }
 

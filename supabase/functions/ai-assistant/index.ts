@@ -20,7 +20,7 @@ serve(async (req) => {
 
     // Parse Request Body early
     const body = await req.json();
-    const { messages, systemInstruction, modelName = 'gemini-1.5-flash', mode } = body;
+    const { messages, systemInstruction, modelName = 'gemini-2.5-flash', mode } = body;
     const timestamp = new Date().toISOString();
 
     // 1. Reachability Check (Ping Mode - No Auth Required)
