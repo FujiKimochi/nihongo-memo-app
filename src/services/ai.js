@@ -5,7 +5,7 @@ const STORAGE_KEY_MODEL = 'nihongo-memo-model-name';
 
 export const getModelName = () => {
   const model = localStorage.getItem(STORAGE_KEY_MODEL);
-  if (!model || model === 'gemini-2.5-flash' || model === 'gemini-2.5-pro') {
+  if (!model || model === 'gemini-2.5-flash' || model === 'gemini-2.5-pro' || model === 'gemini-2.0-flash') {
     return 'gemini-1.5-flash';
   }
   return model;
@@ -16,9 +16,8 @@ export const setModelName = (name) => localStorage.setItem(STORAGE_KEY_MODEL, na
 // We can just return a hardcoded list of supported backend models.
 export async function fetchAvailableModels() {
   return [
-    { name: 'gemini-1.5-flash', displayName: 'Gemini 1.5 Flash (Fast)' },
-    { name: 'gemini-1.5-pro', displayName: 'Gemini 1.5 Pro (Accurate)' },
-    { name: 'gemini-2.0-flash', displayName: 'Gemini 2.0 Flash (Experimental)' }
+    { name: 'gemini-1.5-flash', displayName: 'Gemini 1.5 Flash (推薦・快速)' },
+    { name: 'gemini-1.5-pro', displayName: 'Gemini 1.5 Pro (精確)' },
   ];
 }
 
