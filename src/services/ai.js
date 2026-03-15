@@ -27,6 +27,7 @@ async function invokeAIAssistant(messages) {
   if (!supabase) throw new Error("Supabase client not initialized.");
 
   const modelName = getModelName();
+  console.log("Invoking AI Assistant with model:", modelName);
 
   const { data, error } = await supabase.functions.invoke('ai-assistant', {
     body: {
@@ -36,8 +37,23 @@ async function invokeAIAssistant(messages) {
   });
 
   if (error) {
-    console.error("Edge Function Error:", error);
-    throw new Error(error.message || "Failed to invoke AI assistant.");
+    console.error("Edge Function Invoke Error:", error);
+
+    // Supabase client might return a descriptive message if the body is JSON
+    let errorMsg = error.message;
+
+    // Attempt to see if there's more info in the context or if we can parse the message
+    if (error.context && typeof error.context.text === 'function') {
+      try {
+        const bodyText = await error.context.text();
+        const bodyJson = JSON.parse(bodyText);
+        if (bodyJson.error) errorMsg = bodyJson.error;
+      } catch (e) {
+        console.error("Could not parse error body", e);
+      }
+    }
+
+    throw new Error(errorMsg || "Failed to invoke AI assistant.");
   }
 
   if (!data || !data.response) {

@@ -20,21 +20,30 @@ serve(async (req) => {
     }
 
     // 1. Verify Authentication 
-    // We get the Authorization header from the request and verify it against Supabase Auth
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      console.error('Missing Authorization header');
+      throw new Error('Unauthorized: Missing Authorization header');
+    }
+
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      { global: { headers: { Authorization: req.headers.get('Authorization')! } } }
+      { global: { headers: { Authorization: authHeader } } }
     );
 
     const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
 
     if (authError || !user) {
-      throw new Error('Unauthorized');
+      console.error('Auth Error:', authError);
+      throw new Error(`Unauthorized: ${authError?.message || 'Invalid user'}`);
     }
 
     // 2. Parse Request Body
-    const { messages, systemInstruction, modelName = 'gemini-1.5-flash' } = await req.json();
+    const body = await req.json();
+    const { messages, systemInstruction, modelName = 'gemini-1.5-flash' } = body;
+
+    console.log(`Processing AI request. Model: ${modelName}, Messages: ${messages?.length}`);
 
     if (!messages || !Array.isArray(messages)) {
       throw new Error('Invalid or missing "messages" in request body.');
@@ -43,14 +52,13 @@ serve(async (req) => {
     // 3. Get Google Gemini API Key from environment variables
     const apiKey = Deno.env.get('GEMINI_API_KEY');
     if (!apiKey) {
-      throw new Error('GEMINI_API_KEY is not set in Edge Function environment variables.');
+      console.error('GEMINI_API_KEY not found in secrets');
+      throw new Error('Server configuration error: GEMINI_API_KEY is missing.');
     }
 
     // 4. Construct Gemini API Request
-    // Google's REST API endpoint structure
     const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
 
-    // Map abstract messages to Gemini format
     const contents = messages.map(msg => ({
       role: msg.role === 'assistant' ? 'model' : 'user',
       parts: [{ text: msg.content }]
@@ -61,7 +69,8 @@ serve(async (req) => {
     };
 
     if (systemInstruction) {
-      requestBody.system_instruction = {
+      // Use camelCase 'systemInstruction' for Gemini v1 API
+      requestBody.systemInstruction = {
         parts: [{ text: systemInstruction }]
       }
     }
@@ -69,25 +78,24 @@ serve(async (req) => {
     // 5. Call Gemini API
     const response = await fetch(geminiUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(requestBody),
     });
 
-    if (!response.ok) {
-      const errorData = await response.text();
-      console.error('Gemini API Error:', errorData);
-      throw new Error(`Gemini API returned status ${response.status}: ${errorData}`);
-    }
-
     const data = await response.json();
 
-    // 6. Extract the text response from Gemini format
+    if (!response.ok) {
+      console.error('Gemini API Error Detail:', JSON.stringify(data));
+      const geminiErrorMessage = data.error?.message || response.statusText || 'Unknown Gemini error';
+      throw new Error(`Gemini API error (${response.status}): ${geminiErrorMessage}`);
+    }
+
+    // 6. Extract the text response
     const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!replyText) {
-      throw new Error("No text response received from Gemini.");
+      console.error('Empty response from Gemini:', JSON.stringify(data));
+      throw new Error("AI returned an empty response. It might have been blocked due to safety filters.");
     }
 
     // 7. Return to App
@@ -97,11 +105,15 @@ serve(async (req) => {
     );
 
   } catch (error: any) {
+    console.error('System Error:', error.message);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({
+        error: error.message,
+        details: error.stack // Optional: remove if too verbose, but helpful for debugging now
+      }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: error.message === 'Unauthorized' ? 401 : 400,
+        status: error.message.includes('Unauthorized') ? 401 : 400,
       },
     );
   }
