@@ -34,7 +34,7 @@ serve(async (req) => {
     }
 
     // 2. Parse Request Body
-    const { messages, systemInstruction, modelName = 'gemini-2.5-flash' } = await req.json();
+    const { messages, systemInstruction, modelName = 'gemini-1.5-flash' } = await req.json();
 
     if (!messages || !Array.isArray(messages)) {
       throw new Error('Invalid or missing "messages" in request body.');

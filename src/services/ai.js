@@ -3,17 +3,22 @@ import { getSupabaseClient } from './supabase';
 // We no longer need local storage keys for API since it's handled by backend
 const STORAGE_KEY_MODEL = 'nihongo-memo-model-name';
 
-export const getModelName = () => localStorage.getItem(STORAGE_KEY_MODEL) || 'gemini-2.5-flash';
+export const getModelName = () => {
+  const model = localStorage.getItem(STORAGE_KEY_MODEL);
+  if (!model || model === 'gemini-2.5-flash' || model === 'gemini-2.5-pro') {
+    return 'gemini-1.5-flash';
+  }
+  return model;
+};
 export const setModelName = (name) => localStorage.setItem(STORAGE_KEY_MODEL, name);
 
 // Kept for UI compatibility if needed, but we don't strictly "fetch" them from user key anymore.
 // We can just return a hardcoded list of supported backend models.
 export async function fetchAvailableModels() {
   return [
-    { name: 'gemini-2.5-flash', displayName: 'Gemini 2.5 Flash (Fast)' },
-    { name: 'gemini-2.5-pro', displayName: 'Gemini 2.5 Pro (Accurate)' },
-    { name: 'gemini-1.5-flash', displayName: 'Gemini 1.5 Flash' },
-    { name: 'gemini-1.5-pro', displayName: 'Gemini 1.5 Pro' }
+    { name: 'gemini-1.5-flash', displayName: 'Gemini 1.5 Flash (Fast)' },
+    { name: 'gemini-1.5-pro', displayName: 'Gemini 1.5 Pro (Accurate)' },
+    { name: 'gemini-2.0-flash', displayName: 'Gemini 2.0 Flash (Experimental)' }
   ];
 }
 
