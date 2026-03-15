@@ -41,9 +41,28 @@ serve(async (req) => {
 
     // 2. Parse Request Body
     const body = await req.json();
-    const { messages, systemInstruction, modelName = 'gemini-1.5-flash' } = body;
+    const { messages, systemInstruction, modelName = 'gemini-1.5-flash', mode } = body;
 
-    console.log(`Processing AI request. Model: ${modelName}, Messages: ${messages?.length}`);
+    const timestamp = new Date().toISOString();
+
+    // Debug Ping Mode
+    if (mode === 'ping') {
+      return new Response(
+        JSON.stringify({
+          status: 'ok',
+          message: 'Pong! Edge Function is reachable.',
+          timestamp: timestamp,
+          config: {
+            hasGeminiKey: !!Deno.env.get('GEMINI_API_KEY'),
+            supabaseUrl: !!Deno.env.get('SUPABASE_URL'),
+            nodeVersion: Deno.version.deno
+          }
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      );
+    }
+
+    console.log(`[${timestamp}] Processing AI request. Model: ${modelName}, Messages: ${messages?.length}`);
 
     if (!messages || !Array.isArray(messages)) {
       throw new Error('Invalid or missing "messages" in request body.');

@@ -37,20 +37,21 @@ async function invokeAIAssistant(messages) {
   });
 
   if (error) {
-    console.error("Edge Function Invoke Error:", error);
+    console.error("DEBUG: Full Edge Function Error Object:", error);
 
-    // Supabase client might return a descriptive message if the body is JSON
     let errorMsg = error.message;
 
-    // Attempt to see if there's more info in the context or if we can parse the message
+    // Aggressively try to extract the error body
     if (error.context && typeof error.context.text === 'function') {
       try {
         const bodyText = await error.context.text();
         const bodyJson = JSON.parse(bodyText);
         if (bodyJson.error) errorMsg = bodyJson.error;
       } catch (e) {
-        console.error("Could not parse error body", e);
+        console.warn("Could not parse error.context.text()", e);
       }
+    } else if (error.details) {
+      errorMsg = typeof error.details === 'string' ? error.details : JSON.stringify(error.details);
     }
 
     throw new Error(errorMsg || "Failed to invoke AI assistant.");
@@ -61,6 +62,28 @@ async function invokeAIAssistant(messages) {
   }
 
   return data.response;
+}
+
+/**
+ * Health check to verify Edge Function connectivity and configuration.
+ */
+export async function checkAIHealth() {
+  const supabase = getSupabaseClient();
+  if (!supabase) return { status: 'error', message: 'Supabase not initialized' };
+
+  try {
+    const { data, error } = await supabase.functions.invoke('ai-assistant', {
+      body: { mode: 'ping' }
+    });
+
+    if (error) {
+      console.error("Health Check Error:", error);
+      return { status: 'error', message: error.message };
+    }
+    return { status: 'ok', ...data };
+  } catch (err) {
+    return { status: 'error', message: err.message };
+  }
 }
 
 export async function generateVerbDetails(verbInput) {

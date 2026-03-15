@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getModelName, setModelName, fetchAvailableModels } from '../services/ai';
+import { getModelName, setModelName, fetchAvailableModels, checkAIHealth } from '../services/ai';
 import { getSupabaseConfig, setSupabaseConfig, getSupabaseClient, settingsSupabaseService } from '../services/supabase';
 import { Database, Cloud, RefreshCw, CheckCircle, AlertCircle, Save, Bot, LogOut, User } from 'lucide-react';
 
@@ -18,6 +18,10 @@ export function Settings() {
     const [isLoadingModels, setIsLoadingModels] = useState(false);
     const [fetchError, setFetchError] = useState(null);
     const [user, setUser] = useState(null);
+
+    // AI Health state
+    const [healthStatus, setHealthStatus] = useState(null); // null, 'testing', 'success', 'error'
+    const [healthData, setHealthData] = useState(null);
 
     useEffect(() => {
         const client = getSupabaseClient();
@@ -77,7 +81,23 @@ export function Settings() {
             setIsLoadingModels(false);
         }
     };
-
+    const handleTestHealth = async () => {
+        setHealthStatus('testing');
+        setHealthData(null);
+        try {
+            const res = await checkAIHealth();
+            if (res.status === 'ok') {
+                setHealthStatus('success');
+                setHealthData(res);
+            } else {
+                setHealthStatus('error');
+                setHealthData(res);
+            }
+        } catch (err) {
+            setHealthStatus('error');
+            setHealthData({ message: err.message });
+        }
+    };
     const handleLogout = async () => {
         const client = getSupabaseClient();
         if (client) {
@@ -199,14 +219,67 @@ export function Settings() {
                         </div>
                     )}
 
+                    <div style={{
+                        marginTop: '1rem',
+                        padding: '1rem',
+                        borderRadius: '1rem',
+                        background: '#f8fafc',
+                        border: '1px solid #e2e8f0'
+                    }}>
+                        <div className="flex justify-between items-center mb-2">
+                            <span style={{ fontSize: '0.875rem', fontWeight: 700, color: '#475569' }}>Backend Connection Test</span>
+                            <button
+                                onClick={handleTestHealth}
+                                disabled={healthStatus === 'testing'}
+                                className="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
+                            >
+                                {healthStatus === 'testing' ? <RefreshCw className="animate-spin" size={12} /> : <RefreshCw size={12} />}
+                                Run Test
+                            </button>
+                        </div>
+
+                        {healthStatus === 'testing' && <p className="text-xs text-gray-500">Connecting to Supabase Edge Function...</p>}
+
+                        {healthStatus === 'success' && (
+                            <div className="flex flex-col gap-2">
+                                <div className="flex items-center gap-2 text-green-600 font-bold text-xs">
+                                    <CheckCircle size={14} /> {healthData?.message}
+                                </div>
+                                <div className="grid grid-cols-2 gap-2 mt-1">
+                                    <div className="bg-white p-2 rounded border border-green-100 text-[10px]">
+                                        <div className="text-gray-400 uppercase font-bold">Gemini Key</div>
+                                        <div className={healthData?.config?.hasGeminiKey ? "text-green-600" : "text-red-500"}>
+                                            {healthData?.config?.hasGeminiKey ? "✅ 已設定" : "❌ 未設定"}
+                                        </div>
+                                    </div>
+                                    <div className="bg-white p-2 rounded border border-green-100 text-[10px]">
+                                        <div className="text-gray-400 uppercase font-bold">Timestamp</div>
+                                        <div className="text-gray-600 truncate">{healthData?.timestamp}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {healthStatus === 'error' && (
+                            <div className="p-3 bg-red-50 border border-red-100 rounded-lg text-xs text-red-600">
+                                <div className="flex items-center gap-2 font-bold mb-1">
+                                    <AlertCircle size={14} /> 測試失敗
+                                </div>
+                                <p className="font-mono">{healthData?.message}</p>
+                                <p className="mt-2 text-red-400 text-[10px]">請確認已部署 Edge Function 且設定了 GEMINI_API_KEY。</p>
+                            </div>
+                        )}
+                    </div>
+
                     <button
                         onClick={handleSave}
                         className="btn btn-primary"
-                        style={{ alignSelf: 'flex-start' }}
+                        style={{ alignSelf: 'flex-start', marginTop: '0.5rem' }}
                     >
                         {saved ? 'Saved!' : 'Save Settings'}
                         <Save size={18} />
                     </button>
+
                 </div>
             </div>
 
