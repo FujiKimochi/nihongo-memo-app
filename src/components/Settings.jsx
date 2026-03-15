@@ -263,9 +263,15 @@ export function Settings() {
                         {healthStatus === 'error' && (
                             <div className="p-3 bg-red-50 border border-red-100 rounded-lg text-xs text-red-600">
                                 <div className="flex items-center gap-2 font-bold mb-1">
-                                    <AlertCircle size={14} /> 測試失敗
+                                    <AlertCircle size={14} /> 測試失敗 {healthData?.statusCode && `(Status: ${healthData.statusCode})`}
                                 </div>
-                                <p className="font-mono">{healthData?.message}</p>
+                                <p className="font-mono break-all">{healthData?.message}</p>
+                                {healthData?.details && (
+                                    <div className="mt-2 p-2 bg-red-100/50 rounded border border-red-200 overflow-auto max-h-24">
+                                        <p className="font-bold text-[10px] uppercase text-red-400 mb-1">Raw Details:</p>
+                                        <pre className="text-[10px] whitespace-pre-wrap">{healthData.details}</pre>
+                                    </div>
+                                )}
                                 <p className="mt-2 text-red-400 text-[10px]">請確認已部署 Edge Function 且設定了 GEMINI_API_KEY。</p>
                             </div>
                         )}

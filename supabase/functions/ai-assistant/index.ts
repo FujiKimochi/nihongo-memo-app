@@ -19,7 +19,29 @@ serve(async (req) => {
       throw new Error('Method not allowed. Only POST requests are accepted.');
     }
 
-    // 1. Verify Authentication 
+    // Parse Request Body early
+    const body = await req.json();
+    const { messages, systemInstruction, modelName = 'gemini-1.5-flash', mode } = body;
+    const timestamp = new Date().toISOString();
+
+    // 1. Reachability Check (Ping Mode - No Auth Required)
+    if (mode === 'ping') {
+      return new Response(
+        JSON.stringify({
+          status: 'ok',
+          message: 'Pong! Edge Function is reachable.',
+          timestamp: timestamp,
+          config: {
+            hasGeminiKey: !!Deno.env.get('GEMINI_API_KEY'),
+            hasSupabaseUrl: !!Deno.env.get('SUPABASE_URL'),
+            nodeVersion: Deno.version.deno
+          }
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      );
+    }
+
+    // 2. Verify Authentication (Required for AI calls)
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       console.error('Missing Authorization header');
@@ -37,29 +59,6 @@ serve(async (req) => {
     if (authError || !user) {
       console.error('Auth Error:', authError);
       throw new Error(`Unauthorized: ${authError?.message || 'Invalid user'}`);
-    }
-
-    // 2. Parse Request Body
-    const body = await req.json();
-    const { messages, systemInstruction, modelName = 'gemini-1.5-flash', mode } = body;
-
-    const timestamp = new Date().toISOString();
-
-    // Debug Ping Mode
-    if (mode === 'ping') {
-      return new Response(
-        JSON.stringify({
-          status: 'ok',
-          message: 'Pong! Edge Function is reachable.',
-          timestamp: timestamp,
-          config: {
-            hasGeminiKey: !!Deno.env.get('GEMINI_API_KEY'),
-            supabaseUrl: !!Deno.env.get('SUPABASE_URL'),
-            nodeVersion: Deno.version.deno
-          }
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      );
     }
 
     console.log(`[${timestamp}] Processing AI request. Model: ${modelName}, Messages: ${messages?.length}`);

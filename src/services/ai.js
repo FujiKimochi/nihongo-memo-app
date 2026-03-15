@@ -71,17 +71,35 @@ export async function checkAIHealth() {
   const supabase = getSupabaseClient();
   if (!supabase) return { status: 'error', message: 'Supabase not initialized' };
 
+  console.log("Starting backend health check...");
   try {
     const { data, error } = await supabase.functions.invoke('ai-assistant', {
       body: { mode: 'ping' }
     });
 
     if (error) {
-      console.error("Health Check Error:", error);
-      return { status: 'error', message: error.message };
+      console.error("Health Check SDK Error:", error);
+
+      let details = error.message;
+      if (error.context && typeof error.context.text === 'function') {
+        try {
+          details = await error.context.text();
+        } catch (e) {
+          details = "Could not read error context body";
+        }
+      }
+
+      return {
+        status: 'error',
+        message: error.message,
+        details: details,
+        statusCode: error.status
+      };
     }
+    console.log("Health Check Success:", data);
     return { status: 'ok', ...data };
   } catch (err) {
+    console.error("Health Check Unexpected Error:", err);
     return { status: 'error', message: err.message };
   }
 }
