@@ -155,7 +155,7 @@ export function SetupGuide({ onClose }) {
                     <button
                         onClick={() => setStep(s => Math.max(1, s - 1))}
                         style={{
-                            padding: '10px 16px', borderRadius: '12px', border: 'none',
+                            padding: '10px 16px', borderRadius: '12px',
                             background: '#fff', color: '#4b5563', fontWeight: 700, fontSize: '0.875rem',
                             cursor: 'pointer', visibility: step === 1 ? 'hidden' : 'visible',
                             border: '1px solid #e5e7eb'
