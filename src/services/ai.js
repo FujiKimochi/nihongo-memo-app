@@ -235,8 +235,11 @@ export async function generateDialogueContext(scenario) {
     3. "dialogues": An array of objects, each representing one line:
        - "role": "A" or "B".
        - "jp": The Japanese sentence.
-       - "ruby": The Japanese sentence with <ruby> tags for Kanji furigana.
+       - "ruby": The Japanese sentence with <ruby> tags for ALL Kanji furigana.
        - "zh": The Traditional Chinese translation.
+
+    **CRITICAL**: Every "ruby" field MUST contain the Japanese sentence with HTML <ruby> tags for ALL Kanji furigana.
+    Example: <ruby>私<rt>わたし</rt></ruby>は<ruby>學生<rt>がくせい</rt></ruby>です。
 
     Structure:
     {
