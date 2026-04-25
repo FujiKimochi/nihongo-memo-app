@@ -319,7 +319,6 @@ export const settingsSupabaseService = {
             .from('user_settings')
             .upsert({
                 user_id: user.id,
-                gemini_api_key: settings.geminiApiKey,
                 ai_model: settings.aiModel,
                 updated_at: new Date().toISOString()
             });

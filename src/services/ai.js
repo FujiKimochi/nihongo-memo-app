@@ -5,19 +5,20 @@ const STORAGE_KEY_MODEL = 'nihongo-memo-model-name';
 
 export const getModelName = () => {
   const model = localStorage.getItem(STORAGE_KEY_MODEL);
-  // All older models (1.5, 2.0) are deprecated as of early 2026
-  if (!model || model.includes('gemini-1.5') || model.includes('gemini-2.0')) {
-    return 'gemini-2.5-flash';
+  // Migrate from old Gemini models to Groq default
+  if (!model || model.includes('gemini')) {
+    return 'llama-3.3-70b-versatile';
   }
   return model;
 };
 export const setModelName = (name) => localStorage.setItem(STORAGE_KEY_MODEL, name);
 
-// Currently available Gemini models (March 2026)
+// Currently available Groq models (April 2026)
 export async function fetchAvailableModels() {
   return [
-    { name: 'gemini-2.5-flash', displayName: 'Gemini 2.5 Flash (推薦・快速)' },
-    { name: 'gemini-2.5-pro', displayName: 'Gemini 2.5 Pro (精確)' },
+    { name: 'llama-3.3-70b-versatile', displayName: 'Llama 3.3 70B (推薦・高品質)' },
+    { name: 'llama-3.1-8b-instant', displayName: 'Llama 3.1 8B (快速・輕量)' },
+    { name: 'mixtral-8x7b-32768', displayName: 'Mixtral 8x7B (平衡)' },
   ];
 }
 
@@ -61,6 +62,41 @@ async function invokeAIAssistant(messages) {
   }
 
   return data.response;
+}
+
+/**
+ * Strip markdown code fences and extract clean JSON from AI response.
+ * Llama models often wrap JSON in ```json ... ``` blocks.
+ */
+function cleanAIResponse(text) {
+  // Remove markdown code fences: ```json ... ``` or ``` ... ```
+  let cleaned = text.replace(/^```(?:json)?\s*\n?/i, '').replace(/\n?```\s*$/i, '');
+  // Also handle cases where there's text before/after the code fence
+  const fenceMatch = text.match(/```(?:json)?\s*\n([\s\S]*?)\n?```/i);
+  if (fenceMatch) {
+    cleaned = fenceMatch[1];
+  }
+  return cleaned.trim();
+}
+
+/**
+ * Extract and parse JSON from AI response text.
+ */
+function parseAIJson(responseText) {
+  const cleaned = cleanAIResponse(responseText);
+  
+  // Try direct parse first (cleanest path)
+  try {
+    return JSON.parse(cleaned);
+  } catch (e) {
+    // Fallback: extract JSON via regex
+    const jsonMatch = cleaned.match(/\[\s\S]*\]|\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      console.error("AI Response Text:", responseText);
+      throw new Error("Invalid response format from AI (No JSON found)");
+    }
+    return JSON.parse(jsonMatch[0]);
+  }
 }
 
 /**
@@ -120,8 +156,8 @@ export async function generateVerbDetails(verbInput) {
     3. "meaning": Meaning in Traditional Chinese.
     4. "type": Verb type (e.g., Godan, Ichidan, Irregular).
     5. "conjugations": { "polite": {...}, "negative": {...}, "te": {...}, "potential": {...}, "passive": {...}, "causative": {...}, "causativePassive": {...}, "imperative": {...}, "volitional": {...}, "conditionalBa": {...}, "conditionalTara": {...}, "dictionary": {...} }
-       (Each conjugation must include "form", "explanation", and "example": { "jp", "ruby", "zh" })
-    6. "examples": An array of 3 objects. Each object: { "jp", "ruby", "zh" }.
+       **CRITICAL**: You MUST provide all 12 conjugations listed above. Do not skip any. Each conjugation must include "form" (the conjugated word), "explanation" (brief usage), and "example": { "jp", "ruby", "zh" }.
+    6. "examples": An array of 3 distinct and practical objects. Each object: { "jp", "ruby", "zh" }.
 
     **CRITICAL**: Every "ruby" field MUST contain the Japanese sentence with HTML <ruby> tags for ALL Kanji furigana.
     Example: <ruby>私<rt>わたし</rt></ruby>は...
@@ -138,9 +174,9 @@ export async function generateVerbDetails(verbInput) {
     2. "kana": Hiragana reading.
     3. "meaning": Traditional Chinese meaning.
     4. "type": Verb type.
-    5. "conjugations": { "polite": {...}, "negative": {...}, ... } 
-       Each conjugation: { "form", "explanation", "example": { "jp", "ruby", "zh" } }
-    6. "examples": Array of 3 objects: { "jp", "ruby", "zh" }.
+    5. "conjugations": { "polite": {...}, "negative": {...}, "te": {...}, "potential": {...}, "passive": {...}, "causative": {...}, "causativePassive": {...}, "imperative": {...}, "volitional": {...}, "conditionalBa": {...}, "conditionalTara": {...}, "dictionary": {...} } 
+       **CRITICAL**: You MUST provide all 12 conjugations listed above. Do not skip any. Each conjugation must include "form" (the conjugated word), "explanation", and "example": { "jp", "ruby", "zh" }
+    6. "examples": Array of 3 distinct and practical objects: { "jp", "ruby", "zh" }.
 
     **CRITICAL**: Every "ruby" field MUST contain the Japanese sentence with HTML <ruby> tags for ALL Kanji furigana.
 
@@ -149,14 +185,7 @@ export async function generateVerbDetails(verbInput) {
 
   try {
     const responseText = await invokeAIAssistant([{ role: 'user', content: promptText }]);
-
-    const jsonMatch = responseText.match(/\[[\s\S]*\]|\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      console.error("AI Response Text:", responseText);
-      throw new Error("Invalid response format from AI (No JSON found)");
-    }
-
-    return JSON.parse(jsonMatch[0]);
+    return parseAIJson(responseText);
   } catch (error) {
     console.error("AI Generation Error (Primary):", error);
     throw error;
@@ -208,10 +237,7 @@ export async function generateGrammarDetails(grammarInput) {
 
   try {
     const responseText = await invokeAIAssistant([{ role: 'user', content: promptText }]);
-
-    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error("Invalid response format from AI");
-    return JSON.parse(jsonMatch[0]);
+    return parseAIJson(responseText);
   } catch (error) {
     console.error("AI Grammar Generation Error:", error);
     throw error;
@@ -226,7 +252,12 @@ export async function generateDialogueContext(scenario) {
     You are a Japanese language tutor specialized in teaching Traditional Chinese speakers.
     The user wants to practice a dialogue in this scenario: "${scenario}".
 
-    Please generate a natural, helpful dialogue (8-10 sentences) between two people (A and B).
+    Please generate a natural, highly engaging, and realistic situational dialogue (8-10 sentences) between two people (A and B).
+    **CRITICAL Instructions for Dialogue Quality**:
+    - Make the conversation lively and authentic. Avoid monotonous, robotic, or overly textbook-like phrases.
+    - Include varied expressions, natural spoken Japanese nuances (like fillers, sentence-ending particles, colloquialisms if appropriate), and practical vocabulary related to the scenario.
+    - Ensure there is a clear flow and purpose to the conversation, not just simple greetings.
+
     Provide the result in strict JSON format.
     **CRITICAL**: All descriptions and translations must be in **Traditional Chinese (繁體中文)**.
 
@@ -256,10 +287,7 @@ export async function generateDialogueContext(scenario) {
 
   try {
     const responseText = await invokeAIAssistant([{ role: 'user', content: promptText }]);
-
-    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error("Invalid response format from AI");
-    return JSON.parse(jsonMatch[0]);
+    return parseAIJson(responseText);
   } catch (error) {
     console.error("AI Dialogue Generation Error:", error);
     throw error;
@@ -310,12 +338,41 @@ export async function generateAdjectiveDetails(adjectiveInput) {
 
   try {
     const responseText = await invokeAIAssistant([{ role: 'user', content: promptText }]);
-
-    const jsonMatch = responseText.match(/\[[\s\S]*\]|\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error("Invalid response format from AI");
-    return JSON.parse(jsonMatch[0]);
+    return parseAIJson(responseText);
   } catch (error) {
     console.error("AI Adjective Generation Error:", error);
+    throw error;
+  }
+}
+
+/**
+ * Generates N3-level sentences for a given word or grammar point.
+ */
+export async function generateN3Sentences(input) {
+  const promptText = `
+    You are a Japanese language tutor specialized in teaching Traditional Chinese speakers.
+    The user has provided a Japanese word or grammar point: "${input}".
+
+    Please generate exactly 5 natural, practical example sentences using this input.
+    **CRITICAL Requirements**:
+    1. The grammar and vocabulary used in the sentences MUST be at the JLPT N3 level or lower.
+    2. All explanations and translations must be in **Traditional Chinese (繁體中文)**.
+    3. You must return a strict JSON array of 5 objects.
+    
+    Each object in the array MUST have:
+    - "jp": The Japanese sentence.
+    - "ruby": The Japanese sentence with HTML <ruby> tags for ALL Kanji furigana. Example: <ruby>私<rt>わたし</rt></ruby>は...
+    - "zh": The Traditional Chinese translation.
+    - "grammar_explanation": A detailed grammatical explanation of the sentence structure. You must explicitly break down the sentence into components such as subject (主詞), object (受詞), particles (助詞, explaining their specific function in this sentence), and verb (動詞, explaining its specific form/conjugation). All text must be in Traditional Chinese.
+
+    Return JSON array ONLY.
+  `;
+
+  try {
+    const responseText = await invokeAIAssistant([{ role: 'user', content: promptText }]);
+    return parseAIJson(responseText);
+  } catch (error) {
+    console.error("AI N3 Sentence Generation Error:", error);
     throw error;
   }
 }

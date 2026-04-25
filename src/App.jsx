@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { onAuthStateChange, getSupabaseClient, settingsSupabaseService } from './services/supabase';
 import { setModelName } from './services/ai';
 import { Auth } from './components/Auth';
-import { BookOpen, PlusCircle, Brain, Settings as SettingsIcon, Languages, FileText, MessageSquare, Sparkles, Grid } from 'lucide-react';
+import { BookOpen, PlusCircle, Brain, Settings as SettingsIcon, Languages, FileText, MessageSquare, Sparkles, Grid, PenTool } from 'lucide-react';
 import { useVocabulary } from './hooks/useVocabulary';
 import { useGrammar } from './hooks/useGrammar';
 import { useDialogues } from './hooks/useDialogues';
@@ -20,6 +20,7 @@ import { AdjectiveList } from './components/AdjectiveList';
 import { Settings } from './components/Settings';
 import { ReloadPrompt } from './components/ReloadPrompt';
 import { KanaChart } from './components/KanaChart';
+import { N3SentenceGenerator } from './components/N3SentenceGenerator';
 
 function App() {
     const { words, addWords, deleteWord } = useVocabulary();
@@ -27,7 +28,7 @@ function App() {
     const { dialogues, addDialogue, deleteDialogue } = useDialogues();
     const { adjectives, addAdjectives, deleteAdjective } = useAdjectives();
 
-    const [activeTab, setActiveTab] = useState('add'); // 'list', 'add', 'review', 'settings'
+    const [activeTab, setActiveTab] = useState('add'); // 'list', 'add', 'review', 'sentences', 'kana', 'settings'
     const [activeCategory, setActiveCategory] = useState('vocabulary'); // 'vocabulary', 'grammar', 'adjective', 'dialogue'
     const [session, setSession] = useState(null);
 
@@ -104,7 +105,7 @@ function App() {
                 </div>
 
                 {/* Category Switcher */}
-                {activeTab !== 'kana' && activeTab !== 'settings' && (
+                {activeTab !== 'kana' && activeTab !== 'settings' && activeTab !== 'sentences' && (
                     <div className="flex bg-gray-100 p-1 rounded-xl overflow-x-auto no-scrollbar">
                         {[
                             { id: 'vocabulary', label: '單字', icon: Languages },
@@ -147,6 +148,10 @@ function App() {
 
                 {activeTab === 'kana' && (
                     <KanaChart />
+                )}
+
+                {activeTab === 'sentences' && (
+                    <N3SentenceGenerator />
                 )}
 
                 {activeTab === 'list' && (
@@ -220,6 +225,15 @@ function App() {
                 >
                     <Brain size={24} />
                     <span style={{ fontSize: '0.75rem' }}>複習</span>
+                </button>
+
+                <button
+                    className="flex flex-col items-center gap-1"
+                    style={{ color: activeTab === 'sentences' ? 'hsl(var(--indigo-500))' : 'var(--text-muted)' }}
+                    onClick={() => setActiveTab('sentences')}
+                >
+                    <PenTool size={24} />
+                    <span style={{ fontSize: '0.75rem' }}>造句</span>
                 </button>
 
                 <button

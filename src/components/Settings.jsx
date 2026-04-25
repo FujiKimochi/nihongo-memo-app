@@ -149,13 +149,13 @@ export function Settings() {
 
                 <div className="flex flex-col gap-3">
                     <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
-                        If you encounter slow responses, try switching to a different model like gemini-1.5-flash.
+                        如果回應速度慢，可以試試切換到較輕量的模型如 llama-3.1-8b-instant。
                     </p>
                     <input
                         type="text"
                         value={model}
                         onChange={(e) => setModel(e.target.value)}
-                        placeholder="e.g. gemini-1.5-flash"
+                        placeholder="e.g. llama-3.3-70b-versatile"
                         list="model-suggestions"
                         style={{
                             padding: '0.75rem',
@@ -247,9 +247,9 @@ export function Settings() {
                                 </div>
                                 <div className="grid grid-cols-2 gap-2 mt-1">
                                     <div className="bg-white p-2 rounded border border-green-100 text-[10px]">
-                                        <div className="text-gray-400 uppercase font-bold">Gemini Key</div>
-                                        <div className={healthData?.config?.hasGeminiKey ? "text-green-600" : "text-red-500"}>
-                                            {healthData?.config?.hasGeminiKey ? "✅ 已設定" : "❌ 未設定"}
+                                        <div className="text-gray-400 uppercase font-bold">Groq Key</div>
+                                        <div className={healthData?.config?.hasGroqKey ? "text-green-600" : "text-red-500"}>
+                                            {healthData?.config?.hasGroqKey ? "✅ 已設定" : "❌ 未設定"}
                                         </div>
                                     </div>
                                     <div className="bg-white p-2 rounded border border-green-100 text-[10px]">
@@ -272,7 +272,7 @@ export function Settings() {
                                         <pre className="text-[10px] whitespace-pre-wrap">{healthData.details}</pre>
                                     </div>
                                 )}
-                                <p className="mt-2 text-red-400 text-[10px]">請確認已部署 Edge Function 且設定了 GEMINI_API_KEY。</p>
+                                <p className="mt-2 text-red-400 text-[10px]">請確認已部署 Edge Function 且設定了 GROQ_API_KEY。</p>
                             </div>
                         )}
                     </div>
