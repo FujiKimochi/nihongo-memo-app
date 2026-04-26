@@ -156,8 +156,13 @@ export async function generateVerbDetails(verbInput) {
     3. "meaning": Meaning in Traditional Chinese.
     4. "type": Verb type (e.g., Godan, Ichidan, Irregular).
     5. "conjugations": { "polite": {...}, "negative": {...}, "te": {...}, "potential": {...}, "passive": {...}, "causative": {...}, "causativePassive": {...}, "imperative": {...}, "volitional": {...}, "conditionalBa": {...}, "conditionalTara": {...}, "dictionary": {...} }
-       **CRITICAL**: You MUST provide all 12 conjugations listed above. Do not skip any. Each conjugation must include "form" (the conjugated word), "explanation" (brief usage), and "example": { "jp", "ruby", "zh" }.
-       **EXTREMELY IMPORTANT**: The "example.jp" for EACH conjugation MUST be a COMPLETE, MEANINGFUL, and NATURAL Japanese sentence that demonstrates the conjugated verb in a real-life context (e.g., instead of just "引き出さない", write "お金を引き出さない予定です"). Do NOT just output the verb itself.
+       **CRITICAL**: You MUST provide all 12 conjugations listed above. Do not skip any. Each conjugation must include "form" (the correctly conjugated word), "explanation" (brief usage), and "example": { "jp", "ruby", "zh" }.
+       **EXTREMELY IMPORTANT**: The "example.jp" for EACH conjugation MUST be a LONG, COMPLETE, MEANINGFUL, and NATURAL Japanese sentence with rich context. 
+       - BAD EXAMPLE: "私は引き出さない" (Too short, no context)
+       - GOOD EXAMPLE: "今日は銀行のATMでお金を引き出さない予定です。" (Has context, subject, object, and natural flow)
+       - BAD EXAMPLE: "引き出してみます" (Too short)
+       - GOOD EXAMPLE: "彼の本当の気持ちを引き出してみます。" (Meaningful context)
+       Ensure correct Japanese conjugation rules (e.g., Godan verbs: ば-form is 〜えば, not 〜すば).
     6. "examples": An array of 3 distinct and practical objects. Each object: { "jp", "ruby", "zh" }.
 
     **CRITICAL**: Every "ruby" field MUST contain the Japanese sentence with HTML <ruby> tags for ALL Kanji furigana.
@@ -165,7 +170,7 @@ export async function generateVerbDetails(verbInput) {
 
     Return only a valid JSON array: [ {...}, {...} ].
   ` : `
-    You are a Japanese language tutor specialized in teaching Traditional Chinese speakers.
+    You are a professional Japanese language professor specialized in teaching Traditional Chinese speakers.
     The user has provided a Japanese verb: "${verbInput}".
     
     Please provide the following information in strict JSON format.
@@ -176,8 +181,13 @@ export async function generateVerbDetails(verbInput) {
     3. "meaning": Traditional Chinese meaning.
     4. "type": Verb type.
     5. "conjugations": { "polite": {...}, "negative": {...}, "te": {...}, "potential": {...}, "passive": {...}, "causative": {...}, "causativePassive": {...}, "imperative": {...}, "volitional": {...}, "conditionalBa": {...}, "conditionalTara": {...}, "dictionary": {...} } 
-       **CRITICAL**: You MUST provide all 12 conjugations listed above. Do not skip any. Each conjugation must include "form" (the conjugated word), "explanation" (brief usage), and "example": { "jp", "ruby", "zh" }.
-       **EXTREMELY IMPORTANT**: The "example.jp" for EACH conjugation MUST be a COMPLETE, MEANINGFUL, and NATURAL Japanese sentence that demonstrates the conjugated verb in a real-life context. Do NOT just output the verb itself.
+       **CRITICAL**: You MUST provide all 12 conjugations listed above. Do not skip any. Each conjugation must include "form" (the correctly conjugated word), "explanation" (brief usage), and "example": { "jp", "ruby", "zh" }.
+       **EXTREMELY IMPORTANT**: The "example.jp" for EACH conjugation MUST be a LONG, COMPLETE, MEANINGFUL, and NATURAL Japanese sentence with rich context.
+       - BAD EXAMPLE: "私は引き出さない" (Too short, no context)
+       - GOOD EXAMPLE: "今日は銀行のATMでお金を引き出さない予定です。" (Has context, subject, object, and natural flow)
+       - BAD EXAMPLE: "引き出してみます" (Too short)
+       - GOOD EXAMPLE: "彼の本当の気持ちを引き出してみます。" (Meaningful context)
+       Ensure correct Japanese conjugation rules (e.g., Godan verbs: ば-form is 〜えば, not 〜すば).
     6. "examples": Array of 3 distinct and practical objects: { "jp", "ruby", "zh" }.
 
     **CRITICAL**: Every "ruby" field MUST contain the Japanese sentence with HTML <ruby> tags for ALL Kanji furigana.
