@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { Search, Loader2, AlertCircle, Book, Volume2 } from 'lucide-react';
-import { generateDictionaryLookup } from '../services/ai';
+import { Search, Loader2, AlertCircle, Book, Volume2, PlusCircle, CheckCircle2 } from 'lucide-react';
+import { generateDictionaryLookup, generateVerbDetails, generateGrammarDetails, generateAdjectiveDetails } from '../services/ai';
 
-export function DictionaryLookup() {
+export function DictionaryLookup({ onAddWord, onAddGrammar, onAddAdjective }) {
     const [input, setInput] = useState('');
     const [status, setStatus] = useState('idle'); // idle, generating, success, error
     const [error, setError] = useState('');
     const [result, setResult] = useState(null);
+    const [savingTo, setSavingTo] = useState(null); // 'word', 'grammar', 'adjective', 'success'
 
     const handleSearch = async (e) => {
         e.preventDefault();
@@ -20,10 +21,66 @@ export function DictionaryLookup() {
             const data = await generateDictionaryLookup(input.trim());
             setResult(data);
             setStatus('success');
+            setSavingTo(null);
         } catch (err) {
             console.error(err);
             setError(err.message || 'AI 查詢失敗，請重試');
             setStatus('error');
+        }
+    };
+
+    const handleSave = async (target) => {
+        if (!result || !result.word) return;
+        
+        setSavingTo(target);
+        setError('');
+
+        try {
+            if (target === 'word') {
+                const data = await generateVerbDetails(result.word);
+                const results = Array.isArray(data) ? data : [data];
+                const wordEntries = results.map(p => ({
+                    kanji: p.kanji,
+                    kana: p.kana,
+                    meaning: p.meaning,
+                    type: p.type || 'Verb',
+                    conjugations: p.conjugations,
+                    examples: p.examples
+                }));
+                if (onAddWord) onAddWord(wordEntries);
+            } else if (target === 'grammar') {
+                const data = await generateGrammarDetails(result.word);
+                const results = Array.isArray(data) ? data : [data];
+                const grammarEntries = results.map(g => ({
+                    grammarPoint: g.grammar_point,
+                    meaning: g.meaning,
+                    explanation: g.explanation,
+                    connection: g.connection,
+                    examples: g.examples,
+                    is_comparison: g.is_comparison || false,
+                    comparison_analysis: g.comparison_analysis || null,
+                    items: g.items || []
+                }));
+                if (onAddGrammar) onAddGrammar(grammarEntries[0]);
+            } else if (target === 'adjective') {
+                const data = await generateAdjectiveDetails(result.word);
+                const results = Array.isArray(data) ? data : [data];
+                const adjEntries = results.map(p => ({
+                    kanji: p.kanji,
+                    kana: p.kana,
+                    meaning: p.meaning,
+                    type: p.type || 'Adjective',
+                    conjugations: p.conjugations,
+                    examples: p.examples
+                }));
+                if (onAddAdjective) onAddAdjective(adjEntries);
+            }
+            setSavingTo('success');
+            setTimeout(() => setSavingTo(null), 3000);
+        } catch (err) {
+            console.error("Save error:", err);
+            setError(err.message || '加入筆記失敗，請重試');
+            setSavingTo(null);
         }
     };
 
@@ -136,6 +193,52 @@ export function DictionaryLookup() {
                                 </div>
                             ))}
                         </div>
+                    </div>
+
+                    {/* Save Buttons */}
+                    <div className="mt-4 pt-4 border-t border-gray-100 flex flex-col gap-3">
+                        <h4 className="text-sm font-bold text-gray-500 mb-1 px-1 uppercase tracking-wider">
+                            將查詢結果存入筆記：
+                        </h4>
+                        
+                        {savingTo === 'success' ? (
+                            <div className="bg-green-50 text-green-700 p-4 rounded-xl border border-green-100 flex items-center justify-center gap-2 font-bold animate-pulse">
+                                <CheckCircle2 size={20} />
+                                已成功加入筆記！
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-3 gap-2">
+                                <button 
+                                    onClick={() => handleSave('word')}
+                                    disabled={savingTo !== null}
+                                    className="flex flex-col items-center justify-center gap-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 p-3 rounded-xl border border-indigo-100 transition-colors disabled:opacity-50"
+                                >
+                                    {savingTo === 'word' ? <Loader2 size={20} className="animate-spin" /> : <PlusCircle size={20} />}
+                                    <span className="text-xs font-bold whitespace-nowrap">單字庫</span>
+                                </button>
+                                <button 
+                                    onClick={() => handleSave('grammar')}
+                                    disabled={savingTo !== null}
+                                    className="flex flex-col items-center justify-center gap-2 bg-pink-50 hover:bg-pink-100 text-pink-700 p-3 rounded-xl border border-pink-100 transition-colors disabled:opacity-50"
+                                >
+                                    {savingTo === 'grammar' ? <Loader2 size={20} className="animate-spin" /> : <PlusCircle size={20} />}
+                                    <span className="text-xs font-bold whitespace-nowrap">文法筆記</span>
+                                </button>
+                                <button 
+                                    onClick={() => handleSave('adjective')}
+                                    disabled={savingTo !== null}
+                                    className="flex flex-col items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 p-3 rounded-xl border border-emerald-100 transition-colors disabled:opacity-50"
+                                >
+                                    {savingTo === 'adjective' ? <Loader2 size={20} className="animate-spin" /> : <PlusCircle size={20} />}
+                                    <span className="text-xs font-bold whitespace-nowrap">形 / 副詞</span>
+                                </button>
+                            </div>
+                        )}
+                        {savingTo && savingTo !== 'success' && (
+                            <p className="text-xs text-center text-gray-400 mt-2">
+                                正在為您產生完整的專屬分析格式（包含變化表），請稍候 10~15 秒...
+                            </p>
+                        )}
                     </div>
                 </div>
             )}

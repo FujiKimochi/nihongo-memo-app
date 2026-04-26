@@ -156,7 +156,11 @@ function App() {
                 )}
 
                 {activeTab === 'dictionary' && (
-                    <DictionaryLookup />
+                    <DictionaryLookup 
+                        onAddWord={handleAddWords}
+                        onAddGrammar={handleAddGrammar}
+                        onAddAdjective={handleAddAdjectives}
+                    />
                 )}
 
                 {activeTab === 'list' && (
