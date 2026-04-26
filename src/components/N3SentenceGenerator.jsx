@@ -91,7 +91,9 @@ export function N3SentenceGenerator() {
                                         文法解析
                                     </h4>
                                     <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
-                                        {item.grammar_explanation}
+                                        {Array.isArray(item.grammar_explanation) 
+                                            ? item.grammar_explanation.join('\n') 
+                                            : item.grammar_explanation}
                                     </p>
                                 </div>
                             )}

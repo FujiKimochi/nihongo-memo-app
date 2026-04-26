@@ -363,13 +363,15 @@ export async function generateN3Sentences(input) {
     - "jp": The Japanese sentence.
     - "ruby": The Japanese sentence with HTML <ruby> tags for ALL Kanji furigana. Example: <ruby>私<rt>わたし</rt></ruby>は...
     - "zh": The Traditional Chinese translation.
-    - "grammar_explanation": A detailed grammatical explanation of the sentence structure. You MUST use a highly readable, structured text format with bullet points like this:
-      • 【主詞】: [Japanese text] - [Chinese explanation]
-      • 【受詞】: [Japanese text] - [Chinese explanation] (if applicable)
-      • 【助詞】: [Particle 1] ([Function]), [Particle 2] ([Function])...
-      • 【動詞】: [Japanese Verb] (Dictionary form: ..., Conjugation: ...)
-      • 【句型/文法】: Explain the key grammar point or structure used here.
-      IMPORTANT: Do NOT use HTML <ruby> tags inside this grammar_explanation field. Use plain Japanese text and Traditional Chinese only.
+    - "grammar_explanation": A detailed grammatical explanation of the sentence structure. You MUST return an ARRAY OF STRINGS, where each string is a bullet point. Example:
+      [
+        "• 【主詞】: [Japanese text] - [Chinese explanation]",
+        "• 【受詞】: [Japanese text] - [Chinese explanation] (if applicable)",
+        "• 【助詞】: [Particle 1] ([Function]), [Particle 2] ([Function])...",
+        "• 【動詞】: [Japanese Verb] (Dictionary form: ..., Conjugation: ...)",
+        "• 【句型/文法】: Explain the key grammar point or structure used here."
+      ]
+      IMPORTANT: Do NOT use HTML <ruby> tags inside this array. Use plain Japanese text and Traditional Chinese only.
 
     Return JSON array ONLY.
   `;
