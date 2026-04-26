@@ -93,6 +93,7 @@ ${y}`}class te extends Error{constructor({message:t,code:n,cause:r,name:s}){var 
     4. "type": Verb type (e.g., Godan, Ichidan, Irregular).
     5. "conjugations": { "polite": {...}, "negative": {...}, "te": {...}, "potential": {...}, "passive": {...}, "causative": {...}, "causativePassive": {...}, "imperative": {...}, "volitional": {...}, "conditionalBa": {...}, "conditionalTara": {...}, "dictionary": {...} }
        **CRITICAL**: You MUST provide all 12 conjugations listed above. Do not skip any. Each conjugation must include "form" (the conjugated word), "explanation" (brief usage), and "example": { "jp", "ruby", "zh" }.
+       **EXTREMELY IMPORTANT**: The "example.jp" for EACH conjugation MUST be a COMPLETE, MEANINGFUL, and NATURAL Japanese sentence that demonstrates the conjugated verb in a real-life context (e.g., instead of just "引き出さない", write "お金を引き出さない予定です"). Do NOT just output the verb itself.
     6. "examples": An array of 3 distinct and practical objects. Each object: { "jp", "ruby", "zh" }.
 
     **CRITICAL**: Every "ruby" field MUST contain the Japanese sentence with HTML <ruby> tags for ALL Kanji furigana.
@@ -111,7 +112,8 @@ ${y}`}class te extends Error{constructor({message:t,code:n,cause:r,name:s}){var 
     3. "meaning": Traditional Chinese meaning.
     4. "type": Verb type.
     5. "conjugations": { "polite": {...}, "negative": {...}, "te": {...}, "potential": {...}, "passive": {...}, "causative": {...}, "causativePassive": {...}, "imperative": {...}, "volitional": {...}, "conditionalBa": {...}, "conditionalTara": {...}, "dictionary": {...} } 
-       **CRITICAL**: You MUST provide all 12 conjugations listed above. Do not skip any. Each conjugation must include "form" (the conjugated word), "explanation", and "example": { "jp", "ruby", "zh" }
+       **CRITICAL**: You MUST provide all 12 conjugations listed above. Do not skip any. Each conjugation must include "form" (the conjugated word), "explanation" (brief usage), and "example": { "jp", "ruby", "zh" }.
+       **EXTREMELY IMPORTANT**: The "example.jp" for EACH conjugation MUST be a COMPLETE, MEANINGFUL, and NATURAL Japanese sentence that demonstrates the conjugated verb in a real-life context. Do NOT just output the verb itself.
     6. "examples": Array of 3 distinct and practical objects: { "jp", "ruby", "zh" }.
 
     **CRITICAL**: Every "ruby" field MUST contain the Japanese sentence with HTML <ruby> tags for ALL Kanji furigana.
