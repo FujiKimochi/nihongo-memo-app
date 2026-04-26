@@ -85,9 +85,19 @@ export function DictionaryLookup() {
                                 {result.type}
                             </span>
                         </div>
-                        <p className="text-xl text-gray-700 mt-3 font-medium">
-                            {result.meaning}
-                        </p>
+                        <div className="mt-3 space-y-3">
+                            <p className="text-xl text-gray-800 font-medium">
+                                {result.meaning}
+                            </p>
+                            {result.meaning_jp && (
+                                <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                                    <p className="text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">日文解釋</p>
+                                    <p className="text-[15px] text-slate-700 font-medium leading-relaxed">
+                                        {result.meaning_jp}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* Explanation Card */}

@@ -405,6 +405,7 @@ export async function generateDictionaryLookup(input) {
       "word": "The word being looked up (Kanji if applicable, otherwise kana)",
       "kana": "The reading in Hiragana/Katakana",
       "meaning": "The core meaning in Traditional Chinese",
+      "meaning_jp": "A simple, easy-to-understand explanation of the word IN JAPANESE (like a beginner's dictionary).",
       "type": "Part of speech (e.g., 名詞, 動詞(I類/II類/III類), い形容詞, な形容詞, 副詞)",
       "explanation": [
         "A detailed explanation of usage, nuances, or grammar points.",
