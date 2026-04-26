@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { onAuthStateChange, getSupabaseClient, settingsSupabaseService } from './services/supabase';
 import { setModelName } from './services/ai';
 import { Auth } from './components/Auth';
-import { BookOpen, PlusCircle, Brain, Settings as SettingsIcon, Languages, FileText, MessageSquare, Sparkles, Grid, PenTool } from 'lucide-react';
+import { BookOpen, PlusCircle, Brain, Settings as SettingsIcon, Languages, FileText, MessageSquare, Sparkles, Grid, PenTool, Search } from 'lucide-react';
 import { useVocabulary } from './hooks/useVocabulary';
 import { useGrammar } from './hooks/useGrammar';
 import { useDialogues } from './hooks/useDialogues';
@@ -21,6 +21,7 @@ import { Settings } from './components/Settings';
 import { ReloadPrompt } from './components/ReloadPrompt';
 import { KanaChart } from './components/KanaChart';
 import { N3SentenceGenerator } from './components/N3SentenceGenerator';
+import { DictionaryLookup } from './components/DictionaryLookup';
 
 function App() {
     const { words, addWords, deleteWord } = useVocabulary();
@@ -105,7 +106,7 @@ function App() {
                 </div>
 
                 {/* Category Switcher */}
-                {activeTab !== 'kana' && activeTab !== 'settings' && activeTab !== 'sentences' && (
+                {activeTab !== 'kana' && activeTab !== 'settings' && activeTab !== 'sentences' && activeTab !== 'dictionary' && (
                     <div className="flex bg-gray-100 p-1 rounded-xl overflow-x-auto no-scrollbar">
                         {[
                             { id: 'vocabulary', label: '單字', icon: Languages },
@@ -152,6 +153,10 @@ function App() {
 
                 {activeTab === 'sentences' && (
                     <N3SentenceGenerator />
+                )}
+
+                {activeTab === 'dictionary' && (
+                    <DictionaryLookup />
                 )}
 
                 {activeTab === 'list' && (
@@ -243,6 +248,15 @@ function App() {
                 >
                     <Grid size={24} />
                     <span style={{ fontSize: '0.75rem' }}>五十音</span>
+                </button>
+
+                <button
+                    className="flex flex-col items-center gap-1"
+                    style={{ color: activeTab === 'dictionary' ? 'hsl(var(--indigo-500))' : 'var(--text-muted)' }}
+                    onClick={() => setActiveTab('dictionary')}
+                >
+                    <Search size={24} />
+                    <span style={{ fontSize: '0.75rem' }}>字典</span>
                 </button>
 
                 <button

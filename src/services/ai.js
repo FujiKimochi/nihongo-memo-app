@@ -384,3 +384,51 @@ export async function generateN3Sentences(input) {
     throw error;
   }
 }
+
+/**
+ * Generates a comprehensive dictionary lookup for any given Japanese word.
+ */
+export async function generateDictionaryLookup(input) {
+  const promptText = `
+    You are a professional Japanese dictionary and language tutor for Traditional Chinese speakers.
+    The user is looking up the word: "${input}".
+
+    Please provide a comprehensive explanation of this word in a strict JSON object format.
+    **CRITICAL Requirements**:
+    1. Determine the correct reading (kana), type (noun, verb, adj, adv, etc.), and meaning.
+    2. Provide a detailed explanation of its usage.
+    3. Provide exactly 3 natural, practical example sentences.
+    4. All explanations and translations must be in **Traditional Chinese (繁體中文)**.
+    5. The response MUST be a strict JSON object with the following structure:
+
+    {
+      "word": "The word being looked up (Kanji if applicable, otherwise kana)",
+      "kana": "The reading in Hiragana/Katakana",
+      "meaning": "The core meaning in Traditional Chinese",
+      "type": "Part of speech (e.g., 名詞, 動詞(I類/II類/III類), い形容詞, な形容詞, 副詞)",
+      "explanation": [
+        "A detailed explanation of usage, nuances, or grammar points.",
+        "Must be an ARRAY OF STRINGS, where each string is a bullet point or paragraph.",
+        "Do NOT use HTML <ruby> tags inside this array."
+      ],
+      "examples": [
+        {
+          "jp": "The Japanese sentence.",
+          "ruby": "The Japanese sentence with HTML <ruby> tags for ALL Kanji furigana. Example: <ruby>私<rt>わたし</rt></ruby>は...",
+          "zh": "The Traditional Chinese translation."
+        },
+        ... (exactly 3 examples)
+      ]
+    }
+
+    Return the JSON object ONLY. Do not include markdown formatting like \`\`\`json.
+  `;
+
+  try {
+    const responseText = await invokeAIAssistant([{ role: 'user', content: promptText }]);
+    return parseAIJson(responseText);
+  } catch (error) {
+    console.error("AI Dictionary Lookup Error:", error);
+    throw error;
+  }
+}
