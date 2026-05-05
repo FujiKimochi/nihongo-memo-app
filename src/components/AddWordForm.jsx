@@ -28,6 +28,8 @@ export function AddWordForm({ onAdd, onCancel }) {
                 kana: p.kana,
                 meaning: p.meaning,
                 type: p.type || 'Verb',
+                transitivity: p.transitivity,
+                verbGroup: p.verb_group,
                 conjugations: p.conjugations,
                 examples: p.examples
             }));

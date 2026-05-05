@@ -44,6 +44,8 @@ const mapFromDb = (row) => ({
     kana: row.kana,
     meaning: row.meaning,
     type: row.type,
+    transitivity: row.transitivity,
+    verbGroup: row.verb_group,
     conjugations: row.conjugations,
     examples: row.examples,
     addedAt: row.added_at,
@@ -57,6 +59,8 @@ const mapToDb = (word) => ({
     kana: word.kana,
     meaning: word.meaning,
     type: word.type,
+    transitivity: word.transitivity,
+    verb_group: word.verbGroup,
     conjugations: word.conjugations,
     examples: word.examples,
     added_at: word.addedAt,
@@ -68,9 +72,13 @@ export const supabaseService = {
         const client = getSupabaseClient();
         if (!client) return null;
 
+        const { data: { user } } = await client.auth.getUser();
+        if (!user) return [];
+
         const { data, error } = await client
             .from('vocabulary')
             .select('*')
+            .eq('user_id', user.id)
             .order('added_at', { ascending: false });
 
         if (error) throw error;
@@ -95,10 +103,13 @@ export const supabaseService = {
         const client = getSupabaseClient();
         if (!client) return null;
 
+        const { data: { user } } = await client.auth.getUser();
+        if (!user) return;
+
         const { error } = await client
             .from('vocabulary')
             .delete()
-            .match({ id });
+            .match({ id, user_id: user.id });
 
         if (error) throw error;
     }
@@ -109,9 +120,13 @@ export const grammarSupabaseService = {
         const client = getSupabaseClient();
         if (!client) return null;
 
+        const { data: { user } } = await client.auth.getUser();
+        if (!user) return [];
+
         const { data, error } = await client
             .from('grammar')
             .select('*')
+            .eq('user_id', user.id)
             .order('added_at', { ascending: false });
 
         if (error) throw error;
@@ -161,10 +176,13 @@ export const grammarSupabaseService = {
         const client = getSupabaseClient();
         if (!client) return null;
 
+        const { data: { user } } = await client.auth.getUser();
+        if (!user) return;
+
         const { error } = await client
             .from('grammar')
             .delete()
-            .match({ id });
+            .match({ id, user_id: user.id });
 
         if (error) throw error;
     }
@@ -175,9 +193,13 @@ export const dialogueSupabaseService = {
         const client = getSupabaseClient();
         if (!client) return null;
 
+        const { data: { user } } = await client.auth.getUser();
+        if (!user) return [];
+
         const { data, error } = await client
             .from('dialogues')
             .select('*')
+            .eq('user_id', user.id)
             .order('added_at', { ascending: false });
 
         if (error) throw error;
@@ -218,10 +240,13 @@ export const dialogueSupabaseService = {
         const client = getSupabaseClient();
         if (!client) return null;
 
+        const { data: { user } } = await client.auth.getUser();
+        if (!user) return;
+
         const { error } = await client
             .from('dialogues')
             .delete()
-            .match({ id });
+            .match({ id, user_id: user.id });
 
         if (error) throw error;
     }
@@ -232,9 +257,13 @@ export const adjectiveSupabaseService = {
         const client = getSupabaseClient();
         if (!client) return null;
 
+        const { data: { user } } = await client.auth.getUser();
+        if (!user) return [];
+
         const { data, error } = await client
             .from('adjectives')
             .select('*')
+            .eq('user_id', user.id)
             .order('added_at', { ascending: false });
 
         if (error) throw error;
@@ -281,10 +310,13 @@ export const adjectiveSupabaseService = {
         const client = getSupabaseClient();
         if (!client) return null;
 
+        const { data: { user } } = await client.auth.getUser();
+        if (!user) return;
+
         const { error } = await client
             .from('adjectives')
             .delete()
-            .match({ id });
+            .match({ id, user_id: user.id });
 
         if (error) throw error;
     }

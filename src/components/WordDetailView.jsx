@@ -41,8 +41,20 @@ export function WordDetailView({ word, showHeader = true }) {
                             {word.kanji}
                             <span style={{ fontSize: '1.1rem', fontWeight: 400, color: 'var(--text-muted)' }}>{word.kana}</span>
                         </h3>
-                        <div style={{ fontSize: '1.25rem', color: 'hsl(var(--indigo-600))', fontWeight: 600, marginTop: '0.25rem' }}>
+                        <div style={{ fontSize: '1.25rem', color: 'hsl(var(--indigo-600))', fontWeight: 600, marginTop: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                             {word.meaning}
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                {word.transitivity && (
+                                    <span style={{ fontSize: '0.65rem', padding: '2px 8px', borderRadius: '4px', background: 'hsl(var(--indigo-50))', color: 'hsl(var(--indigo-600))', border: '1px solid hsl(var(--indigo-100))' }}>
+                                        {word.transitivity}
+                                    </span>
+                                )}
+                                {word.verbGroup && (
+                                    <span style={{ fontSize: '0.65rem', padding: '2px 8px', borderRadius: '4px', background: 'hsl(var(--sakura-50))', color: 'hsl(var(--sakura-600))', border: '1px solid hsl(var(--sakura-100))' }}>
+                                        {word.verbGroup}
+                                    </span>
+                                )}
+                            </div>
                         </div>
                     </div>
                     <button

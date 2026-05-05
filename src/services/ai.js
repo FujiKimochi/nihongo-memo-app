@@ -154,16 +154,18 @@ export async function generateVerbDetails(verbInput) {
     1. "kanji": The dictionary form of the verb (with Kanji).
     2. "kana": The reading in Hiragana (for Furigana usage).
     3. "meaning": Meaning in Traditional Chinese.
-    4. "type": Verb type (e.g., Godan, Ichidan, Irregular).
-    5. "conjugations": { "polite": {...}, "negative": {...}, "te": {...}, "potential": {...}, "passive": {...}, "causative": {...}, "causativePassive": {...}, "imperative": {...}, "volitional": {...}, "conditionalBa": {...}, "conditionalTara": {...}, "dictionary": {...} }
-       **CRITICAL**: You MUST provide all 12 conjugations listed above. Do not skip any. Each conjugation must include "form" (the correctly conjugated word), "explanation" (brief usage), and "example": { "jp", "ruby", "zh" }.
+    4. "type": General part of speech (e.g., 動詞).
+    5. "transitivity": The verb's transitivity, either "自動詞" or "他動詞".
+    6. "verb_group": The verb's category, such as "第1類", "第2類", or "第3類".
+    7. "conjugations": { "polite": {...}, "negative": {...}, "te": {...}, "potential": {...}, "passive": {...}, "causative": {...}, "causativePassive": {...}, "imperative": {...}, "volitional": {...}, "conditionalBa": {...}, "conditionalTara": {...}, "dictionary": {...} }
+       **CRITICAL**: You MUST provide all 12 conjugations listed above. Do not skip any. Each conjugation must include "form" (the correctly conjugated word), "explanation" (brief usage), and "example": { "jp": "...", "ruby": "...", "zh": "..." }.
        **EXTREMELY IMPORTANT**: The "example.jp" for EACH conjugation MUST be a LONG, COMPLETE, MEANINGFUL, and NATURAL Japanese sentence with rich context. 
        - BAD EXAMPLE: "私は引き出さない" (Too short, no context)
        - GOOD EXAMPLE: "今日は銀行のATMでお金を引き出さない予定です。" (Has context, subject, object, and natural flow)
        - BAD EXAMPLE: "引き出してみます" (Too short)
        - GOOD EXAMPLE: "彼の本当の気持ちを引き出してみます。" (Meaningful context)
        Ensure correct Japanese conjugation rules (e.g., Godan verbs: ば-form is 〜えば, not 〜すば).
-    6. "examples": An array of 3 distinct and practical objects. Each object: { "jp", "ruby", "zh" }.
+    6. "examples": An array of 3 distinct and practical objects. Each object: { "jp": "...", "ruby": "...", "zh": "..." }.
 
     **CRITICAL**: Every "ruby" field MUST contain the Japanese sentence with HTML <ruby> tags for ALL Kanji furigana.
     Example: <ruby>私<rt>わたし</rt></ruby>は...
@@ -179,16 +181,18 @@ export async function generateVerbDetails(verbInput) {
     1. "kanji": The dictionary form (Kanji).
     2. "kana": Hiragana reading.
     3. "meaning": Traditional Chinese meaning.
-    4. "type": Verb type.
-    5. "conjugations": { "polite": {...}, "negative": {...}, "te": {...}, "potential": {...}, "passive": {...}, "causative": {...}, "causativePassive": {...}, "imperative": {...}, "volitional": {...}, "conditionalBa": {...}, "conditionalTara": {...}, "dictionary": {...} } 
-       **CRITICAL**: You MUST provide all 12 conjugations listed above. Do not skip any. Each conjugation must include "form" (the correctly conjugated word), "explanation" (brief usage), and "example": { "jp", "ruby", "zh" }.
+    4. "type": General part of speech (e.g., 動詞).
+    5. "transitivity": Either "自動詞" or "他動詞".
+    6. "verb_group": Category like "第1類", "第2類", or "第3類".
+    7. "conjugations": { "polite": {...}, "negative": {...}, "te": {...}, "potential": {...}, "passive": {...}, "causative": {...}, "causativePassive": {...}, "imperative": {...}, "volitional": {...}, "conditionalBa": {...}, "conditionalTara": {...}, "dictionary": {...} } 
+       **CRITICAL**: You MUST provide all 12 conjugations listed above. Do not skip any. Each conjugation must include "form" (the correctly conjugated word), "explanation" (brief usage), and "example": { "jp": "...", "ruby": "...", "zh": "..." }.
        **EXTREMELY IMPORTANT**: The "example.jp" for EACH conjugation MUST be a LONG, COMPLETE, MEANINGFUL, and NATURAL Japanese sentence with rich context.
        - BAD EXAMPLE: "私は引き出さない" (Too short, no context)
        - GOOD EXAMPLE: "今日は銀行のATMでお金を引き出さない予定です。" (Has context, subject, object, and natural flow)
        - BAD EXAMPLE: "引き出してみます" (Too short)
        - GOOD EXAMPLE: "彼の本当の気持ちを引き出してみます。" (Meaningful context)
        Ensure correct Japanese conjugation rules (e.g., Godan verbs: ば-form is 〜えば, not 〜すば).
-    6. "examples": Array of 3 distinct and practical objects: { "jp", "ruby", "zh" }.
+    6. "examples": Array of 3 distinct and practical objects: { "jp": "...", "ruby": "...", "zh": "..." }.
 
     **CRITICAL**: Every "ruby" field MUST contain the Japanese sentence with HTML <ruby> tags for ALL Kanji furigana.
 
