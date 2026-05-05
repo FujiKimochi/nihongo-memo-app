@@ -58,7 +58,14 @@ export function WordList({ words, onDelete, onAddClick }) {
                                         </button>
                                     </div>
                                     <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{word.kana}</div>
-                                    <div style={{ marginTop: '0.25rem' }}>{word.meaning}</div>
+                                    <div style={{ marginTop: '0.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <span style={{ fontWeight: 500 }}>{word.meaning}</span>
+                                        {word.transitivity && (
+                                            <span style={{ fontSize: '0.65rem', padding: '1px 6px', borderRadius: '4px', background: '#eef2ff', color: '#4338ca', border: '1px solid #c7d2fe' }}>
+                                                {word.transitivity}
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <button

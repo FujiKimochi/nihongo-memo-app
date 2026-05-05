@@ -45,12 +45,12 @@ export function WordDetailView({ word, showHeader = true }) {
                             {word.meaning}
                             <div style={{ display: 'flex', gap: '0.5rem' }}>
                                 {word.transitivity && (
-                                    <span style={{ fontSize: '0.65rem', padding: '2px 8px', borderRadius: '4px', background: 'hsl(var(--indigo-50))', color: 'hsl(var(--indigo-600))', border: '1px solid hsl(var(--indigo-100))' }}>
+                                    <span style={{ fontSize: '0.7rem', padding: '2px 10px', borderRadius: '6px', background: '#eef2ff', color: '#4338ca', border: '1px solid #c7d2fe', fontWeight: 700 }}>
                                         {word.transitivity}
                                     </span>
                                 )}
                                 {word.verbGroup && (
-                                    <span style={{ fontSize: '0.65rem', padding: '2px 8px', borderRadius: '4px', background: 'hsl(var(--sakura-50))', color: 'hsl(var(--sakura-600))', border: '1px solid hsl(var(--sakura-100))' }}>
+                                    <span style={{ fontSize: '0.7rem', padding: '2px 10px', borderRadius: '6px', background: '#fff5f5', color: '#e53e3e', border: '1px solid #feb2b2', fontWeight: 700 }}>
                                         {word.verbGroup}
                                     </span>
                                 )}
@@ -62,8 +62,8 @@ export function WordDetailView({ word, showHeader = true }) {
                             e.stopPropagation();
                             speak(word.kanji);
                         }}
-                        className="btn-ghost p-3 rounded-full hover:bg-indigo-50"
-                        style={{ color: 'hsl(var(--indigo-500))' }}
+                        className="p-3 rounded-full hover:bg-indigo-50 transition-colors"
+                        style={{ color: 'hsl(var(--indigo-500))', border: '1px solid #eef2ff' }}
                     >
                         <Volume2 size={28} />
                     </button>
