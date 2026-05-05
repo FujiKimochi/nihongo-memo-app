@@ -422,7 +422,9 @@ export async function generateDictionaryLookup(input) {
       "kana": "The reading in Hiragana/Katakana",
       "meaning": "The core meaning in Traditional Chinese",
       "meaning_jp": "A simple, easy-to-understand explanation of the word IN JAPANESE (like a beginner's dictionary).",
-      "type": "Part of speech (e.g., 名詞, 動詞(I類/II類/III類), い形容詞, な形容詞, 副詞)",
+      "type": "Part of speech (e.g., 名詞, 動詞, い形容詞, な形容詞, 副詞)",
+      "transitivity": "If verb: 自動詞 or 他動詞. If not verb: null",
+      "verb_group": "If verb: 第1類, 第2類, or 第3類. If not verb: null",
       "explanation": [
         "A detailed explanation of usage, nuances, or grammar points.",
         "Must be an ARRAY OF STRINGS, where each string is a bullet point or paragraph.",

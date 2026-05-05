@@ -44,6 +44,8 @@ export function DictionaryLookup({ onAddWord, onAddGrammar, onAddAdjective }) {
                     kana: p.kana,
                     meaning: p.meaning,
                     type: p.type || 'Verb',
+                    transitivity: p.transitivity,
+                    verbGroup: p.verb_group,
                     conjugations: p.conjugations,
                     examples: p.examples
                 }));
@@ -138,9 +140,23 @@ export function DictionaryLookup({ onAddWord, onAddGrammar, onAddAdjective }) {
                                 <h3 className="text-3xl font-bold text-gray-900 mb-1">{result.word}</h3>
                                 <p className="text-lg text-indigo-600 font-medium">{result.kana}</p>
                             </div>
+                        <div className="flex flex-col items-end gap-2">
                             <span className="px-3 py-1 bg-indigo-50 text-indigo-700 text-sm font-bold rounded-full border border-indigo-100">
                                 {result.type}
                             </span>
+                            <div className="flex gap-1">
+                                {result.transitivity && (
+                                    <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded border border-blue-100">
+                                        {result.transitivity}
+                                    </span>
+                                )}
+                                {result.verb_group && (
+                                    <span className="px-2 py-0.5 bg-rose-50 text-rose-600 text-[10px] font-bold rounded border border-rose-100">
+                                        {result.verb_group}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
                         </div>
                         <div className="mt-3 space-y-3">
                             <p className="text-xl text-gray-800 font-medium">
