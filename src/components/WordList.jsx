@@ -61,8 +61,13 @@ export function WordList({ words, onDelete, onAddClick }) {
                                     <div style={{ marginTop: '0.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         <span style={{ fontWeight: 500 }}>{word.meaning}</span>
                                         {word.transitivity && (
-                                            <span style={{ fontSize: '0.65rem', padding: '1px 6px', borderRadius: '4px', background: '#eef2ff', color: '#4338ca', border: '1px solid #c7d2fe' }}>
+                                            <span style={{ fontSize: '0.65rem', padding: '2px 8px', borderRadius: '4px', background: 'linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)', color: '#4338ca', border: '1px solid #c7d2fe', fontWeight: 800 }}>
                                                 {word.transitivity}
+                                            </span>
+                                        )}
+                                        {word.verbGroup && (
+                                            <span style={{ fontSize: '0.65rem', padding: '2px 8px', borderRadius: '4px', background: 'linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%)', color: '#e53e3e', border: '1px solid #feb2b2', fontWeight: 800 }}>
+                                                {word.verbGroup}
                                             </span>
                                         )}
                                     </div>

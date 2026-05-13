@@ -19,8 +19,6 @@ import { DialogueList } from './components/DialogueList';
 import { AdjectiveList } from './components/AdjectiveList';
 import { Settings } from './components/Settings';
 import { ReloadPrompt } from './components/ReloadPrompt';
-import { KanaChart } from './components/KanaChart';
-import { N3SentenceGenerator } from './components/N3SentenceGenerator';
 import { DictionaryLookup } from './components/DictionaryLookup';
 
 function App() {
@@ -29,7 +27,7 @@ function App() {
     const { dialogues, addDialogue, deleteDialogue } = useDialogues();
     const { adjectives, addAdjectives, deleteAdjective } = useAdjectives();
 
-    const [activeTab, setActiveTab] = useState('add'); // 'list', 'add', 'review', 'sentences', 'kana', 'settings'
+    const [activeTab, setActiveTab] = useState('list'); // 'list', 'add', 'review', 'dictionary', 'settings'
     const [activeCategory, setActiveCategory] = useState('vocabulary'); // 'vocabulary', 'grammar', 'adjective', 'dialogue'
     const [session, setSession] = useState(null);
 
@@ -99,7 +97,7 @@ function App() {
                     <h1 style={{ fontSize: '1.25rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <span style={{ color: 'hsl(var(--sakura-500))' }}>✿</span>
                         Nihongo Memo
-                        <span style={{ fontSize: '0.6rem', background: '#eef2ff', color: '#4338ca', padding: '2px 6px', borderRadius: '4px', marginLeft: '4px', opacity: 0.8 }}>v1.2.1</span>
+                        <span style={{ fontSize: '0.6rem', background: '#eef2ff', color: '#4338ca', padding: '2px 6px', borderRadius: '4px', marginLeft: '4px', opacity: 0.8 }}>v1.4.0</span>
                     </h1>
                     <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500 }}>
                         {getCountDisplay()}
@@ -107,7 +105,7 @@ function App() {
                 </div>
 
                 {/* Category Switcher */}
-                {activeTab !== 'kana' && activeTab !== 'settings' && activeTab !== 'sentences' && activeTab !== 'dictionary' && (
+                {activeTab !== 'settings' && activeTab !== 'dictionary' && (
                     <div className="flex bg-gray-100 p-1 rounded-xl overflow-x-auto no-scrollbar">
                         {[
                             { id: 'vocabulary', label: '單字', icon: Languages },
@@ -146,14 +144,6 @@ function App() {
 
                 {activeTab === 'settings' && (
                     <Settings />
-                )}
-
-                {activeTab === 'kana' && (
-                    <KanaChart />
-                )}
-
-                {activeTab === 'sentences' && (
-                    <N3SentenceGenerator />
                 )}
 
                 {activeTab === 'dictionary' && (
@@ -237,23 +227,7 @@ function App() {
                     <span style={{ fontSize: '0.75rem' }}>複習</span>
                 </button>
 
-                <button
-                    className="flex flex-col items-center gap-1"
-                    style={{ color: activeTab === 'sentences' ? 'hsl(var(--indigo-500))' : 'var(--text-muted)' }}
-                    onClick={() => setActiveTab('sentences')}
-                >
-                    <PenTool size={24} />
-                    <span style={{ fontSize: '0.75rem' }}>造句</span>
-                </button>
 
-                <button
-                    className="flex flex-col items-center gap-1"
-                    style={{ color: activeTab === 'kana' ? 'hsl(var(--indigo-500))' : 'var(--text-muted)' }}
-                    onClick={() => setActiveTab('kana')}
-                >
-                    <Grid size={24} />
-                    <span style={{ fontSize: '0.75rem' }}>五十音</span>
-                </button>
 
                 <button
                     className="flex flex-col items-center gap-1"

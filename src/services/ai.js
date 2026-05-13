@@ -5,9 +5,9 @@ const STORAGE_KEY_MODEL = 'nihongo-memo-model-name';
 
 export const getModelName = () => {
   const model = localStorage.getItem(STORAGE_KEY_MODEL);
-  // Migrate from old Gemini models to Groq default
-  if (!model || model.includes('gemini')) {
-    return 'llama-3.3-70b-versatile';
+  // Default to Gemini Flash Latest
+  if (!model || model.includes('1.5')) {
+    return 'gemini-flash-latest';
   }
   return model;
 };
@@ -16,9 +16,9 @@ export const setModelName = (name) => localStorage.setItem(STORAGE_KEY_MODEL, na
 // Currently available Groq models (April 2026)
 export async function fetchAvailableModels() {
   return [
-    { name: 'llama-3.3-70b-versatile', displayName: 'Llama 3.3 70B (推薦・高品質)' },
-    { name: 'llama-3.1-8b-instant', displayName: 'Llama 3.1 8B (快速・輕量)' },
-    { name: 'mixtral-8x7b-32768', displayName: 'Mixtral 8x7B (平衡)' },
+    { name: 'gemini-flash-latest', displayName: 'Gemini Flash (推薦・極速)' },
+    { name: 'gemini-pro-latest', displayName: 'Gemini Pro (高品質・精準)' },
+    { name: 'gemini-2.0-flash-lite', displayName: 'Gemini 2.0 Lite (輕量)' },
   ];
 }
 
@@ -155,8 +155,8 @@ export async function generateVerbDetails(verbInput) {
     2. "kana": The reading in Hiragana (for Furigana usage).
     3. "meaning": Meaning in Traditional Chinese.
     4. "type": General part of speech (e.g., 動詞).
-    5. "transitivity": The verb's transitivity, either "自動詞" or "他動詞".
-    6. "verb_group": The verb's category, such as "第1類", "第2類", or "第3類".
+    5. "transitivity": MUST PROVIDE. The verb's transitivity, either "自動詞" or "他動詞".
+    6. "verb_group": MUST PROVIDE. The verb's category, such as "第1類", "第2類", or "第3類".
     7. "conjugations": { "polite": {...}, "negative": {...}, "te": {...}, "potential": {...}, "passive": {...}, "causative": {...}, "causativePassive": {...}, "imperative": {...}, "volitional": {...}, "conditionalBa": {...}, "conditionalTara": {...}, "dictionary": {...} }
        **CRITICAL**: You MUST provide all 12 conjugations listed above. Do not skip any. Each conjugation must include "form" (the correctly conjugated word), "explanation" (brief usage), and "example": { "jp": "...", "ruby": "...", "zh": "..." }.
        **EXTREMELY IMPORTANT**: The "example.jp" for EACH conjugation MUST be a LONG, COMPLETE, MEANINGFUL, and NATURAL Japanese sentence with rich context. 
@@ -423,8 +423,8 @@ export async function generateDictionaryLookup(input) {
       "meaning": "The core meaning in Traditional Chinese",
       "meaning_jp": "A simple, easy-to-understand explanation of the word IN JAPANESE (like a beginner's dictionary).",
       "type": "Part of speech (e.g., 名詞, 動詞, い形容詞, な形容詞, 副詞)",
-      "transitivity": "If verb: 自動詞 or 他動詞. If not verb: null",
-      "verb_group": "If verb: 第1類, 第2類, or 第3類. If not verb: null",
+      "transitivity": "MANDATORY if verb: 自動詞 or 他動詞. If not verb: null",
+      "verb_group": "MANDATORY if verb: 第1類, 第2類, or 第3類. If not verb: null",
       "explanation": [
         "A detailed explanation of usage, nuances, or grammar points.",
         "Must be an ARRAY OF STRINGS, where each string is a bullet point or paragraph.",

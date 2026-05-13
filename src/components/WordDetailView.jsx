@@ -41,16 +41,16 @@ export function WordDetailView({ word, showHeader = true }) {
                             {word.kanji}
                             <span style={{ fontSize: '1.1rem', fontWeight: 400, color: 'var(--text-muted)' }}>{word.kana}</span>
                         </h3>
-                        <div style={{ fontSize: '1.25rem', color: 'hsl(var(--indigo-600))', fontWeight: 600, marginTop: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <div style={{ fontSize: '1.25rem', color: 'hsl(var(--indigo-600))', fontWeight: 600, marginTop: '0.25rem', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.75rem' }}>
                             {word.meaning}
                             <div style={{ display: 'flex', gap: '0.5rem' }}>
                                 {word.transitivity && (
-                                    <span style={{ fontSize: '0.7rem', padding: '2px 10px', borderRadius: '6px', background: '#eef2ff', color: '#4338ca', border: '1px solid #c7d2fe', fontWeight: 700 }}>
+                                    <span style={{ fontSize: '0.75rem', padding: '4px 12px', borderRadius: '8px', background: 'linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)', color: '#4338ca', border: '1px solid #c7d2fe', fontWeight: 800, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                                         {word.transitivity}
                                     </span>
                                 )}
                                 {word.verbGroup && (
-                                    <span style={{ fontSize: '0.7rem', padding: '2px 10px', borderRadius: '6px', background: '#fff5f5', color: '#e53e3e', border: '1px solid #feb2b2', fontWeight: 700 }}>
+                                    <span style={{ fontSize: '0.75rem', padding: '4px 12px', borderRadius: '8px', background: 'linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%)', color: '#e53e3e', border: '1px solid #feb2b2', fontWeight: 800, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                                         {word.verbGroup}
                                     </span>
                                 )}
@@ -62,10 +62,10 @@ export function WordDetailView({ word, showHeader = true }) {
                             e.stopPropagation();
                             speak(word.kanji);
                         }}
-                        className="p-3 rounded-full hover:bg-indigo-50 transition-colors"
-                        style={{ color: 'hsl(var(--indigo-500))', border: '1px solid #eef2ff' }}
+                        className="p-4 rounded-2xl hover:bg-indigo-50 transition-all active:scale-90"
+                        style={{ color: 'hsl(var(--indigo-500))', background: '#f8fafc', border: '1px solid #e2e8f0' }}
                     >
-                        <Volume2 size={28} />
+                        <Volume2 size={32} />
                     </button>
                 </div>
             )}
