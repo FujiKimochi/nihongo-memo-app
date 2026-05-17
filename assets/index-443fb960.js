@@ -86,7 +86,7 @@ ${y}`}class ne extends Error{constructor({message:t,code:r,cause:n,name:s}){var 
     1. "kanji", "kana", "meaning", "type", "transitivity" (自動詞/他動詞), "verb_group" (第1/2/3類).
     2. "conjugations": { "polite", "negative", "te", "potential", "passive", "causative", "causativePassive", "imperative", "volitional", "conditionalBa", "conditionalTara", "dictionary" }.
        - Each conjugation: { "form", "explanation", "example": { "jp", "ruby", "zh" } }.
-       - **CRITICAL**: Example "jp" must be LONG, NATURAL sentences.
+       - **CRITICAL**: Example "jp" must be short, concise, and practical sentences.
     3. "examples": Array of 3: { "jp", "ruby", "zh" }.
     **HTML <ruby> tags REQUIRED** for ALL Kanji furigana in all "ruby" fields.
     Return JSON array ONLY.
@@ -97,7 +97,7 @@ ${y}`}class ne extends Error{constructor({message:t,code:r,cause:n,name:s}){var 
     1. "kanji", "kana", "meaning", "type", "transitivity", "verb_group".
     2. "conjugations": { "polite", "negative", "te", "potential", "passive", "causative", "causativePassive", "imperative", "volitional", "conditionalBa", "conditionalTara", "dictionary" }.
        - Each: { "form", "explanation", "example": { "jp", "ruby", "zh" } }.
-       - **CRITICAL**: Example "jp" must be LONG, NATURAL sentences.
+       - **CRITICAL**: Example "jp" must be short, concise, and practical sentences.
     3. "examples": Array of 3: { "jp", "ruby", "zh" }.
     **HTML <ruby> tags REQUIRED** for ALL Kanji furigana in all "ruby" fields.
   `;try{const s=await ps([{role:"user",content:n}]);return gs(s)}catch(s){throw console.error("AI Generation Error (Primary):",s),s}}async function tf(e){const t=e.split(/[\s,，、]+/).filter(s=>s.trim().length>0),n=t.length>1?`
