@@ -146,23 +146,22 @@ export async function generateVerbDetails(verbInput) {
     You are a Japanese tutor for Traditional Chinese speakers. Input: "${items.join(', ')}".
     Provide a JSON array of objects. ALL Chinese text must be **Traditional Chinese**.
     Each object MUST have:
-    1. "kanji", "kana", "meaning", "type", "transitivity" (自動詞/他動詞), "verb_group" (第1/2/3類).
+    1. "kanji", "kana", "meaning", "type", "transitivity" (自動詞/他動詞, or null if N/A), "verb_group" (第1/2/3類, or null if N/A).
     2. "conjugations": { "polite", "negative", "te", "potential", "passive", "causative", "causativePassive", "imperative", "volitional", "conditionalBa", "conditionalTara", "dictionary" }.
        - Each conjugation: { "form", "explanation", "example": { "jp", "ruby", "zh" } }.
        - **CRITICAL**: Example "jp" must be short, concise, and practical sentences.
     3. "examples": Array of 3: { "jp", "ruby", "zh" }.
-    **HTML <ruby> tags REQUIRED** for ALL Kanji furigana in all "ruby" fields.
-    Return JSON array ONLY.
+    **CRITICAL RUBY FORMAT**: For ALL "ruby" fields, you MUST use strict HTML <ruby> tags for Kanji (e.g., <ruby>漢字<rt>かんじ</rt></ruby>). DO NOT output plain text like 漢かん字じ or 漢字(かんじ).
   ` : `
     You are a Japanese tutor for Traditional Chinese speakers. Input: "${verbInput}".
     Provide a JSON object. ALL Chinese text must be **Traditional Chinese**.
     Include:
-    1. "kanji", "kana", "meaning", "type", "transitivity", "verb_group".
+    1. "kanji", "kana", "meaning", "type", "transitivity" (自動詞/他動詞, or null if N/A), "verb_group" (第1/2/3類, or null if N/A).
     2. "conjugations": { "polite", "negative", "te", "potential", "passive", "causative", "causativePassive", "imperative", "volitional", "conditionalBa", "conditionalTara", "dictionary" }.
        - Each: { "form", "explanation", "example": { "jp", "ruby", "zh" } }.
        - **CRITICAL**: Example "jp" must be short, concise, and practical sentences.
     3. "examples": Array of 3: { "jp", "ruby", "zh" }.
-    **HTML <ruby> tags REQUIRED** for ALL Kanji furigana in all "ruby" fields.
+    **CRITICAL RUBY FORMAT**: For ALL "ruby" fields, you MUST use strict HTML <ruby> tags for Kanji (e.g., <ruby>漢字<rt>かんじ</rt></ruby>). DO NOT output plain text like 漢かん字じ or 漢字(かんじ).
   `;
 
   try {
@@ -187,14 +186,14 @@ export async function generateGrammarDetails(grammarInput) {
     1. "grammar_point", "meaning", "explanation", "connection", "is_comparison": true.
     2. "comparison_analysis": Detailed comparison text/table.
     3. "items": Array for each point. Each: { "grammar", "explanation", "examples": [ { "jp", "ruby", "zh" }, ... ] }
-    **HTML <ruby> tags REQUIRED** for furigana. ALL Chinese in **Traditional**.
+    **CRITICAL RUBY FORMAT**: For ALL "ruby" fields, you MUST use strict HTML <ruby> tags for Kanji (e.g., <ruby>漢字<rt>かんじ</rt></ruby>). DO NOT output plain text like 漢かん字じ. ALL Chinese in **Traditional**.
     Return JSON ONLY.
   ` : `
     You are a Japanese tutor for Traditional Chinese speakers. Point: "${grammarInput}".
     Provide strict JSON:
     1. "grammar_point", "meaning", "explanation", "connection".
     2. "examples": Array of 5: [ { "jp", "ruby", "zh" }, ... ]
-    **HTML <ruby> tags REQUIRED** for furigana. ALL Chinese in **Traditional**.
+    **CRITICAL RUBY FORMAT**: For ALL "ruby" fields, you MUST use strict HTML <ruby> tags for Kanji (e.g., <ruby>漢字<rt>かんじ</rt></ruby>). DO NOT output plain text like 漢かん字じ. ALL Chinese in **Traditional**.
     Return JSON ONLY.
   `;
 
@@ -219,7 +218,7 @@ export async function generateDialogueContext(scenario) {
     Return strict JSON:
     1. "scenario", "description".
     2. "dialogues": Array of { "role", "jp", "ruby", "zh" }.
-    **HTML <ruby> tags REQUIRED** for furigana. ALL Chinese in **Traditional**.
+    **CRITICAL RUBY FORMAT**: For ALL "ruby" fields, you MUST use strict HTML <ruby> tags for Kanji (e.g., <ruby>漢字<rt>かんじ</rt></ruby>). DO NOT output plain text like 漢かん字じ. ALL Chinese in **Traditional**.
     Return JSON ONLY.
   `;
 
@@ -247,7 +246,7 @@ export async function generateAdjectiveDetails(adjectiveInput) {
     - "kanji", "kana", "meaning", "type" (i-adj/na-adj/adv).
     - "conjugations": If adjective: { "negative", "past", "pastNegative", "polite", "politeNegative", "te", "adverb" }. Each: { "form", "explanation", "example": { "jp", "ruby", "zh" } }. If adverb: null.
     - "examples": Array of 3: { "jp", "ruby", "zh" }.
-    **HTML <ruby> tags REQUIRED** for furigana.
+    **CRITICAL RUBY FORMAT**: For ALL "ruby" fields, you MUST use strict HTML <ruby> tags for Kanji (e.g., <ruby>漢字<rt>かんじ</rt></ruby>). DO NOT output plain text like 漢かん字じ.
     Return JSON ONLY.
   ` : `
     You are a Japanese tutor for Traditional Chinese speakers. Input: "${adjectiveInput}".
@@ -255,7 +254,7 @@ export async function generateAdjectiveDetails(adjectiveInput) {
     - "kanji", "kana", "meaning", "type" (i-adj/na-adj/adv).
     - "conjugations": If adjective: { "negative", "past", "pastNegative", "polite", "politeNegative", "te", "adverb" }. Each: { "form", "explanation", "example": { "jp", "ruby", "zh" } }. If adverb: null.
     - "examples": Array of 3: { "jp", "ruby", "zh" }.
-    **HTML <ruby> tags REQUIRED** for furigana.
+    **CRITICAL RUBY FORMAT**: For ALL "ruby" fields, you MUST use strict HTML <ruby> tags for Kanji (e.g., <ruby>漢字<rt>かんじ</rt></ruby>). DO NOT output plain text like 漢かん字じ.
     Return JSON ONLY.
   `;
 
@@ -280,7 +279,7 @@ export async function generateN3Sentences(input) {
     - "jp", "zh".
     - "ruby": With HTML <ruby> tags for furigana.
     - "grammar_explanation": Array of strings (bullets). Explain structure, particles, verb form. (No ruby tags here).
-    ALL Chinese in **Traditional**. Return JSON ONLY.
+    **CRITICAL RUBY FORMAT**: For ALL "ruby" fields, you MUST use strict HTML <ruby> tags for Kanji (e.g., <ruby>漢字<rt>かんじ</rt></ruby>). DO NOT output plain text like 漢かん字じ. ALL Chinese in **Traditional**. Return JSON ONLY.
   `;
 
 
@@ -304,8 +303,7 @@ export async function generateDictionaryLookup(input) {
     - "type", "transitivity" (verb only), "verb_group" (verb only).
     - "explanation": Array of strings (bullets). No ruby tags.
     - "examples": Array of 3: { "jp", "ruby", "zh" }.
-    **HTML <ruby> tags REQUIRED** for furigana in "ruby".
-    ALL Chinese in **Traditional**. Return JSON ONLY.
+    **CRITICAL RUBY FORMAT**: For ALL "ruby" fields, you MUST use strict HTML <ruby> tags for Kanji (e.g., <ruby>漢字<rt>かんじ</rt></ruby>). DO NOT output plain text like 漢かん字じ. ALL Chinese in **Traditional**. Return JSON ONLY.
   `;
 
 

@@ -44,12 +44,12 @@ export function WordDetailView({ word, showHeader = true }) {
                         <div style={{ fontSize: '1.25rem', color: 'hsl(var(--indigo-600))', fontWeight: 600, marginTop: '0.25rem', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.75rem' }}>
                             {word.meaning}
                             <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                {word.transitivity && (
+                                {word.transitivity && word.transitivity !== 'N/A' && word.transitivity !== '無' && (
                                     <span style={{ fontSize: '0.75rem', padding: '4px 12px', borderRadius: '8px', background: 'linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)', color: '#4338ca', border: '1px solid #c7d2fe', fontWeight: 800, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                                         {word.transitivity}
                                     </span>
                                 )}
-                                {word.verbGroup && (
+                                {word.verbGroup && word.verbGroup !== 'N/A' && word.verbGroup !== '無' && (
                                     <span style={{ fontSize: '0.75rem', padding: '4px 12px', borderRadius: '8px', background: 'linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%)', color: '#e53e3e', border: '1px solid #feb2b2', fontWeight: 800, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                                         {word.verbGroup}
                                     </span>
