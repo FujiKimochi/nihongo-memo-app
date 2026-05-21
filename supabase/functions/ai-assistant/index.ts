@@ -20,7 +20,7 @@ serve(async (req) => {
 
     // Parse Request Body early
     const body = await req.json();
-    const { messages, systemInstruction, modelName = 'gemini-1.5-flash', mode } = body;
+    const { messages, systemInstruction, modelName = 'gemini-2.5-flash', mode } = body;
     const timestamp = new Date().toISOString();
 
     // 1. Reachability Check (Ping Mode - No Auth Required)
@@ -78,15 +78,31 @@ serve(async (req) => {
         geminiBody.systemInstruction = { parts: [{ text: systemInstruction }] };
       }
 
-      const response = await fetch(geminiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(geminiBody),
-      });
+      // Retry logic for 429
+      let response: Response;
+      let data: any;
+      const MAX_RETRIES = 3;
+      
+      for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+        response = await fetch(geminiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(geminiBody),
+        });
 
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(`Gemini API error (${response.status}): ${data.error?.message || 'Unknown'}`);
+        data = await response.json();
+        
+        if (response.status === 429 && attempt < MAX_RETRIES) {
+          const waitMs = 2000 * (attempt + 1); // Incremental wait
+          console.log(`[Rate Limited] Attempt ${attempt + 1} failed. Retrying in ${waitMs}ms...`);
+          await new Promise(r => setTimeout(r, waitMs));
+          continue;
+        }
+        break;
+      }
+
+      if (!response!.ok) {
+        throw new Error(`Gemini API error (${response!.status}): ${data.error?.message || 'Unknown'}`);
       }
       replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 

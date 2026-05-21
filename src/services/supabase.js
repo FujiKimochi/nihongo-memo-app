@@ -3,9 +3,12 @@ import { createClient } from '@supabase/supabase-js';
 const STORAGE_KEY_URL = 'nihongo-memo-supabase-url';
 const STORAGE_KEY_KEY = 'nihongo-memo-supabase-key';
 
+const DEFAULT_URL = 'https://rctplsmxqadphcnremfj.supabase.co';
+const DEFAULT_KEY = 'sb_publishable_27Dpe4QonNNtroGAy7H_cw_cYelDsui';
+
 export const getSupabaseConfig = () => ({
-    url: localStorage.getItem(STORAGE_KEY_URL) || '',
-    key: localStorage.getItem(STORAGE_KEY_KEY) || ''
+    url: localStorage.getItem(STORAGE_KEY_URL) || DEFAULT_URL,
+    key: localStorage.getItem(STORAGE_KEY_KEY) || DEFAULT_KEY
 });
 
 export const setSupabaseConfig = (url, key) => {

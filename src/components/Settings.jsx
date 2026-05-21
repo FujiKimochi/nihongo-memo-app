@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { getModelName, setModelName, fetchAvailableModels, checkAIHealth } from '../services/ai';
-import { getSupabaseConfig, setSupabaseConfig, getSupabaseClient, settingsSupabaseService } from '../services/supabase';
-import { Database, Cloud, RefreshCw, CheckCircle, AlertCircle, Save, Bot, LogOut, User } from 'lucide-react';
+import { getModelName, setModelName, fetchAvailableModels, checkAIHealth, generateVerbDetails } from '../services/ai';
+import { getSupabaseConfig, setSupabaseConfig, getSupabaseClient, settingsSupabaseService, supabaseService } from '../services/supabase';
+import { Database, Cloud, RefreshCw, CheckCircle, AlertCircle, Save, Bot, LogOut, User, Wrench, Loader2 } from 'lucide-react';
+import { useVocabulary } from '../hooks/useVocabulary';
 
 import { APP_VERSION } from '../app-version';
 
@@ -22,6 +23,10 @@ export function Settings() {
     // AI Health state
     const [healthStatus, setHealthStatus] = useState(null); // null, 'testing', 'success', 'error'
     const [healthData, setHealthData] = useState(null);
+
+    const { words } = useVocabulary();
+    const [isRepairing, setIsRepairing] = useState(false);
+    const [repairProgress, setRepairProgress] = useState({ current: 0, total: 0 });
 
     useEffect(() => {
         const client = getSupabaseClient();
@@ -103,6 +108,67 @@ export function Settings() {
         if (client) {
             await client.auth.signOut();
             window.location.reload(); // Hard reload to clear all states
+        }
+    };
+
+    const handleRepairData = async () => {
+        const verbsToFix = words.filter(w => 
+            (w.type === '動詞' || w.type?.includes('動詞')) && 
+            (!w.transitivity || !w.verbGroup)
+        );
+
+        if (verbsToFix.length === 0) {
+            alert('所有動詞似乎都已經有標註屬性了！');
+            return;
+        }
+
+        if (!confirm(`確定要重新分析 ${verbsToFix.length} 個動詞嗎？這可能需要一點時間。`)) return;
+
+        setIsRepairing(true);
+        setRepairProgress({ current: 0, total: verbsToFix.length });
+
+        try {
+            // Get current local data
+            const localDataRaw = localStorage.getItem('nihongo-memo-data');
+            let localWords = localDataRaw ? JSON.parse(localDataRaw) : [];
+
+            for (let i = 0; i < verbsToFix.length; i++) {
+                const word = verbsToFix[i];
+                setRepairProgress(p => ({ ...p, current: i + 1 }));
+
+                try {
+                    // Call AI to get missing details
+                    const aiDetails = await generateVerbDetails(word.kanji);
+                    
+                    // Support both single object and array response from generateVerbDetails
+                    const result = Array.isArray(aiDetails) ? aiDetails[0] : aiDetails;
+
+                    const updatedWord = {
+                        ...word,
+                        transitivity: result.transitivity,
+                        verbGroup: result.verb_group
+                    };
+
+                    // 1. Update Cloud (Supabase)
+                    await supabaseService.upsert(updatedWord);
+
+                    // 2. Update Local Cache
+                    localWords = localWords.map(w => w.id === word.id ? updatedWord : w);
+                    localStorage.setItem('nihongo-memo-data', JSON.stringify(localWords));
+
+                } catch (err) {
+                    console.error(`Failed to repair word ${word.kanji}:`, err);
+                }
+
+                // Small delay to avoid hitting rate limits too hard
+                await new Promise(r => setTimeout(r, 600));
+            }
+            alert('所有單字修復完成！頁面即將重新整理以顯示最新標籤。');
+            window.location.reload();
+        } catch (err) {
+            alert('修復過程中發生錯誤: ' + err.message);
+        } finally {
+            setIsRepairing(false);
         }
     };
 
@@ -343,7 +409,75 @@ export function Settings() {
                         {saved ? '已儲存！' : '儲存同步設定'}
                         <Save size={18} />
                     </button>
+
+                    <div className="mt-4 pt-4 border-t border-gray-100">
+                        <p className="text-xs text-gray-400 mb-2">手機版更新不順？試試強制清除快取</p>
+                        <button
+                            onClick={() => {
+                                if (confirm('這將清除本地快取並強制重新載入，確定嗎？')) {
+                                    window.location.reload(true);
+                                    // Also try to unregister service workers
+                                    if ('serviceWorker' in navigator) {
+                                        navigator.serviceWorker.getRegistrations().then(registrations => {
+                                            for(let registration of registrations) {
+                                                registration.unregister();
+                                            }
+                                        });
+                                    }
+                                    setTimeout(() => window.location.reload(), 500);
+                                }
+                            }}
+                            className="text-xs font-bold text-gray-500 hover:text-indigo-600 flex items-center gap-1"
+                        >
+                            <RefreshCw size={12} />
+                            強制清除快取並重新載入
+                        </button>
+                    </div>
                 </div>
+            </div>
+
+            {/* Data Maintenance Section */}
+            <div className="glass-card" style={{ padding: '1.5rem', border: '1px solid #fee2e2', background: 'linear-gradient(to bottom right, #ffffff, #fef2f2)' }}>
+                <h3 className="flex items-center gap-2 text-red-600" style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1rem' }}>
+                    <Wrench size={20} />
+                    資料維護工具
+                </h3>
+
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+                    如果您的舊單字沒有標註「自/他動詞」或「動詞類別」，可以使用此工具。AI 將重新分析所有動詞並補全屬性。
+                </p>
+
+                {isRepairing ? (
+                    <div className="flex flex-col gap-3">
+                        <div className="flex justify-between items-center text-sm font-bold text-indigo-600">
+                            <div className="flex items-center gap-2">
+                                <Loader2 size={16} className="animate-spin" />
+                                正在分析並補全資料...
+                            </div>
+                            <span>{repairProgress.current} / {repairProgress.total}</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div 
+                                className="bg-indigo-600 h-2 rounded-full transition-all duration-300" 
+                                style={{ width: `${(repairProgress.current / repairProgress.total) * 100}%` }}
+                            ></div>
+                        </div>
+                    </div>
+                ) : (
+                    <button
+                        onClick={handleRepairData}
+                        className="btn w-full py-3 flex items-center justify-center gap-2 font-bold transition-all hover:bg-red-50"
+                        style={{ 
+                            background: 'white', 
+                            border: '2px solid #ef4444', 
+                            color: '#ef4444',
+                            borderRadius: '12px'
+                        }}
+                    >
+                        <RefreshCw size={18} />
+                        重新生成現有單字屬性 (自/他動詞、類別)
+                    </button>
+                )}
             </div>
         </div>
     );

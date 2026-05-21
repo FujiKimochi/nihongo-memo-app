@@ -1,6 +1,8 @@
 const https = require('https');
 
-const API_KEY = 'AIzaSyBMc8_rpX5C9LQv3fjT2rUCoSvLqsSCn5o';
+// const API_KEY = 'AIzaSyBMc8_rpX5C9LQv3fjT2rUCoSvLqsSCn5o'; // LEAKED KEY REMOVED
+const API_KEY = process.env.GEMINI_API_KEY; // Use environment variable instead
+
 const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${API_KEY}`;
 
 https.get(url, (res) => {
