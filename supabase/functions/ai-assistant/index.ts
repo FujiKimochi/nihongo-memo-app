@@ -68,10 +68,13 @@ serve(async (req) => {
       console.log(`Calling Gemini API: ${geminiUrl}`);
 
       // Map to Gemini Format
-      const contents = messages.map(msg => ({
-        role: msg.role === 'assistant' || msg.role === 'model' ? 'model' : 'user',
-        parts: [{ text: msg.content }]
-      }));
+      const contents = messages.map(msg => {
+        const role = msg.role === 'assistant' || msg.role === 'model' ? 'model' : 'user';
+        if (msg.parts && Array.isArray(msg.parts)) {
+          return { role, parts: msg.parts };
+        }
+        return { role, parts: [{ text: msg.content || '' }] };
+      });
 
       const geminiBody: any = { contents };
       if (systemInstruction) {

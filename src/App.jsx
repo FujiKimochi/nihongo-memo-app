@@ -19,7 +19,7 @@ import { DialogueList } from './components/DialogueList';
 import { AdjectiveList } from './components/AdjectiveList';
 import { Settings } from './components/Settings';
 import { ReloadPrompt } from './components/ReloadPrompt';
-import { DictionaryLookup } from './components/DictionaryLookup';
+import { SentenceMaker } from './components/SentenceMaker';
 import { VerbReference } from './components/VerbReference';
 
 function App() {
@@ -28,7 +28,7 @@ function App() {
     const { dialogues, addDialogue, deleteDialogue } = useDialogues();
     const { adjectives, addAdjectives, deleteAdjective } = useAdjectives();
 
-    const [activeTab, setActiveTab] = useState('list'); // 'list', 'add', 'review', 'dictionary', 'reference', 'settings'
+    const [activeTab, setActiveTab] = useState('list'); // 'list', 'add', 'review', 'sentence', 'reference', 'settings'
     const [activeCategory, setActiveCategory] = useState('vocabulary'); // 'vocabulary', 'grammar', 'adjective', 'dialogue'
     const [session, setSession] = useState(null);
 
@@ -106,7 +106,7 @@ function App() {
                 </div>
 
                 {/* Category Switcher */}
-                {activeTab !== 'settings' && activeTab !== 'dictionary' && activeTab !== 'reference' && (
+                {activeTab !== 'settings' && activeTab !== 'sentence' && activeTab !== 'reference' && (
                     <div className="flex bg-gray-100 p-1 rounded-xl overflow-x-auto no-scrollbar">
                         {[
                             { id: 'vocabulary', label: '單字', icon: Languages },
@@ -151,12 +151,8 @@ function App() {
                     <VerbReference />
                 )}
 
-                {activeTab === 'dictionary' && (
-                    <DictionaryLookup 
-                        onAddWord={handleAddWords}
-                        onAddGrammar={handleAddGrammar}
-                        onAddAdjective={handleAddAdjectives}
-                    />
+                {activeTab === 'sentence' && (
+                    <SentenceMaker />
                 )}
 
                 {activeTab === 'list' && (
@@ -236,11 +232,11 @@ function App() {
 
                 <button
                     className="flex flex-col items-center gap-1"
-                    style={{ color: activeTab === 'dictionary' ? 'hsl(var(--indigo-500))' : 'var(--text-muted)' }}
-                    onClick={() => setActiveTab('dictionary')}
+                    style={{ color: activeTab === 'sentence' ? 'hsl(var(--indigo-500))' : 'var(--text-muted)' }}
+                    onClick={() => setActiveTab('sentence')}
                 >
-                    <Search size={24} />
-                    <span style={{ fontSize: '0.75rem' }}>字典</span>
+                    <PenTool size={24} />
+                    <span style={{ fontSize: '0.75rem' }}>造句</span>
                 </button>
 
                 <button

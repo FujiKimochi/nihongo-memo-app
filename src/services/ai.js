@@ -315,3 +315,78 @@ export async function generateDictionaryLookup(input) {
     throw error;
   }
 }
+
+/**
+ * Generates exactly 5 Japanese example sentences containing the input word/phrase.
+ */
+export async function generateFiveSentences(input) {
+  const promptText = `
+    You are a Japanese tutor for Traditional Chinese speakers. Input: "${input}".
+    Generate exactly 5 practical Japanese example sentences containing the word or phrase "${input}".
+    Return a strict JSON array of 5 objects, each object must contain:
+    - "jp": The Japanese sentence text.
+    - "ruby": The Japanese sentence text using strict HTML <ruby> tags for Kanji (e.g. <ruby>漢字<rt>かんじ</rt></ruby>).
+    - "zh": The Traditional Chinese translation of the sentence.
+    
+    **CRITICAL**:
+    - All Chinese text must be **Traditional Chinese**.
+    - For the "ruby" field, you MUST use strict HTML <ruby> tags. Do NOT output plain text like 漢かん字じ or 漢字(かんじ).
+    Return JSON ONLY.
+  `;
+
+  try {
+    const responseText = await invokeAIAssistant([{ role: 'user', content: promptText }]);
+    return parseAIJson(responseText);
+  } catch (error) {
+    console.error("AI generateFiveSentences Error:", error);
+    throw error;
+  }
+}
+
+/**
+ * Corrects Japanese grammar from an uploaded image containing Japanese sentences.
+ */
+export async function correctGrammarFromImage(base64Data, mimeType) {
+  const promptText = `
+    You are an expert Japanese language tutor.
+    An image is provided. Please perform the following steps:
+    1. OCR/Read any Japanese sentences or text written in the image (especially handwritten or printed exercises, notes, or test sentences).
+    2. Check the Japanese sentences for any grammar, particle, verb conjugation, or vocabulary errors.
+    3. For each sentence found, provide:
+       - The original sentence found in the image.
+       - A corrected version of the sentence (if it has errors; otherwise indicate it's correct).
+       - A detailed grammar correction and explanation of the errors/nuances in **Traditional Chinese**.
+    
+    Return a strict JSON object with:
+    - "detected_text": A string containing the raw text detected in the image.
+    - "corrections": An array of objects, each containing:
+       - "original": The original sentence found in the image.
+       - "corrected": The corrected sentence.
+       - "has_error": Boolean, true if there was an error corrected, false if the original was already correct.
+       - "explanation": Detailed explanation of grammar points and errors in Traditional Chinese.
+       
+    All explanations and translations must be in **Traditional Chinese**.
+    Return JSON ONLY.
+  `;
+
+  try {
+    const responseText = await invokeAIAssistant([
+      {
+        role: 'user',
+        parts: [
+          { text: promptText },
+          {
+            inlineData: {
+              mimeType: mimeType,
+              data: base64Data
+            }
+          }
+        ]
+      }
+    ]);
+    return parseAIJson(responseText);
+  } catch (error) {
+    console.error("AI correctGrammarFromImage Error:", error);
+    throw error;
+  }
+}
