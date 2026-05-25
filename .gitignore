@@ -126,3 +126,5 @@ dist
 
 # Scratch
 scratch/
+agent_history/
+

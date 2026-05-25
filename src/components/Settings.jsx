@@ -112,10 +112,17 @@ export function Settings() {
     };
 
     const handleRepairData = async () => {
-        const verbsToFix = words.filter(w => 
-            (w.type === '動詞' || w.type?.includes('動詞')) && 
-            (!w.transitivity || !w.verbGroup)
-        );
+        const verbsToFix = words.filter(w => {
+            if (!w.type) return false;
+            const typeStr = String(w.type).toLowerCase();
+            const isVerb = typeStr.includes('動詞') || typeStr.includes('verb');
+            if (!isVerb) return false;
+
+            const hasValidTransitivity = w.transitivity === '自動詞' || w.transitivity === '他動詞';
+            const hasValidVerbGroup = w.verbGroup && w.verbGroup !== 'N/A' && w.verbGroup !== '無' && w.verbGroup.trim() !== '';
+
+            return !hasValidTransitivity || !hasValidVerbGroup;
+        });
 
         if (verbsToFix.length === 0) {
             alert('所有動詞似乎都已經有標註屬性了！');
