@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { PlusCircle, Info, ChevronDown, ChevronUp, Trash2, BookOpen } from 'lucide-react';
 import { GrammarDetailView } from './GrammarDetailView';
 
-export function GrammarList({ items, onDelete, onAddClick }) {
+export function GrammarList({ items, onDelete, onAddClick, onUpdateGrammar }) {
     const [expandedId, setExpandedId] = useState(null);
 
     if (items.length === 0) {
@@ -81,7 +81,7 @@ export function GrammarList({ items, onDelete, onAddClick }) {
                                         <ChevronUp size={20} className="text-indigo-500" />
                                     </div>
                                 </div>
-                                <GrammarDetailView grammar={item} />
+                                <GrammarDetailView grammar={item} onUpdateGrammar={onUpdateGrammar} />
                             </div>
                         )}
                     </div>

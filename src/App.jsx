@@ -23,8 +23,8 @@ import { SentenceMaker } from './components/SentenceMaker';
 import { VerbReference } from './components/VerbReference';
 
 function App() {
-    const { words, addWords, deleteWord } = useVocabulary();
-    const { grammarItems, addGrammar, deleteGrammar } = useGrammar();
+    const { words, addWords, deleteWord, updateWord } = useVocabulary();
+    const { grammarItems, addGrammar, deleteGrammar, updateGrammar } = useGrammar();
     const { dialogues, addDialogue, deleteDialogue } = useDialogues();
     const { adjectives, addAdjectives, deleteAdjective } = useAdjectives();
 
@@ -160,12 +160,14 @@ function App() {
                         <WordList
                             words={words}
                             onDelete={deleteWord}
+                            onUpdateWord={updateWord}
                             onAddClick={() => setActiveTab('add')}
                         />
                     ) : activeCategory === 'grammar' ? (
                         <GrammarList
                             items={grammarItems}
                             onDelete={deleteGrammar}
+                            onUpdateGrammar={updateGrammar}
                             onAddClick={() => setActiveTab('add')}
                         />
                     ) : activeCategory === 'adjective' ? (

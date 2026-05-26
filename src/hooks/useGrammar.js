@@ -98,5 +98,28 @@ export function useGrammar() {
         }
     };
 
-    return { grammarItems, addGrammar, deleteGrammar, toggleMemorized, isSyncing };
+    const updateGrammar = async (id, updatedFields) => {
+        let target = null;
+        setGrammarItems(prev => {
+            const updated = prev.map(item => {
+                if (item.id === id) {
+                    target = { ...item, ...updatedFields };
+                    return target;
+                }
+                return item;
+            });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+            return updated;
+        });
+
+        if (target) {
+            try {
+                await grammarSupabaseService.upsert(target);
+            } catch (err) {
+                console.error('Failed to sync updated grammar to cloud:', err);
+            }
+        }
+    };
+
+    return { grammarItems, addGrammar, deleteGrammar, toggleMemorized, updateGrammar, isSyncing };
 }

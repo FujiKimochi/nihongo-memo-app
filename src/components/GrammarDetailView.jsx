@@ -2,8 +2,82 @@ import React from 'react';
 import { Volume2 } from 'lucide-react';
 import { useSpeech } from '../hooks/useSpeech';
 
-export function GrammarDetailView({ grammar, showHeader = true }) {
+export function GrammarDetailView({ grammar, showHeader = true, onUpdateGrammar }) {
     const { speak } = useSpeech();
+    const [loadingExamples, setLoadingExamples] = React.useState(false);
+    const [errorMsg, setErrorMsg] = React.useState(null);
+
+    React.useEffect(() => {
+        if (!grammar || !onUpdateGrammar || loadingExamples) return;
+
+        let isMounted = true;
+
+        const checkAndFetch = async () => {
+            // Case 1: Single grammar point missing examples
+            if (!grammar.is_comparison) {
+                if (!grammar.examples || grammar.examples.length === 0) {
+                    setLoadingExamples(true);
+                    setErrorMsg(null);
+                    try {
+                        const { generateGrammarExamples } = await import('../services/ai');
+                        const examples = await generateGrammarExamples(grammar.grammarPoint);
+                        if (isMounted && examples) {
+                            onUpdateGrammar(grammar.id, { examples });
+                        }
+                    } catch (err) {
+                        console.error('Failed to load grammar examples:', err);
+                        if (isMounted) {
+                            setErrorMsg('無法載入學習語句，請檢查網路連線或稍後再試。');
+                        }
+                    } finally {
+                        if (isMounted) {
+                            setLoadingExamples(false);
+                        }
+                    }
+                }
+            } 
+            // Case 2: Comparison grammar missing examples in items
+            else if (grammar.is_comparison && grammar.items && grammar.items.length > 0) {
+                const needsExamples = grammar.items.some(item => !item.examples || item.examples.length === 0);
+                if (needsExamples) {
+                    setLoadingExamples(true);
+                    setErrorMsg(null);
+                    try {
+                        const { generateComparisonExamples } = await import('../services/ai');
+                        const itemNames = grammar.items.map(i => i.grammar || i.grammar_point || i.grammarPoint || '');
+                        const comparisonResults = await generateComparisonExamples(grammar.grammarPoint, itemNames);
+                        if (isMounted && comparisonResults) {
+                            // Map the generated examples back to grammar.items
+                            const updatedItems = grammar.items.map(item => {
+                                const name = item.grammar || item.grammar_point || item.grammarPoint;
+                                const match = comparisonResults.find(r => r.grammar === name);
+                                return {
+                                    ...item,
+                                    examples: match ? match.examples : (item.examples || [])
+                                };
+                            });
+                            onUpdateGrammar(grammar.id, { items: updatedItems });
+                        }
+                    } catch (err) {
+                        console.error('Failed to load comparison examples:', err);
+                        if (isMounted) {
+                            setErrorMsg('無法載入比較例句，請檢查網路連線或稍後再試。');
+                        }
+                    } finally {
+                        if (isMounted) {
+                            setLoadingExamples(false);
+                        }
+                    }
+                }
+            }
+        };
+
+        checkAndFetch();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [grammar?.id, grammar?.is_comparison, grammar?.examples, grammar?.items, onUpdateGrammar]);
 
     if (!grammar) return null;
 
@@ -34,33 +108,57 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
 
                 <section>
                     <h4 className="text-sm font-semibold text-gray-400 mb-2">學習語句 ({item.examples?.length || 0})</h4>
-                    <div className="flex flex-col gap-3">
-                        {item.examples?.map((ex, idx) => (
-                            <div key={idx} className="bg-gray-50 p-3 rounded-lg border border-gray-100">
-                                <div className="flex items-start gap-3">
-                                    <div className="flex-1">
-                                        <div className="text-gray-900 font-medium text-lg leading-relaxed">
-                                            {ex.ruby ? (
-                                                <span dangerouslySetInnerHTML={{ __html: ex.ruby }} />
-                                            ) : (
-                                                ex.jp
-                                            )}
+                    {item.examples && item.examples.length > 0 ? (
+                        <div className="flex flex-col gap-3">
+                            {item.examples.map((ex, idx) => (
+                                <div key={idx} className="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                    <div className="flex items-start gap-3">
+                                        <div className="flex-1">
+                                            <div className="text-gray-900 font-medium text-lg leading-relaxed">
+                                                {ex.ruby ? (
+                                                    <span dangerouslySetInnerHTML={{ __html: ex.ruby }} />
+                                                ) : (
+                                                    ex.jp
+                                                )}
+                                            </div>
+                                            <div className="text-gray-500 text-sm mt-1">{ex.zh}</div>
                                         </div>
-                                        <div className="text-gray-500 text-sm mt-1">{ex.zh}</div>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                speak(ex.jp);
+                                            }}
+                                            className="btn-ghost p-1.5 rounded-full hover:bg-gray-200 text-gray-400"
+                                        >
+                                            <Volume2 size={16} />
+                                        </button>
                                     </div>
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            speak(ex.jp);
-                                        }}
-                                        className="btn-ghost p-1.5 rounded-full hover:bg-gray-200 text-gray-400"
-                                    >
-                                        <Volume2 size={16} />
-                                    </button>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    ) : loadingExamples ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '1.5rem', background: '#f8fafc', borderRadius: '0.5rem' }}>
+                            <div className="animate-spin" style={{ width: '1.5rem', height: '1.5rem', border: '3px solid #e0e7ff', borderTopColor: '#4338ca', borderRadius: '50%' }}></div>
+                            <p style={{ fontSize: '0.75rem', fontWeight: 600, color: '#4338ca' }} className="animate-pulse">正在利用 AI 生成例句...</p>
+                        </div>
+                    ) : errorMsg ? (
+                        <div style={{ padding: '1rem', color: '#ef4444', background: '#fef2f2', borderRadius: '0.5rem', textAlign: 'center' }}>
+                            <p style={{ fontSize: '0.75rem', fontWeight: 600 }}>{errorMsg}</p>
+                            <button 
+                                onClick={() => {
+                                    setErrorMsg(null);
+                                    setLoadingExamples(false);
+                                }}
+                                style={{ marginTop: '0.5rem', fontSize: '0.75rem', padding: '0.25rem 0.75rem', backgroundColor: '#fff', color: '#ef4444', border: '1px solid #fca5a5', borderRadius: '0.375rem', cursor: 'pointer' }}
+                            >
+                                重試
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="text-center py-4 text-gray-400 bg-gray-50 rounded-lg border border-dashed border-gray-200 text-xs">
+                            無學習語句
+                        </div>
+                    )}
                 </section>
             </div>
         </div>
@@ -276,33 +374,55 @@ export function GrammarDetailView({ grammar, showHeader = true }) {
 
                                         {/* Examples */}
                                         <td style={{ padding: '12px 16px', border: '1px solid #c7d2fe', background: '#fff', verticalAlign: 'top' }}>
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                                {item.examples?.map((ex, exIdx) => (
-                                                    <div key={exIdx} style={{ paddingLeft: '10px', borderLeft: '2px solid #e0e7ff' }}>
-                                                        <div style={{ color: '#111827', fontWeight: 500, marginBottom: '4px' }}>
-                                                            {ex.ruby ? (
-                                                                <span dangerouslySetInnerHTML={{ __html: ex.ruby }} />
-                                                            ) : (
-                                                                ex.jp
-                                                            )}
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    speak(ex.jp);
-                                                                }}
-                                                                style={{
-                                                                    marginLeft: '8px', background: 'none', border: 'none',
-                                                                    color: '#818cf8', cursor: 'pointer', padding: 0,
-                                                                    display: 'inline-flex', verticalAlign: 'middle'
-                                                                }}
-                                                            >
-                                                                <Volume2 size={14} />
-                                                            </button>
+                                            {item.examples && item.examples.length > 0 ? (
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                                    {item.examples.map((ex, exIdx) => (
+                                                        <div key={exIdx} style={{ paddingLeft: '10px', borderLeft: '2px solid #e0e7ff' }}>
+                                                            <div style={{ color: '#111827', fontWeight: 500, marginBottom: '4px' }}>
+                                                                {ex.ruby ? (
+                                                                    <span dangerouslySetInnerHTML={{ __html: ex.ruby }} />
+                                                                ) : (
+                                                                    ex.jp
+                                                                )}
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        speak(ex.jp);
+                                                                    }}
+                                                                    style={{
+                                                                        marginLeft: '8px', background: 'none', border: 'none',
+                                                                        color: '#818cf8', cursor: 'pointer', padding: 0,
+                                                                        display: 'inline-flex', verticalAlign: 'middle'
+                                                                    }}
+                                                                >
+                                                                    <Volume2 size={14} />
+                                                                </button>
+                                                            </div>
+                                                            <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>{ex.zh}</div>
                                                         </div>
-                                                        <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>{ex.zh}</div>
-                                                    </div>
-                                                ))}
-                                            </div>
+                                                    ))}
+                                                </div>
+                                            ) : loadingExamples ? (
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#4338ca', fontSize: '0.75rem' }}>
+                                                    <div className="animate-spin" style={{ width: '12px', height: '12px', border: '2px solid #e0e7ff', borderTopColor: '#4338ca', borderRadius: '50%' }}></div>
+                                                    <span className="animate-pulse">正在生成例句...</span>
+                                                </div>
+                                            ) : errorMsg ? (
+                                                <div style={{ color: '#ef4444', fontSize: '0.75rem' }}>
+                                                    <span>{errorMsg}</span>
+                                                    <button 
+                                                        onClick={() => {
+                                                            setErrorMsg(null);
+                                                            setLoadingExamples(false);
+                                                        }}
+                                                        style={{ marginLeft: '4px', textDecoration: 'underline', color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem' }}
+                                                    >
+                                                        重試
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <span style={{ color: '#9ca3af' }}>-</span>
+                                            )}
                                         </td>
                                     </tr>
                                 ))}

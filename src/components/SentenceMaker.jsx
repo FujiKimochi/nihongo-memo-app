@@ -127,9 +127,14 @@ export function SentenceMaker() {
                 <div className="flex flex-col gap-4">
                     <div className="glass-card" style={{ padding: '1.5rem' }}>
                         <form onSubmit={handleGenerate} className="flex flex-col gap-3">
-                            <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-color)' }}>
-                                請輸入字詞或片語
-                            </label>
+                            <div className="flex justify-between items-center">
+                                <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-color)' }}>
+                                    請輸入字詞或片語
+                                </label>
+                                <span style={{ fontSize: '0.75rem', color: 'hsl(var(--indigo-500))', fontWeight: 500 }}>
+                                    ⚡️ 已優化短句生成，約 3 秒內完成
+                                </span>
+                            </div>
                             <div className="flex gap-2">
                                 <input
                                     required

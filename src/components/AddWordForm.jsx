@@ -17,7 +17,7 @@ export function AddWordForm({ onAdd, onCancel }) {
         setPreviews([]);
 
         try {
-            const data = await generateVerbDetails(kanjiInput.trim());
+            const data = await generateVerbDetails(kanjiInput.trim(), { basicOnly: true });
 
             // AI might return a single object or an array - normalize to array
             const results = Array.isArray(data) ? data : [data];

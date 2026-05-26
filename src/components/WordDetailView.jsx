@@ -27,8 +27,43 @@ export const renderExample = (example) => {
     return example.jp;
 };
 
-export function WordDetailView({ word, showHeader = true }) {
+export function WordDetailView({ word, showHeader = true, onUpdateWord }) {
     const { speak } = useSpeech();
+    const [loadingConjugations, setLoadingConjugations] = React.useState(false);
+    const [errorMsg, setErrorMsg] = React.useState(null);
+
+    React.useEffect(() => {
+        if (word && word.type === '動詞' && !word.conjugations && onUpdateWord && !loadingConjugations) {
+            let isMounted = true;
+            const fetchConjugations = async () => {
+                setLoadingConjugations(true);
+                setErrorMsg(null);
+                try {
+                    const { generateVerbConjugations } = await import('../services/ai');
+                    const result = await generateVerbConjugations(word.kanji);
+                    if (isMounted && result) {
+                        onUpdateWord(word.id, {
+                            conjugations: result.conjugations,
+                            examples: result.examples || []
+                        });
+                    }
+                } catch (err) {
+                    console.error('Failed to load verb conjugations:', err);
+                    if (isMounted) {
+                        setErrorMsg('無法載入變化表與例句，請檢查網路連線或稍後再試。');
+                    }
+                } finally {
+                    if (isMounted) {
+                        setLoadingConjugations(false);
+                    }
+                }
+            };
+            fetchConjugations();
+            return () => {
+                isMounted = false;
+            };
+        }
+    }, [word?.id, word?.type, word?.conjugations, onUpdateWord]);
 
     if (!word) return null;
 
@@ -124,10 +159,85 @@ export function WordDetailView({ word, showHeader = true }) {
                         * 向右滑動查看更多
                     </div>
                 </div>
+            ) : word.type === '動詞' ? (
+                <div style={{
+                    marginBottom: '2rem', padding: '2rem',
+                    background: '#fff', borderRadius: '1rem',
+                    boxShadow: '0 2px 8px -2px rgba(0, 0, 0, 0.08)',
+                    border: '1px solid #e0e7ff',
+                    textAlign: 'center'
+                }}>
+                    {loadingConjugations ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', padding: '1.5rem 0' }}>
+                            <div className="animate-spin" style={{ width: '2.5rem', height: '2.5rem', border: '4px solid #e0e7ff', borderTopColor: '#4338ca', borderRadius: '50%' }}></div>
+                            <p style={{ fontSize: '0.875rem', fontWeight: 600, color: '#4338ca' }} className="animate-pulse">正在利用 AI 生成變化表與例句...</p>
+                            <p style={{ fontSize: '0.75rem', color: '#94a3b8' }}>這通常需要 3 ~ 5 秒左右，請稍候</p>
+                        </div>
+                    ) : errorMsg ? (
+                        <div style={{ padding: '1rem 0', color: '#ef4444' }}>
+                            <p style={{ fontSize: '0.875rem', fontWeight: 600 }}>{errorMsg}</p>
+                            <button 
+                                onClick={() => {
+                                    setErrorMsg(null);
+                                    // 重新觸發載入
+                                    setLoadingConjugations(false);
+                                }}
+                                style={{ marginTop: '0.5rem', fontSize: '0.75rem', padding: '0.25rem 0.75rem', backgroundColor: '#fef2f2', color: '#ef4444', border: '1px solid #fca5a5', borderRadius: '0.375rem', cursor: 'pointer' }}
+                            >
+                                重試
+                            </button>
+                        </div>
+                    ) : (
+                        <p style={{ fontSize: '0.875rem', color: '#94a3b8' }}>等待載入...</p>
+                    )}
+                </div>
             ) : (
-                <div className="text-center py-8 text-gray-400 bg-gray-50 rounded-lg border border-dashed border-gray-200">
-                    尚無詳細變化資料
-                    <div className="text-xs mt-2">請嘗試刪除此單字並重新新增</div>
+                <div style={{
+                    textAlign: 'center', padding: '2rem 0', color: '#94a3b8',
+                    backgroundColor: '#f8fafc', borderRadius: '0.5rem', border: '1px dashed #e2e8f0'
+                }}>
+                    此單字非動詞，無變化資料
+                </div>
+            )}
+
+            {/* Examples Section */}
+            {word.examples && word.examples.length > 0 && (
+                <div style={{
+                    marginBottom: '2rem', padding: '1.25rem',
+                    background: '#fff', borderRadius: '1rem',
+                    boxShadow: '0 2px 8px -2px rgba(0, 0, 0, 0.08)',
+                    border: '1px solid #e0e7ff'
+                }}>
+                    <h4 style={{
+                        display: 'flex', alignItems: 'center', gap: '8px',
+                        fontWeight: 700, marginBottom: '12px',
+                        color: '#4338ca', textTransform: 'uppercase',
+                        letterSpacing: '0.05em', fontSize: '0.75rem'
+                    }}>
+                        <Volume2 size={16} /> 學習例句
+                    </h4>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        {word.examples.map((ex, index) => (
+                            <div key={index} style={{ borderBottom: index < word.examples.length - 1 ? '1px solid #f1f5f9' : 'none', paddingBottom: index < word.examples.length - 1 ? '0.75rem' : '0' }}>
+                                <div style={{ fontSize: '1rem', color: '#1e293b', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                    <span style={{ color: 'hsl(var(--indigo-500))', fontWeight: 600 }}>{index + 1}.</span>
+                                    <span>{renderExample(ex)}</span>
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            speak(ex.jp);
+                                        }}
+                                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: '#94a3b8' }}
+                                    >
+                                        <Volume2 size={14} />
+                                    </button>
+                                </div>
+                                <div style={{ fontSize: '0.875rem', color: '#64748b', paddingLeft: '1.25rem' }}>
+                                    {ex.zh}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             )}
         </div>

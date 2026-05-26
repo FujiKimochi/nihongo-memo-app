@@ -139,30 +139,47 @@ export async function checkAIHealth() {
   }
 }
 
-export async function generateVerbDetails(verbInput) {
+export async function generateVerbDetails(verbInput, options = {}) {
   const items = verbInput.split(/[\s,，、]+/).filter(i => i.trim().length > 0);
   const isBatch = items.length > 1;
-  const promptText = isBatch ? `
-    You are a Japanese tutor for Traditional Chinese speakers. Input: "${items.join(', ')}".
-    Provide a JSON array of objects. ALL Chinese text must be **Traditional Chinese**.
-    Each object MUST have:
-    1. "kanji", "kana", "meaning", "type", "transitivity" (自動詞/他動詞, or null if N/A), "verb_group" (第1/2/3類, or null if N/A).
-    2. "conjugations": { "polite", "negative", "te", "potential", "passive", "causative", "causativePassive", "imperative", "volitional", "conditionalBa", "conditionalTara", "dictionary" }.
-       - Each conjugation: { "form", "explanation", "example": { "jp", "ruby", "zh" } }.
-       - **CRITICAL**: Example "jp" must be short, concise, and practical sentences.
-    3. "examples": Array of 3: { "jp", "ruby", "zh" }.
-    **CRITICAL RUBY FORMAT**: For ALL "ruby" fields, you MUST use strict HTML <ruby> tags for Kanji (e.g., <ruby>漢字<rt>かんじ</rt></ruby>). DO NOT output plain text like 漢かん字じ or 漢字(かんじ).
-  ` : `
-    You are a Japanese tutor for Traditional Chinese speakers. Input: "${verbInput}".
-    Provide a JSON object. ALL Chinese text must be **Traditional Chinese**.
-    Include:
-    1. "kanji", "kana", "meaning", "type", "transitivity" (自動詞/他動詞, or null if N/A), "verb_group" (第1/2/3類, or null if N/A).
-    2. "conjugations": { "polite", "negative", "te", "potential", "passive", "causative", "causativePassive", "imperative", "volitional", "conditionalBa", "conditionalTara", "dictionary" }.
-       - Each: { "form", "explanation", "example": { "jp", "ruby", "zh" } }.
-       - **CRITICAL**: Example "jp" must be short, concise, and practical sentences.
-    3. "examples": Array of 3: { "jp", "ruby", "zh" }.
-    **CRITICAL RUBY FORMAT**: For ALL "ruby" fields, you MUST use strict HTML <ruby> tags for Kanji (e.g., <ruby>漢字<rt>かんじ</rt></ruby>). DO NOT output plain text like 漢かん字じ or 漢字(かんじ).
-  `;
+  
+  const promptText = options.basicOnly ? (
+    isBatch ? `
+      You are a Japanese tutor for Traditional Chinese speakers. Input: "${items.join(', ')}".
+      Provide a JSON array of objects. ALL Chinese text must be **Traditional Chinese**.
+      Each object MUST contain ONLY:
+      "kanji", "kana", "meaning", "type" (should be "動詞"), "transitivity" (自動詞/他動詞, or null if N/A), "verb_group" (第1/2/3類, or null if N/A).
+      Do NOT generate conjugations or examples. Return JSON ONLY.
+    ` : `
+      You are a Japanese tutor for Traditional Chinese speakers. Input: "${verbInput}".
+      Provide a JSON object. ALL Chinese text must be **Traditional Chinese**.
+      Include ONLY:
+      "kanji", "kana", "meaning", "type" (should be "動詞"), "transitivity" (自動詞/他動詞, or null if N/A), "verb_group" (第1/2/3類, or null if N/A).
+      Do NOT generate conjugations or examples. Return JSON ONLY.
+    `
+  ) : (
+    isBatch ? `
+      You are a Japanese tutor for Traditional Chinese speakers. Input: "${items.join(', ')}".
+      Provide a JSON array of objects. ALL Chinese text must be **Traditional Chinese**.
+      Each object MUST have:
+      1. "kanji", "kana", "meaning", "type", "transitivity" (自動詞/他動詞, or null if N/A), "verb_group" (第1/2/3類, or null if N/A).
+      2. "conjugations": { "polite", "negative", "te", "potential", "passive", "causative", "causativePassive", "imperative", "volitional", "conditionalBa", "conditionalTara", "dictionary" }.
+         - Each conjugation: { "form", "explanation", "example": { "jp", "ruby", "zh" } }.
+         - **CRITICAL**: Example "jp" must be short, concise, and practical sentences.
+      3. "examples": Array of 3: { "jp", "ruby", "zh" }.
+      **CRITICAL RUBY FORMAT**: For ALL "ruby" fields, you MUST use strict HTML <ruby> tags for Kanji (e.g., <ruby>漢字<rt>かんじ</rt></ruby>). DO NOT output plain text like 漢かん字じ or 漢字(かんじ).
+    ` : `
+      You are a Japanese tutor for Traditional Chinese speakers. Input: "${verbInput}".
+      Provide a JSON object. ALL Chinese text must be **Traditional Chinese**.
+      Include:
+      1. "kanji", "kana", "meaning", "type", "transitivity" (自動詞/他動詞, or null if N/A), "verb_group" (第1/2/3類, or null if N/A).
+      2. "conjugations": { "polite", "negative", "te", "potential", "passive", "causative", "causativePassive", "imperative", "volitional", "conditionalBa", "conditionalTara", "dictionary" }.
+         - Each: { "form", "explanation", "example": { "jp", "ruby", "zh" } }.
+         - **CRITICAL**: Example "jp" must be short, concise, and practical sentences.
+      3. "examples": Array of 3: { "jp", "ruby", "zh" }.
+      **CRITICAL RUBY FORMAT**: For ALL "ruby" fields, you MUST use strict HTML <ruby> tags for Kanji (e.g., <ruby>漢字<rt>かんじ</rt></ruby>). DO NOT output plain text like 漢かん字じ or 漢字(かんじ).
+    `
+  );
 
   try {
     const responseText = await invokeAIAssistant([{ role: 'user', content: promptText }]);
@@ -173,30 +190,44 @@ export async function generateVerbDetails(verbInput) {
   }
 }
 
-/**
- * Generates details for Japanese grammar point(s) using AI.
- */
-export async function generateGrammarDetails(grammarInput) {
+export async function generateGrammarDetails(grammarInput, options = {}) {
   const items = grammarInput.split(/[\s,，、]+/).filter(i => i.trim().length > 0);
   const isComparison = items.length > 1;
 
-  const promptText = isComparison ? `
-    You are a Japanese tutor for Traditional Chinese speakers. Compare: "${items.join(', ')}".
-    Provide strict JSON:
-    1. "grammar_point", "meaning", "explanation", "connection", "is_comparison": true.
-    2. "comparison_analysis": Detailed comparison text/table.
-    3. "items": Array for each point. Each: { "grammar", "explanation", "examples": [ { "jp", "ruby", "zh" }, ... ] }
-    **CRITICAL RUBY FORMAT**: For ALL "ruby" fields, you MUST use strict HTML <ruby> tags for Kanji (e.g., <ruby>漢字<rt>かんじ</rt></ruby>). DO NOT output plain text like 漢かん字じ. ALL Chinese in **Traditional**.
-    Return JSON ONLY.
-  ` : `
-    You are a Japanese tutor for Traditional Chinese speakers. Point: "${grammarInput}".
-    Provide strict JSON:
-    1. "grammar_point", "meaning", "explanation", "connection".
-    2. "examples": Array of 5: [ { "jp", "ruby", "zh" }, ... ]
-    **CRITICAL RUBY FORMAT**: For ALL "ruby" fields, you MUST use strict HTML <ruby> tags for Kanji (e.g., <ruby>漢字<rt>かんじ</rt></ruby>). DO NOT output plain text like 漢かん字じ. ALL Chinese in **Traditional**.
-    Return JSON ONLY.
-  `;
-
+  const promptText = options.basicOnly ? (
+    isComparison ? `
+      You are a Japanese tutor for Traditional Chinese speakers. Compare: "${items.join(', ')}".
+      Provide strict JSON:
+      1. "grammar_point", "meaning", "explanation", "connection", "is_comparison": true.
+      2. "comparison_analysis": Detailed comparison text/table.
+      3. "items": Array for each point. Each: { "grammar", "explanation" }
+      Do NOT generate examples for the items.
+      ALL Chinese in **Traditional**. Return JSON ONLY.
+    ` : `
+      You are a Japanese tutor for Traditional Chinese speakers. Point: "${grammarInput}".
+      Provide strict JSON:
+      "grammar_point", "meaning", "explanation", "connection", "is_comparison": false.
+      Do NOT generate examples.
+      ALL Chinese in **Traditional**. Return JSON ONLY.
+    `
+  ) : (
+    isComparison ? `
+      You are a Japanese tutor for Traditional Chinese speakers. Compare: "${items.join(', ')}".
+      Provide strict JSON:
+      1. "grammar_point", "meaning", "explanation", "connection", "is_comparison": true.
+      2. "comparison_analysis": Detailed comparison text/table.
+      3. "items": Array for each point. Each: { "grammar", "explanation", "examples": [ { "jp", "ruby", "zh" }, ... ] }
+      **CRITICAL RUBY FORMAT**: For ALL "ruby" fields, you MUST use strict HTML <ruby> tags for Kanji (e.g., <ruby>漢字<rt>かんじ</rt></ruby>). DO NOT output plain text like 漢かん字じ. ALL Chinese in **Traditional**.
+      Return JSON ONLY.
+    ` : `
+      You are a Japanese tutor for Traditional Chinese speakers. Point: "${grammarInput}".
+      Provide strict JSON:
+      1. "grammar_point", "meaning", "explanation", "connection".
+      2. "examples": Array of 5: [ { "jp", "ruby", "zh" }, ... ]
+      **CRITICAL RUBY FORMAT**: For ALL "ruby" fields, you MUST use strict HTML <ruby> tags for Kanji (e.g., <ruby>漢字<rt>かんじ</rt></ruby>). DO NOT output plain text like 漢かん字じ. ALL Chinese in **Traditional**.
+      Return JSON ONLY.
+    `
+  );
 
   try {
     const responseText = await invokeAIAssistant([{ role: 'user', content: promptText }]);
@@ -318,6 +349,7 @@ export async function generateDictionaryLookup(input) {
 
 /**
  * Generates exactly 5 Japanese example sentences containing the input word/phrase.
+ * Optimized for speed by requesting shorter sentences.
  */
 export async function generateFiveSentences(input) {
   const promptText = `
@@ -330,7 +362,8 @@ export async function generateFiveSentences(input) {
     
     **CRITICAL**:
     - All Chinese text must be **Traditional Chinese**.
-    - For the "ruby" field, you MUST use strict HTML <ruby> tags. Do NOT output plain text like 漢かん字じ or 漢字(かんじ).
+    - For the "ruby" field, you MUST use strict HTML <ruby> tags.
+    - **SPEED OPTIMIZATION**: Keep the example sentences short, simple, and concise (preferably under 15 characters). This is critical for fast response times.
     Return JSON ONLY.
   `;
 
@@ -345,27 +378,29 @@ export async function generateFiveSentences(input) {
 
 /**
  * Corrects Japanese grammar from an uploaded image containing Japanese sentences.
+ * Optimized for speed by requesting concise explanations.
  */
 export async function correctGrammarFromImage(base64Data, mimeType) {
   const promptText = `
     You are an expert Japanese language tutor.
     An image is provided. Please perform the following steps:
-    1. OCR/Read any Japanese sentences or text written in the image (especially handwritten or printed exercises, notes, or test sentences).
+    1. OCR/Read any Japanese sentences or text written in the image.
     2. Check the Japanese sentences for any grammar, particle, verb conjugation, or vocabulary errors.
     3. For each sentence found, provide:
-       - The original sentence found in the image.
-       - A corrected version of the sentence (if it has errors; otherwise indicate it's correct).
-       - A detailed grammar correction and explanation of the errors/nuances in **Traditional Chinese**.
+       - The original sentence.
+       - A corrected version.
+       - A detailed grammar correction and explanation in **Traditional Chinese**.
     
     Return a strict JSON object with:
-    - "detected_text": A string containing the raw text detected in the image.
+    - "detected_text": A string containing the raw text detected.
     - "corrections": An array of objects, each containing:
-       - "original": The original sentence found in the image.
-       - "corrected": The corrected sentence.
-       - "has_error": Boolean, true if there was an error corrected, false if the original was already correct.
-       - "explanation": Detailed explanation of grammar points and errors in Traditional Chinese.
+       - "original": Original sentence.
+       - "corrected": Corrected sentence.
+       - "has_error": Boolean.
+       - "explanation": Explanation of grammar points and errors in Traditional Chinese.
        
-    All explanations and translations must be in **Traditional Chinese**.
+    **SPEED OPTIMIZATION**: Keep explanations and translations concise and to the point. Short explanations will ensure fast response times.
+    All explanations must be in **Traditional Chinese**.
     Return JSON ONLY.
   `;
 
@@ -387,6 +422,86 @@ export async function correctGrammarFromImage(base64Data, mimeType) {
     return parseAIJson(responseText);
   } catch (error) {
     console.error("AI correctGrammarFromImage Error:", error);
+    throw error;
+  }
+}
+
+/**
+ * Generates conjugations and 3 example sentences for a single verb.
+ */
+export async function generateVerbConjugations(kanji) {
+  const promptText = `
+    You are a Japanese tutor for Traditional Chinese speakers. Verb: "${kanji}".
+    Generate a JSON object containing:
+    1. "conjugations": { "polite", "negative", "te", "potential", "passive", "causative", "causativePassive", "imperative", "volitional", "conditionalBa", "conditionalTara", "dictionary" }.
+       - Each conjugation: { "form", "explanation", "example": { "jp", "ruby", "zh" } }.
+       - Keep the conjugation explanation very short (under 10 chars, e.g. "禮貌否定", "過去形" etc.).
+       - Keep examples short and simple.
+    2. "examples": Array of 3: { "jp", "ruby", "zh" }.
+    **CRITICAL**:
+    - All Chinese text must be **Traditional Chinese**.
+    - For all "ruby" fields, you MUST use strict HTML <ruby> tags (e.g., <ruby>行<rt>い</rt></ruby>く).
+    Return JSON ONLY.
+  `;
+
+  try {
+    const responseText = await invokeAIAssistant([{ role: 'user', content: promptText }]);
+    return parseAIJson(responseText);
+  } catch (error) {
+    console.error("AI generateVerbConjugations Error:", error);
+    throw error;
+  }
+}
+
+/**
+ * Generates exactly 5 example sentences for a single grammar point.
+ */
+export async function generateGrammarExamples(grammarPoint) {
+  const promptText = `
+    You are a Japanese tutor for Traditional Chinese speakers. Grammar Point: "${grammarPoint}".
+    Generate exactly 5 short, practical Japanese example sentences for this grammar point.
+    Return a strict JSON array of 5 objects: [ { "jp", "ruby", "zh" }, ... ]
+    **CRITICAL**:
+    - All Chinese text must be **Traditional Chinese**.
+    - For all "ruby" fields, you MUST use strict HTML <ruby> tags (e.g. <ruby>漢字<rt>かんじ</rt></ruby>).
+    - Keep sentences short and simple for fast generation.
+    Return JSON ONLY.
+  `;
+
+  try {
+    const responseText = await invokeAIAssistant([{ role: 'user', content: promptText }]);
+    return parseAIJson(responseText);
+  } catch (error) {
+    console.error("AI generateGrammarExamples Error:", error);
+    throw error;
+  }
+}
+
+/**
+ * Generates examples for comparison items.
+ */
+export async function generateComparisonExamples(grammarPoint, itemsList) {
+  const promptText = `
+    You are a Japanese tutor for Traditional Chinese speakers. Comparing: "${grammarPoint}".
+    We have these comparison points: ${JSON.stringify(itemsList)}.
+    For each point, generate exactly 3 short, practical Japanese example sentences.
+    Return a strict JSON array of objects:
+    [
+      { "grammar": "point_name", "examples": [ { "jp", "ruby", "zh" }, ... ] },
+      ...
+    ]
+    **CRITICAL**:
+    - All Chinese text must be **Traditional Chinese**.
+    - For all "ruby" fields, you MUST use strict HTML <ruby> tags.
+    - Keep sentences short and simple.
+    Return JSON ONLY.
+  `;
+
+  try {
+    const responseText = await invokeAIAssistant([{ role: 'user', content: promptText }]);
+    return parseAIJson(responseText);
+  } catch (error) {
+    console.error("AI generateComparisonExamples Error:", error);
     throw error;
   }
 }

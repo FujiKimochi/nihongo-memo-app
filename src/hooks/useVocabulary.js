@@ -135,5 +135,28 @@ export function useVocabulary() {
         }
     };
 
-    return { words, addWord, addWords, deleteWord, toggleMemorized, isSyncing };
+    const updateWord = async (id, updatedFields) => {
+        let targetWord = null;
+        setWords(prev => {
+            const updated = prev.map(w => {
+                if (w.id === id) {
+                    targetWord = { ...w, ...updatedFields };
+                    return targetWord;
+                }
+                return w;
+            });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+            return updated;
+        });
+
+        if (targetWord) {
+            try {
+                await supabaseService.upsert(targetWord);
+            } catch (err) {
+                console.error('Failed to sync updated word to cloud:', err);
+            }
+        }
+    };
+
+    return { words, addWord, addWords, deleteWord, toggleMemorized, updateWord, isSyncing };
 }

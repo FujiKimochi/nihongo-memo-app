@@ -3,7 +3,7 @@ import { PlusCircle, Volume2, ChevronDown, ChevronUp, Trash2 } from 'lucide-reac
 import { useSpeech } from '../hooks/useSpeech';
 import { WordDetailView } from './WordDetailView';
 
-export function WordList({ words, onDelete, onAddClick }) {
+export function WordList({ words, onDelete, onAddClick, onUpdateWord }) {
     const [expandedId, setExpandedId] = useState(null);
 
     if (words.length === 0) {
@@ -102,7 +102,7 @@ export function WordList({ words, onDelete, onAddClick }) {
                                         <ChevronUp size={20} className="text-indigo-500" />
                                     </div>
                                 </div>
-                                <WordDetailView word={word} />
+                                <WordDetailView word={word} onUpdateWord={onUpdateWord} />
                             </div>
                         )}
                     </div>

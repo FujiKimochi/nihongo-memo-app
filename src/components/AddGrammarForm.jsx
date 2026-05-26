@@ -16,7 +16,7 @@ export function AddGrammarForm({ onAdd, onCancel }) {
         setError('');
 
         try {
-            const result = await generateGrammarDetails(grammarPoint.trim());
+            const result = await generateGrammarDetails(grammarPoint.trim(), { basicOnly: true });
 
             // Automatically add
             onAdd(result);
