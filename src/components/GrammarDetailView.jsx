@@ -1,6 +1,7 @@
 import React from 'react';
 import { Volume2 } from 'lucide-react';
 import { useSpeech } from '../hooks/useSpeech';
+import { generateGrammarExamples, generateComparisonExamples } from '../services/ai';
 
 export function GrammarDetailView({ grammar, showHeader = true, onUpdateGrammar }) {
     const { speak } = useSpeech();
@@ -19,7 +20,6 @@ export function GrammarDetailView({ grammar, showHeader = true, onUpdateGrammar 
                     setLoadingExamples(true);
                     setErrorMsg(null);
                     try {
-                        const { generateGrammarExamples } = await import('../services/ai');
                         const examples = await generateGrammarExamples(grammar.grammarPoint);
                         if (isMounted && examples) {
                             onUpdateGrammar(grammar.id, { examples });
@@ -43,7 +43,6 @@ export function GrammarDetailView({ grammar, showHeader = true, onUpdateGrammar 
                     setLoadingExamples(true);
                     setErrorMsg(null);
                     try {
-                        const { generateComparisonExamples } = await import('../services/ai');
                         const itemNames = grammar.items.map(i => i.grammar || i.grammar_point || i.grammarPoint || '');
                         const comparisonResults = await generateComparisonExamples(grammar.grammarPoint, itemNames);
                         if (isMounted && comparisonResults) {

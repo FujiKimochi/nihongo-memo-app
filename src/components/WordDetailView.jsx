@@ -1,6 +1,7 @@
 import React from 'react';
 import { Volume2 } from 'lucide-react';
 import { useSpeech } from '../hooks/useSpeech';
+import { generateVerbConjugations } from '../services/ai';
 
 // Hardcoded mapping for reliable localization
 export const CONJUGATION_MAP = {
@@ -32,14 +33,22 @@ export function WordDetailView({ word, showHeader = true, onUpdateWord }) {
     const [loadingConjugations, setLoadingConjugations] = React.useState(false);
     const [errorMsg, setErrorMsg] = React.useState(null);
 
+    const isVerb = React.useMemo(() => {
+        if (!word) return false;
+        const typeStr = (word.type || '').toString().toLowerCase();
+        const isVerbType = typeStr.includes('動詞') || typeStr.includes('verb');
+        const hasVerbGroup = word.verbGroup && word.verbGroup !== 'N/A' && word.verbGroup !== '無';
+        const hasTransitivity = word.transitivity && word.transitivity !== 'N/A' && word.transitivity !== '無';
+        return !!(isVerbType || hasVerbGroup || hasTransitivity);
+    }, [word?.type, word?.verbGroup, word?.transitivity]);
+
     React.useEffect(() => {
-        if (word && word.type === '動詞' && !word.conjugations && onUpdateWord && !loadingConjugations) {
+        if (word && isVerb && !word.conjugations && onUpdateWord && !loadingConjugations) {
             let isMounted = true;
             const fetchConjugations = async () => {
                 setLoadingConjugations(true);
                 setErrorMsg(null);
                 try {
-                    const { generateVerbConjugations } = await import('../services/ai');
                     const result = await generateVerbConjugations(word.kanji);
                     if (isMounted && result) {
                         onUpdateWord(word.id, {
@@ -63,7 +72,7 @@ export function WordDetailView({ word, showHeader = true, onUpdateWord }) {
                 isMounted = false;
             };
         }
-    }, [word?.id, word?.type, word?.conjugations, onUpdateWord]);
+    }, [word?.id, isVerb, word?.conjugations, onUpdateWord]);
 
     if (!word) return null;
 
@@ -159,7 +168,7 @@ export function WordDetailView({ word, showHeader = true, onUpdateWord }) {
                         * 向右滑動查看更多
                     </div>
                 </div>
-            ) : word.type === '動詞' ? (
+            ) : isVerb ? (
                 <div style={{
                     marginBottom: '2rem', padding: '2rem',
                     background: '#fff', borderRadius: '1rem',
