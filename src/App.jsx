@@ -21,6 +21,7 @@ import { Settings } from './components/Settings';
 import { ReloadPrompt } from './components/ReloadPrompt';
 import { SentenceMaker } from './components/SentenceMaker';
 import { VerbReference } from './components/VerbReference';
+import { APP_VERSION } from './app-version';
 
 function App() {
     const { words, addWords, deleteWord, updateWord } = useVocabulary();
@@ -98,7 +99,7 @@ function App() {
                     <h1 style={{ fontSize: '1.25rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <span style={{ color: 'hsl(var(--sakura-500))' }}>✿</span>
                         Nihongo Memo
-                        <span style={{ fontSize: '0.6rem', background: '#eef2ff', color: '#4338ca', padding: '2px 6px', borderRadius: '4px', marginLeft: '4px', opacity: 0.8 }}>v1.5.0</span>
+                        <span style={{ fontSize: '0.6rem', background: '#eef2ff', color: '#4338ca', padding: '2px 6px', borderRadius: '4px', marginLeft: '4px', opacity: 0.8 }}>v{APP_VERSION}</span>
                     </h1>
                     <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500 }}>
                         {getCountDisplay()}

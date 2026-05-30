@@ -255,3 +255,205 @@ rt {
 .bg-kana-r { background-color: hsl(var(--kana-r)); }
 .bg-kana-w { background-color: hsl(var(--kana-w)); }
 .bg-kana-n-single { background-color: hsl(var(--kana-n-single)); }
+
+/* ==========================================================================
+   Keigo (Honorifics) Learning Page Styles
+   ========================================================================== */
+
+/* Sub-tab Switcher */
+.subtab-container {
+    display: flex;
+    background: rgba(0, 0, 0, 0.04);
+    padding: 4px;
+    border-radius: var(--radius-md);
+    margin-bottom: 1.5rem;
+    align-self: flex-start;
+    width: 100%;
+    max-width: 400px;
+}
+
+.subtab-button {
+    flex: 1;
+    text-align: center;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.subtab-button.active {
+    background: white;
+    color: hsl(var(--indigo-500));
+    box-shadow: var(--shadow-sm);
+}
+
+/* Keigo Badge Styles */
+.keigo-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.badge-sonkei {
+    background-color: #fef2f2;
+    color: #ef4444;
+    border: 1px solid #fee2e2;
+}
+
+.badge-kenjou {
+    background-color: #f0fdf4;
+    color: #22c55e;
+    border: 1px solid #dcfce7;
+}
+
+.badge-teinei {
+    background-color: #eff6ff;
+    color: #3b82f6;
+    border: 1px solid #dbeafe;
+}
+
+/* Keigo Responsive Table */
+.keigo-table-wrapper {
+    overflow-x: auto;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background: white;
+    margin: 1.25rem 0;
+}
+
+.keigo-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    min-width: 500px;
+}
+
+.keigo-table th, 
+.keigo-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.keigo-table th {
+    background-color: #f9fafb;
+    color: hsl(var(--indigo-900));
+    font-weight: 700;
+}
+
+.keigo-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Keigo Cards */
+.keigo-rule-card {
+    padding: 1.25rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 1rem;
+}
+
+.bg-sonkei-card {
+    background-color: #fdf2f2;
+    border: 1px solid #fde2e2;
+}
+
+.bg-kenjou-card {
+    background-color: #f3fbf5;
+    border: 1px solid #e1f7e7;
+}
+
+/* Keigo Example Items */
+.keigo-example-item {
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.25rem 0;
+}
+
+.keigo-example-item:last-child {
+    border-bottom: none;
+}
+
+.keigo-example-jp {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: hsl(var(--indigo-900));
+    margin-bottom: 0.5rem;
+}
+
+.keigo-example-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.keigo-example-zh {
+    font-size: 0.95rem;
+    color: hsl(var(--text-main));
+    margin-bottom: 0.5rem;
+}
+
+.keigo-example-analysis {
+    font-size: 0.825rem;
+    color: var(--text-muted);
+    background: #f9fafb;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border-left: 3px solid hsl(var(--indigo-500));
+}
+
+/* Keigo Details/Summary Accordion */
+details.keigo-details {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: white;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+details.keigo-details[open] {
+    box-shadow: var(--shadow-md);
+    border-color: rgba(79, 70, 229, 0.2);
+}
+
+summary.keigo-summary {
+    padding: 1rem 1.25rem;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: hsl(var(--indigo-900));
+    cursor: pointer;
+    background: #f9fafb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    list-style: none;
+    user-select: none;
+}
+
+summary.keigo-summary::-webkit-details-marker {
+    display: none;
+}
+
+summary.keigo-summary::after {
+    content: '＋';
+    font-size: 1.1rem;
+    color: hsl(var(--indigo-500));
+    font-weight: bold;
+    transition: transform 0.2s ease;
+}
+
+details[open] summary.keigo-summary::after {
+    content: '－';
+}
+
+.keigo-details-content {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--border-color);
+    background: white;
+}
