@@ -20,7 +20,7 @@ import { AdjectiveList } from './components/AdjectiveList';
 import { Settings } from './components/Settings';
 import { ReloadPrompt } from './components/ReloadPrompt';
 import { SentenceMaker } from './components/SentenceMaker';
-import { VerbReference } from './components/VerbReference';
+import { StudyNotes } from './components/StudyNotes';
 
 function App() {
     const { words, addWords, deleteWord } = useVocabulary();
@@ -148,7 +148,7 @@ function App() {
                 )}
 
                 {activeTab === 'reference' && (
-                    <VerbReference />
+                    <StudyNotes />
                 )}
 
                 {activeTab === 'sentence' && (
