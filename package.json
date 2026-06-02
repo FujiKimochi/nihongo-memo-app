@@ -9,7 +9,8 @@
         "build": "vite build",
         "preview": "vite preview",
         "predeploy": "npm run build",
-        "deploy": "gh-pages -d dist"
+        "deploy": "gh-pages -d dist",
+        "sync": "node scripts/supabase-sync.js"
     },
     "dependencies": {
         "@google/generative-ai": "^0.24.1",
