@@ -101,8 +101,38 @@ function parseAIJson(responseText) {
   }
 }
 
-// Helper to call Edge function
+// Helper to call Edge function or local Gemini API fallback
 async function invokeAIAssistant(supabase, messages) {
+  const geminiKey = process.env.GEMINI_API_KEY;
+  if (geminiKey) {
+    try {
+      const { GoogleGenerativeAI } = await import('@google/generative-ai');
+      const genAI = new GoogleGenerativeAI(geminiKey);
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+      
+      const lastMsg = messages[messages.length - 1];
+      let responseText = "";
+      
+      if (messages.length > 1) {
+        const history = messages.slice(0, -1).map(msg => ({
+          role: msg.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: msg.content }]
+        }));
+        const chat = model.startChat({ history });
+        const result = await chat.sendMessage(lastMsg.content);
+        const response = await result.response;
+        responseText = response.text();
+      } else {
+        const result = await model.generateContent(lastMsg.content);
+        const response = await result.response;
+        responseText = response.text();
+      }
+      return responseText;
+    } catch (geminiErr) {
+      console.warn("Local Gemini API invocation failed, falling back to Supabase Edge Function:", geminiErr.message);
+    }
+  }
+
   const modelName = 'gemini-2.5-flash';
   const { data, error } = await supabase.functions.invoke('ai-assistant', {
     body: {
