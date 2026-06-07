@@ -1,0 +1,8 @@
+.DS_Store
+*.tmp
+temp/
+memory/
+gen_batch*.py
+apply_batch*.py
+fix_vocab.py
+b401_*.txt
