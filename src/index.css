@@ -1,0 +1,518 @@
+:root {
+    /* HSL Color Palette - Soft Japanese Aesthetics */
+    /* Sakura Pink */
+    --sakura-100: 350 100% 98%;
+    --sakura-200: 350 100% 94%;
+    --sakura-500: 345 85% 75%;
+
+    /* Bamboo Green */
+    --bamboo-100: 120 40% 96%;
+    --bamboo-500: 120 30% 50%;
+
+    /* Indigo (Japan Blue) */
+    --indigo-100: 230 60% 98%;
+    --indigo-500: 230 50% 45%;
+    --indigo-900: 230 60% 15%;
+
+    /* Neutral */
+    --bg-color: 240 20% 98%;
+    --surface-color: 0 0% 100%;
+    --text-main: 230 20% 20%;
+    --text-muted: 230 10% 50%;
+    --border-color: 230 20% 92%;
+
+    /* Shadows */
+    --shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 8px 24px -6px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 16px 32px -8px rgba(0, 0, 0, 0.12);
+
+    /* Radius */
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-full: 9999px;
+
+    /* Font Families */
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-jp: 'Noto Sans JP', sans-serif;
+
+    /* Periodic Table Kana Colors */
+    --kana-vowel: 0 0% 95%;       /* White/Gray for vowels only */
+    --kana-k: 350 85% 94%;        /* Soft Red/Pink */
+    --kana-s: 25 90% 92%;         /* Soft Orange */
+    --kana-t: 45 90% 90%;         /* Soft Yellow */
+    --kana-n: 120 40% 92%;        /* Soft Green */
+    --kana-h: 180 40% 92%;        /* Soft Teal */
+    --kana-m: 210 60% 92%;        /* Soft Blue */
+    --kana-y: 260 60% 94%;        /* Soft Purple */
+    --kana-r: 320 60% 94%;        /* Soft Magenta */
+    --kana-w: 0 0% 92%;           /* Gray */
+    --kana-n-single: 0 0% 88%;    /* Darker Gray */
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-sans);
+    background: hsl(var(--bg-color));
+    color: hsl(var(--text-main));
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+}
+
+#root {
+    width: 100%;
+    max-width: 1920px;
+    /* Mobile first constrained width */
+    margin: 0 auto;
+    position: relative;
+    background: hsl(var(--bg-color));
+    min-height: 100vh;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.02);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Typography Utils */
+h1,
+h2,
+h3,
+p {
+    margin: 0;
+}
+
+button {
+    font-family: inherit;
+    border: none;
+    cursor: pointer;
+    background: none;
+}
+
+input,
+textarea {
+    font-family: inherit;
+}
+
+/* Utilities */
+.flex {
+    display: flex;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.gap-2 {
+    gap: 0.5rem;
+}
+
+.gap-4 {
+    gap: 1rem;
+}
+
+.w-full {
+    width: 100%;
+}
+
+/* Glass Card */
+.glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+    gap: 0.5rem;
+}
+
+.btn:active {
+    transform: scale(0.96);
+}
+
+.btn-primary {
+    background: hsl(var(--indigo-500));
+    color: white;
+    box-shadow: 0 4px 12px rgba(50, 60, 180, 0.2);
+}
+
+.btn-primary:hover {
+    background: hsl(var(--indigo-900));
+}
+
+.btn-ghost {
+    color: hsl(var(--text-muted));
+}
+
+.btn-ghost:hover {
+    background: rgba(0, 0, 0, 0.04);
+    color: hsl(var(--text-main));
+}
+
+/* Layout */
+.app-header {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    padding: 0 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+}
+
+.app-main {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.app-nav {
+    height: 80px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: white;
+    border-top: 1px solid var(--border-color);
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Ruby / Furigana Styling */
+ruby {
+    ruby-align: center;
+}
+
+rt {
+    font-size: 0.6em;
+    color: hsl(var(--text-muted));
+    user-select: none;
+}
+
+/* Kana Chart Periodic Utilities */
+.kana-grid {
+    display: grid;
+    /* 1 column for row header + 5 columns for Kana */
+    grid-template-columns: 24px repeat(5, minmax(0, 1fr));
+    gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+    .kana-grid {
+        grid-template-columns: 32px repeat(5, minmax(0, 1fr));
+        gap: 0.75rem;
+    }
+}
+
+.kana-card {
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.kana-card:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-md);
+    z-index: 10;
+}
+
+.kana-card:active {
+    transform: scale(0.95);
+}
+
+.bg-kana-vowel { background-color: hsl(var(--kana-vowel)); }
+.bg-kana-k { background-color: hsl(var(--kana-k)); }
+.bg-kana-s { background-color: hsl(var(--kana-s)); }
+.bg-kana-t { background-color: hsl(var(--kana-t)); }
+.bg-kana-n { background-color: hsl(var(--kana-n)); }
+.bg-kana-h { background-color: hsl(var(--kana-h)); }
+.bg-kana-m { background-color: hsl(var(--kana-m)); }
+.bg-kana-y { background-color: hsl(var(--kana-y)); }
+.bg-kana-r { background-color: hsl(var(--kana-r)); }
+.bg-kana-w { background-color: hsl(var(--kana-w)); }
+.bg-kana-n-single { background-color: hsl(var(--kana-n-single)); }
+
+/* ==========================================================================
+   Keigo (Honorifics) Learning Page Styles
+   ========================================================================== */
+
+/* Sub-tab Switcher */
+.subtab-container {
+    display: flex;
+    background: rgba(0, 0, 0, 0.04);
+    padding: 4px;
+    border-radius: var(--radius-md);
+    margin-bottom: 1.5rem;
+    align-self: flex-start;
+    width: 100%;
+    max-width: 400px;
+}
+
+.subtab-button {
+    flex: 1;
+    text-align: center;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.subtab-button.active {
+    background: white;
+    color: hsl(var(--indigo-500));
+    box-shadow: var(--shadow-sm);
+}
+
+/* Keigo Badge Styles */
+.keigo-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.badge-sonkei {
+    background-color: #fef2f2;
+    color: #ef4444;
+    border: 1px solid #fee2e2;
+}
+
+.badge-kenjou {
+    background-color: #f0fdf4;
+    color: #22c55e;
+    border: 1px solid #dcfce7;
+}
+
+.badge-teinei {
+    background-color: #eff6ff;
+    color: #3b82f6;
+    border: 1px solid #dbeafe;
+}
+
+/* Keigo Responsive Table */
+.keigo-table-wrapper {
+    overflow-x: auto;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background: white;
+    margin: 1.25rem 0;
+}
+
+.keigo-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    min-width: 500px;
+}
+
+.keigo-table th, 
+.keigo-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.keigo-table th {
+    background-color: #f9fafb;
+    color: hsl(var(--indigo-900));
+    font-weight: 700;
+}
+
+.keigo-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Keigo Cards */
+.keigo-rule-card {
+    padding: 1.25rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 1rem;
+}
+
+.bg-sonkei-card {
+    background-color: #fdf2f2;
+    border: 1px solid #fde2e2;
+}
+
+.bg-kenjou-card {
+    background-color: #f3fbf5;
+    border: 1px solid #e1f7e7;
+}
+
+/* Keigo Example Items */
+.keigo-example-item {
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.25rem 0;
+}
+
+.keigo-example-item:last-child {
+    border-bottom: none;
+}
+
+.keigo-example-jp {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: hsl(var(--indigo-900));
+    margin-bottom: 0.5rem;
+}
+
+.keigo-example-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.keigo-example-zh {
+    font-size: 0.95rem;
+    color: hsl(var(--text-main));
+    margin-bottom: 0.5rem;
+}
+
+.keigo-example-analysis {
+    font-size: 0.825rem;
+    color: var(--text-muted);
+    background: #f9fafb;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border-left: 3px solid hsl(var(--indigo-500));
+}
+
+/* Keigo Details/Summary Accordion */
+details.keigo-details {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: white;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+details.keigo-details[open] {
+    box-shadow: var(--shadow-md);
+    border-color: rgba(79, 70, 229, 0.2);
+}
+
+summary.keigo-summary {
+    padding: 1rem 1.25rem;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: hsl(var(--indigo-900));
+    cursor: pointer;
+    background: #f9fafb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    list-style: none;
+    user-select: none;
+}
+
+summary.keigo-summary::-webkit-details-marker {
+    display: none;
+}
+
+summary.keigo-summary::after {
+    content: '＋';
+    font-size: 1.1rem;
+    color: hsl(var(--indigo-500));
+    font-weight: bold;
+    transition: transform 0.2s ease;
+}
+
+details[open] summary.keigo-summary::after {
+    content: '－';
+}
+
+.keigo-details-content {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--border-color);
+    background: white;
+}
+
+/* Particle Comparison Layout and Badges */
+.particle-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    border-radius: 6px;
+    background-color: #f3f4f6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+}
+
+.bg-particle-card {
+    background-color: #fbfbfb;
+    border: 1px solid var(--border-color);
+}
+
+.keigo-badge.badge-particle {
+    background-color: #fef3c7;
+    color: #d97706;
+    border: 1px solid #fde68a;
+}
+
+.comparison-box {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin: 1.25rem 0;
+}
+
+@media (min-width: 640px) {
+    .comparison-box {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.comparison-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.comparison-header {
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.comparison-desc {
+    font-size: 0.825rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+}

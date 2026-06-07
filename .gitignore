@@ -1,4 +1,55 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Dependency directories
+node_modules/
+jspm_packages/
+bower_components/
+
+# Build output
+dist/
+out/
+.next/
+.nuxt/
+build/Release/
+
+# Caches
+.cache/
+.parcel-cache/
+.npm/
+.eslintcache/
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Environment variables
+.env
+.env.test
+
+# OSX
 .DS_Store
+
+# IDEs
+.idea/
+.vscode/
+
+# N3 Study Guide Generation Temps
 *.tmp
 temp/
 memory/
@@ -6,3 +57,7 @@ gen_batch*.py
 apply_batch*.py
 fix_vocab.py
 b401_*.txt
+
+# Scratch
+scratch/
+agent_history/
