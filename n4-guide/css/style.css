@@ -1,0 +1,387 @@
+:root {
+    --bg-color: #0d1117;
+    --card-bg: #161b22;
+    --border-color: #30363d;
+    --text-main: #c9d1d9;
+    --text-muted: #8b949e;
+    --accent-color: #58a6ff;
+    --grammar-accent: #ff7b72;
+    --vocab-accent: #79c0ff;
+    --hover-bg: #21262d;
+    --font-jp: "Inter", "Noto Sans JP", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-family: var(--font-jp);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+header {
+    margin-bottom: 3rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+h1 {
+    font-size: 2rem;
+    color: var(--accent-color);
+}
+
+nav a {
+    color: var(--text-main);
+    text-decoration: none;
+    margin-left: 1.5rem;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+nav a:hover {
+    color: var(--accent-color);
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+    transition: transform 0.2s, border-color 0.2s;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-color);
+    background-color: var(--hover-bg);
+}
+
+.card h2 {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.card.grammar h2 { color: var(--grammar-accent); }
+.card.vocab h2 { color: var(--vocab-accent); }
+
+.card p {
+    color: var(--text-muted);
+}
+
+/* Section Specifics */
+.search-bar {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-main);
+    margin-bottom: 2rem;
+    font-size: 1rem;
+}
+
+.item-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.tab-btn {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--font-jp);
+}
+
+.tab-btn:hover {
+    background: var(--hover-bg);
+    color: var(--text-main);
+}
+
+.tab-btn.active {
+    background: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+}
+
+.category-list {
+    display: none;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.category-list.active {
+    display: flex;
+}
+
+.grammar-item, .vocab-item {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.grammar-item .title {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--grammar-accent);
+    margin-bottom: 0.5rem;
+}
+
+.vocab-item .title {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--vocab-accent);
+    margin-bottom: 0.5rem;
+}
+
+.connection, .usage, .example {
+    margin-top: 1rem;
+}
+
+.label {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    background: var(--hover-bg);
+    border-radius: 4px;
+    font-size: 0.85rem;
+    color: var(--accent-color);
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.example-box {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-left: 4px solid var(--accent-color);
+    margin-top: 0.5rem;
+    border-radius: 0 4px 4px 0;
+}
+
+.jp-text {
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+}
+
+.cn-text {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+/* Verb Conjugation Table Styles */
+.verb-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.verb-meta .badge {
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.badge.group { background: #388bfd33; color: #58a6ff; border: 1px solid #388bfd66; }
+.badge.type { background: #3fb95033; color: #3fb950; border: 1px solid #3fb95066; }
+
+.conjugation-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.conjugation-table th, .conjugation-table td {
+    padding: 0.6rem;
+    border: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.conjugation-table th {
+    background: var(--hover-bg);
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+.conjugation-table tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* Collapsible Verb Mastery Styles */
+details.verb-mastery {
+    margin-top: 1.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+details.verb-mastery summary {
+    padding: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--accent-color);
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+details.verb-mastery summary::-webkit-details-marker {
+    display: none;
+}
+
+details.verb-mastery summary::after {
+    content: "▼ 展開詳細變化例句";
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+details[open].verb-mastery summary::after {
+    content: "▲ 收起詳細內容";
+}
+
+.mastery-content {
+    padding: 0 1rem 1rem 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.conjugation-group {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.form-item {
+    background: var(--hover-bg);
+    padding: 0.8rem;
+    border-radius: 6px;
+    border-left: 3px solid var(--accent-color);
+}
+
+.form-title {
+    font-weight: bold;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.mastery-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.mastery-table th, .mastery-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    text-align: left;
+    vertical-align: top;
+}
+
+.mastery-table th {
+    background: var(--hover-bg);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.mastery-table td:first-child {
+    width: 20%;
+    background: rgba(88, 166, 255, 0.05);
+}
+
+.mastery-table .form-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 0.2rem;
+}
+
+.mastery-table .form-val {
+    font-weight: bold;
+    color: var(--vocab-accent);
+    font-size: 1.1rem;
+}
+
+.mastery-table .example-cell {
+    width: 80%;
+}
+
+/* Collapsible Grammar Example Styles */
+details.grammar-examples {
+    margin-top: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: rgba(255, 123, 114, 0.03); /* Match grammar accent slightly */
+}
+
+details.grammar-examples summary {
+    padding: 0.8rem;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--grammar-accent);
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+details.grammar-examples summary::after {
+    content: "▼ 點擊展開例句解說";
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+details[open].grammar-examples summary::after {
+    content: "▲ 收起例句";
+}
+
+.grammar-examples-content {
+    padding: 0.5rem 1rem 1rem 1rem;
+    border-top: 1px solid var(--border-color);
+}
