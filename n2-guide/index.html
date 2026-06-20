@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JLPT N2 文法・單字總整理</title>
+<style>
+:root{
+  --bg:#f5f7fa; --card:#ffffff; --ink:#1f2933; --sub:#52606d;
+  --line:#e4e7eb; --brand:#5b54e6; --brand-soft:#eceaff;
+  --green:#2f9e6e; --green-soft:#e3f5ec; --amber:#c77700; --amber-soft:#fff3df;
+  --shadow:0 1px 3px rgba(20,30,60,.08),0 6px 20px rgba(20,30,60,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#13151b; --card:#1c1f27; --ink:#e6e9ef; --sub:#9aa4b2;
+    --line:#2a2e38; --brand:#8b85ff; --brand-soft:#262345;
+    --green:#5fd4a0; --green-soft:#152a22; --amber:#f0b35b; --amber-soft:#2c2415;
+    --shadow:0 1px 3px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.3);
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Noto Sans TC","Microsoft JhengHei",sans-serif;
+  background:var(--bg); color:var(--ink); line-height:1.7; font-size:16px;
+}
+header{
+  position:sticky; top:0; z-index:50; background:var(--card);
+  border-bottom:1px solid var(--line); box-shadow:var(--shadow);
+}
+.bar{max-width:960px; margin:0 auto; padding:12px 16px; display:flex; align-items:center; gap:12px; flex-wrap:wrap}
+.logo{font-weight:800; font-size:1.15rem; letter-spacing:.5px; white-space:nowrap}
+.logo .lv{color:var(--brand)}
+nav{display:flex; gap:6px; margin-left:auto; flex-wrap:wrap}
+nav button{
+  border:none; background:transparent; color:var(--sub); font-size:.95rem; font-weight:600;
+  padding:8px 14px; border-radius:999px; cursor:pointer; transition:.15s;
+}
+nav button:hover{background:var(--brand-soft); color:var(--brand)}
+nav button.active{background:var(--brand); color:#fff}
+main{max-width:960px; margin:0 auto; padding:20px 16px 80px}
+.hero{text-align:center; padding:36px 16px 8px}
+.hero h1{font-size:1.9rem; margin:0 0 10px; line-height:1.3}
+.hero p{color:var(--sub); max-width:620px; margin:0 auto 24px}
+.cards-home{display:grid; grid-template-columns:1fr 1fr; gap:16px; max-width:620px; margin:0 auto}
+@media(max-width:560px){.cards-home{grid-template-columns:1fr}}
+.home-card{
+  background:var(--card); border:1px solid var(--line); border-radius:18px; padding:24px;
+  text-align:left; cursor:pointer; box-shadow:var(--shadow); transition:transform .15s,border-color .15s;
+}
+.home-card:hover{transform:translateY(-3px); border-color:var(--brand)}
+.home-card .ic{font-size:2rem}
+.home-card h3{margin:10px 0 6px; font-size:1.2rem}
+.home-card p{margin:0; color:var(--sub); font-size:.92rem}
+.home-card .cnt{display:inline-block; margin-top:14px; font-size:.8rem; font-weight:700; color:var(--brand); background:var(--brand-soft); padding:4px 10px; border-radius:999px}
+.stats{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:28px 0 8px}
+.stat{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 20px; text-align:center; min-width:96px}
+.stat b{display:block; font-size:1.5rem; color:var(--brand)}
+.stat span{font-size:.8rem; color:var(--sub)}
+
+.toolbar{position:sticky; top:61px; z-index:40; background:var(--bg); padding:12px 0; margin-bottom:6px}
+.search{position:relative}
+.search input{
+  width:100%; padding:12px 16px 12px 42px; font-size:1rem; border:1px solid var(--line);
+  border-radius:12px; background:var(--card); color:var(--ink); outline:none;
+}
+.search input:focus{border-color:var(--brand)}
+.search .mag{position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--sub)}
+.filters{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+.chip{
+  border:1px solid var(--line); background:var(--card); color:var(--sub); font-size:.85rem; font-weight:600;
+  padding:6px 13px; border-radius:999px; cursor:pointer; transition:.12s;
+}
+.chip:hover{border-color:var(--brand); color:var(--brand)}
+.chip.active{background:var(--brand); color:#fff; border-color:var(--brand)}
+.count-line{color:var(--sub); font-size:.85rem; margin:4px 2px 14px}
+
+/* grammar cards */
+.g-card{background:var(--card); border:1px solid var(--line); border-radius:16px; margin-bottom:12px; box-shadow:var(--shadow); overflow:hidden}
+.g-head{display:flex; align-items:center; gap:12px; padding:16px 18px; cursor:pointer}
+.g-head .pat{font-size:1.2rem; font-weight:800; color:var(--brand)}
+.g-head .mean{color:var(--sub); font-size:.9rem; flex:1}
+.g-head .tag{font-size:.72rem; font-weight:700; color:var(--amber); background:var(--amber-soft); padding:3px 9px; border-radius:999px; white-space:nowrap}
+.g-head .arrow{color:var(--sub); transition:transform .2s; flex:0 0 auto}
+.g-card.open .arrow{transform:rotate(180deg)}
+.g-body{display:none; padding:0 18px 18px; border-top:1px solid var(--line)}
+.g-card.open .g-body{display:block}
+.g-sec{margin-top:14px}
+.g-sec .lbl{font-size:.78rem; font-weight:800; color:var(--brand); letter-spacing:.5px; text-transform:uppercase; margin-bottom:6px}
+.conn{background:var(--brand-soft); color:var(--ink); padding:8px 12px; border-radius:10px; font-size:.92rem; display:inline-block}
+.ex{border-left:3px solid var(--green); background:var(--green-soft); padding:10px 14px; border-radius:0 10px 10px 0; margin:8px 0}
+.ex .jp{font-size:1.02rem; margin-bottom:3px}
+.ex .zh{color:var(--sub); font-size:.9rem}
+.usage{color:var(--sub); font-size:.92rem; margin:0; padding-left:18px}
+.usage li{margin-bottom:3px}
+
+/* vocab cards */
+.v-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+@media(max-width:600px){.v-grid{grid-template-columns:1fr}}
+.v-card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 16px; box-shadow:var(--shadow)}
+.v-top{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap}
+.v-word{font-size:1.3rem; font-weight:800}
+.v-kana{color:var(--brand); font-size:.92rem; font-weight:600}
+.v-pos{font-size:.7rem; font-weight:700; padding:2px 8px; border-radius:999px; margin-left:auto}
+.pos-v{color:var(--brand); background:var(--brand-soft)}
+.pos-n{color:var(--green); background:var(--green-soft)}
+.pos-a{color:var(--amber); background:var(--amber-soft)}
+.pos-o{color:var(--sub); background:var(--line)}
+.v-mean{margin:6px 0 0; font-size:.96rem}
+.v-ex{margin-top:8px; font-size:.86rem; color:var(--sub); border-top:1px dashed var(--line); padding-top:8px}
+.v-ex .jp{color:var(--ink)}
+.empty{text-align:center; color:var(--sub); padding:50px 0}
+footer{text-align:center; color:var(--sub); font-size:.8rem; padding:30px 16px 50px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="logo">JLPT <span class="lv">N2</span> 總整理</div>
+    <nav>
+      <button data-view="home" class="active">首頁</button>
+      <button data-view="grammar">📚 文法</button>
+      <button data-view="vocab">💡 單字</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- HOME -->
+  <section id="view-home">
+    <div class="hero">
+      <h1>N2 文法・單字總整理</h1>
+      <p>涵蓋 N2 必考文法句型與核心單字，附接續方式、使用時機、中日對照例句。支援即時搜尋與分類篩選，手機、電腦皆可流暢使用。</p>
+    </div>
+    <div class="cards-home">
+      <div class="home-card" data-go="grammar">
+        <div class="ic">📚</div>
+        <h3>文法解說</h3>
+        <p>N2 必考句型，含接續方式、使用時機與豐富例句。</p>
+        <span class="cnt" id="home-g-cnt"></span>
+      </div>
+      <div class="home-card" data-go="vocab">
+        <div class="ic">💡</div>
+        <h3>單字字典</h3>
+        <p>核心詞彙依詞性分類，附假名與例句。</p>
+        <span class="cnt" id="home-v-cnt"></span>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="st-g">0</b><span>文法句型</span></div>
+      <div class="stat"><b id="st-v">0</b><span>核心單字</span></div>
+      <div class="stat"><b>N2</b><span>程度</span></div>
+    </div>
+  </section>
+
+  <!-- GRAMMAR -->
+  <section id="view-grammar" class="hidden">
+    <div class="toolbar">
+      <div class="search">
+        <span class="mag">🔍</span>
+        <input id="g-search" type="search" placeholder="搜尋文法（句型、意思、例句）…">
+      </div>
+      <div class="filters" id="g-filters"></div>
+    </div>
+    <div class="count-line" id="g-count"></div>
+    <div id="g-list"></div>
+  </section>
+
+  <!-- VOCAB -->
+  <section id="view-vocab" class="hidden">
+    <div class="toolbar">
+      <div class="search">
+        <span class="mag">🔍</span>
+        <input id="v-search" type="search" placeholder="搜尋單字（漢字、假名、中文）…">
+      </div>
+      <div class="filters" id="v-filters"></div>
+    </div>
+    <div class="count-line" id="v-count"></div>
+    <div class="v-grid" id="v-list"></div>
+  </section>
+</main>
+
+<footer>JLPT N2 文法・單字總整理 ・ 純前端靜態頁，可離線使用</footer>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
