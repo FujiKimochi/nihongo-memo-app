@@ -16,6 +16,8 @@ document.querySelectorAll('.home-card').forEach(c=>c.onclick=()=>show(c.dataset.
 
 /* ---------- 工具 ---------- */
 const esc = s => (s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+// 注音：將「漢字《よみ》」轉成 <ruby>，其餘文字仍跳脫，無 XSS 風險
+const ruby = s => esc(s).replace(/([一-鿿々〆ヶ]+)《([ぁ-ゖァ-ヺー]+)》/g,'<ruby>$1<rt>$2</rt></ruby>');
 const norm = s => (s||'').toLowerCase();
 
 /* ---------- 文法 ---------- */
@@ -52,7 +54,7 @@ function renderGrammar(){
         <div class="g-sec"><div class="lbl">接續方式</div><span class="conn">${esc(g.connection)}</span></div>
         ${g.usage&&g.usage.length?`<div class="g-sec"><div class="lbl">使用時機</div><ul class="usage">${g.usage.map(u=>`<li>${esc(u)}</li>`).join('')}</ul></div>`:''}
         <div class="g-sec"><div class="lbl">例句</div>
-          ${g.examples.map(e=>`<div class="ex"><div class="jp">${esc(e.jp)}</div><div class="zh">${esc(e.zh)}</div></div>`).join('')}
+          ${g.examples.map(e=>`<div class="ex"><div class="jp">${ruby(e.jp)}</div><div class="zh">${esc(e.zh)}</div></div>`).join('')}
         </div>
       </div>
     </div>`).join('');
@@ -103,7 +105,7 @@ function renderVocab(){
         <span class="v-pos ${posClass(v.pos)}">${esc(v.pos)}</span>
       </div>
       <p class="v-mean">${esc(v.meaning)}</p>
-      ${v.ex?`<div class="v-ex"><span class="jp">${esc(v.ex.jp)}</span><br>${esc(v.ex.zh)}</div>`:''}
+      ${v.ex?`<div class="v-ex"><span class="jp">${ruby(v.ex.jp)}</span><br>${esc(v.ex.zh)}</div>`:''}
     </div>`).join('');
 }
 document.getElementById('v-search').addEventListener('input',renderVocab);
